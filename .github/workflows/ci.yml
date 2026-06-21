@@ -20,6 +20,7 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: ./backend/go.sum
       - name: Vet
         working-directory: ./backend
         run: go vet ./...
@@ -45,6 +46,7 @@ jobs:
       - uses: actions/setup-go@v6
         with:
           go-version: ${{ env.GO_VERSION }}
+          cache-dependency-path: ./backend/go.sum
       - name: Build
         working-directory: ./backend
         run: go build ./...
