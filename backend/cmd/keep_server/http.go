@@ -2,11 +2,13 @@ package main
 
 import (
 	"context"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 
@@ -25,6 +27,9 @@ import (
 	"goa.design/clue/log"
 	goahttp "goa.design/goa/v3/http"
 )
+
+//go:embed openapi3.yaml
+var openapiSpec []byte
 
 func handleHTTPServer(ctx context.Context, u *url.URL, mediaEndpoints *media.Endpoints, labelsEndpoints *labels.Endpoints, notesEndpoints *notes.Endpoints, permissionsEndpoints *permissions.Endpoints, wg *sync.WaitGroup, errc chan error, dbg bool, attachmentStore *store.AttachmentStore) {
 	var (
@@ -64,6 +69,32 @@ func handleHTTPServer(ctx context.Context, u *url.URL, mediaEndpoints *media.End
 		mux.Handle("POST", "/v1/notes/{noteId}/attachments", uploadHandler(attachmentStore, mux))
 	}
 
+	mux.Handle("GET", "/openapi.yaml", func(w http.ResponseWriter, r *http.Request) {
+		spec := string(openapiSpec)
+		spec = strings.ReplaceAll(spec, "\n    - url: http://localhost:8080\n", "\n    - url: /v1\n")
+		w.Header().Set("Content-Type", "text/yaml")
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(spec))
+	})
+
+	mux.Handle("GET", "/openapi", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
+		fmt.Fprint(w, `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>API Docs</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui.css" />
+</head>
+<body>
+  <div id="swagger-ui"></div>
+  <script src="https://cdn.jsdelivr.net/npm/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script>SwaggerUIBundle({ url: "/openapi.yaml", dom_id: "#swagger-ui" })</script>
+</body>
+</html>`)
+	})
+
 	var handler http.Handler = mux
 	if dbg {
 		handler = debug.HTTP()(handler)
@@ -84,6 +115,8 @@ func handleHTTPServer(ctx context.Context, u *url.URL, mediaEndpoints *media.End
 		log.Printf(ctx, "HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
 	}
 	log.Printf(ctx, "HTTP %q mounted on %s %s", "POST", "POST", "/v1/notes/{noteId}/attachments")
+	log.Printf(ctx, "HTTP %q mounted on %s %s", "GET", "GET", "/openapi")
+	log.Printf(ctx, "HTTP %q mounted on %s %s", "GET", "GET", "/openapi.yaml")
 
 	(*wg).Add(1)
 	go func() {

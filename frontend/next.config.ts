@@ -10,6 +10,14 @@ const nextConfig: NextConfig = {
         source: "/v1/:path*",
         destination: `${API_UPSTREAM}/v1/:path*`,
       },
+      {
+        source: "/openapi",
+        destination: `${API_UPSTREAM}/openapi`,
+      },
+      {
+        source: "/openapi.yaml",
+        destination: `${API_UPSTREAM}/openapi.yaml`,
+      },
     ]
   },
 };

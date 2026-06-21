@@ -1,3 +1,4 @@
+//go:generate cp ../../gen/http/openapi3.yaml openapi3.yaml
 package main
 
 import (
