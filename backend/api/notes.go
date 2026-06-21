@@ -19,6 +19,26 @@ func NewNotesService(noteStore *store.NoteStore) notes.Service {
 	return &NotesService{noteStore: noteStore}
 }
 
+func bodyFields(body *notes.Section) (bodyType *string, bodyText *string, listItems []*notes.ListItem) {
+	if body == nil {
+		return nil, nil, nil
+	}
+	if body.List != nil {
+		t := "list"
+		empty := ""
+		return &t, &empty, body.List.ListItems
+	}
+	if body.Text != nil {
+		t := "text"
+		if body.Text.Text != nil {
+			return &t, body.Text.Text, nil
+		}
+		empty := ""
+		return &t, &empty, nil
+	}
+	return nil, nil, nil
+}
+
 func (s *NotesService) Create(ctx context.Context, p *notes.CreatePayload) (res *notes.Note, err error) {
 	if p.Note == nil {
 		return nil, fmt.Errorf("note payload required")
@@ -29,21 +49,7 @@ func (s *NotesService) Create(ctx context.Context, p *notes.CreatePayload) (res 
 		title = *p.Note.Title
 	}
 
-	var bodyType *string
-	bodyText := ""
-
-	if p.Note.Body != nil {
-		if p.Note.Body.List != nil {
-			t := "list"
-			bodyType = &t
-		} else if p.Note.Body.Text != nil {
-			t := "text"
-			bodyType = &t
-			if p.Note.Body.Text.Text != nil {
-				bodyText = *p.Note.Body.Text.Text
-			}
-		}
-	}
+	bodyType, bodyText, listItems := bodyFields(p.Note.Body)
 
 	color := "DEFAULT"
 	if p.Note.Color != nil {
@@ -60,12 +66,11 @@ func (s *NotesService) Create(ctx context.Context, p *notes.CreatePayload) (res 
 		archived = *p.Note.Archived
 	}
 
-	var listItems []*notes.ListItem
-	if p.Note.Body != nil && p.Note.Body.List != nil {
-		listItems = p.Note.Body.List.ListItems
+	var bodyTextVal string
+	if bodyText != nil {
+		bodyTextVal = *bodyText
 	}
-
-	return s.noteStore.Create(ctx, title, bodyType, bodyText, color, pinned, archived, p.Note.Labels, listItems)
+	return s.noteStore.Create(ctx, title, bodyType, bodyTextVal, color, pinned, archived, p.Note.Labels, listItems)
 }
 
 func (s *NotesService) Get(ctx context.Context, p *notes.GetPayload) (res *notes.Note, err error) {
@@ -82,11 +87,19 @@ func (s *NotesService) Update(ctx context.Context, p *notes.UpdatePayload) (res 
 		return nil, fmt.Errorf("invalid note id: %w", err)
 	}
 
+	var color *string
+	if p.Note.Color != nil {
+		c := string(*p.Note.Color)
+		color = &c
+	}
+
+	bodyType, bodyText, listItems := bodyFields(p.Note.Body)
+
 	return s.noteStore.Update(ctx, id,
 		p.Note.Title,
-		nil, nil,
-		nil, p.Note.Pinned, p.Note.Archived,
-		p.Note.Labels, nil,
+		bodyType, bodyText,
+		color, p.Note.Pinned, p.Note.Archived,
+		p.Note.Labels, listItems,
 	)
 }
 

@@ -243,6 +243,106 @@ func TestListTrashedExcluded(t *testing.T) {
 	assert.Equal(t, "Active", *res.Notes[0].Title)
 }
 
+func TestUpdateNoteBodyFromTextToList(t *testing.T) {
+	pool := newTestPool(t)
+	store := NewNoteStore(pool)
+
+	created, err := store.Create(context.Background(), "Text Note", strPtr("text"), "Some text", "DEFAULT", false, false, nil, nil)
+	require.NoError(t, err)
+	require.NotNil(t, created.Body.Text)
+
+	id, err := parseNoteName(*created.Name)
+	require.NoError(t, err)
+
+	items := []*notes.ListItem{
+		{Text: &notes.TextContent{Text: strPtr("Checklist 1")}, Checked: boolPtr(false)},
+		{Text: &notes.TextContent{Text: strPtr("Checklist 2")}, Checked: boolPtr(true)},
+	}
+
+	updated, err := store.Update(context.Background(), id, nil, strPtr("list"), strPtr(""), nil, nil, nil, nil, items)
+	require.NoError(t, err)
+	require.NotNil(t, updated.Body.List)
+	assert.Len(t, updated.Body.List.ListItems, 2)
+	assert.Equal(t, "Checklist 1", *updated.Body.List.ListItems[0].Text.Text)
+	assert.False(t, *updated.Body.List.ListItems[0].Checked)
+	assert.True(t, *updated.Body.List.ListItems[1].Checked)
+}
+
+func TestUpdateNoteListItems(t *testing.T) {
+	pool := newTestPool(t)
+	store := NewNoteStore(pool)
+
+	items := []*notes.ListItem{
+		{Text: &notes.TextContent{Text: strPtr("Item 1")}, Checked: boolPtr(false)},
+		{Text: &notes.TextContent{Text: strPtr("Item 2")}, Checked: boolPtr(false)},
+	}
+
+	created, err := store.Create(context.Background(), "Checklist", strPtr("list"), "", "DEFAULT", false, false, nil, items)
+	require.NoError(t, err)
+	require.Len(t, created.Body.List.ListItems, 2)
+
+	id, err := parseNoteName(*created.Name)
+	require.NoError(t, err)
+
+	newItems := []*notes.ListItem{
+		{Text: &notes.TextContent{Text: strPtr("Replaced 1")}, Checked: boolPtr(true)},
+		{Text: &notes.TextContent{Text: strPtr("Replaced 2")}, Checked: boolPtr(false)},
+		{Text: &notes.TextContent{Text: strPtr("Replaced 3")}, Checked: boolPtr(true)},
+	}
+
+	updated, err := store.Update(context.Background(), id, nil, strPtr("list"), strPtr(""), nil, nil, nil, nil, newItems)
+	require.NoError(t, err)
+	require.Len(t, updated.Body.List.ListItems, 3)
+	assert.Equal(t, "Replaced 1", *updated.Body.List.ListItems[0].Text.Text)
+	assert.True(t, *updated.Body.List.ListItems[0].Checked)
+	assert.Equal(t, "Replaced 3", *updated.Body.List.ListItems[2].Text.Text)
+}
+
+func TestUpdateNoteCheckedState(t *testing.T) {
+	pool := newTestPool(t)
+	store := NewNoteStore(pool)
+
+	items := []*notes.ListItem{
+		{Text: &notes.TextContent{Text: strPtr("Todo")}, Checked: boolPtr(false)},
+	}
+
+	created, err := store.Create(context.Background(), "Check", strPtr("list"), "", "DEFAULT", false, false, nil, items)
+	require.NoError(t, err)
+
+	id, err := parseNoteName(*created.Name)
+	require.NoError(t, err)
+
+	checkedItems := []*notes.ListItem{
+		{Text: &notes.TextContent{Text: strPtr("Todo")}, Checked: boolPtr(true)},
+	}
+
+	updated, err := store.Update(context.Background(), id, nil, strPtr("list"), strPtr(""), nil, nil, nil, nil, checkedItems)
+	require.NoError(t, err)
+	require.Len(t, updated.Body.List.ListItems, 1)
+	assert.True(t, *updated.Body.List.ListItems[0].Checked)
+}
+
+func TestUpdateNotePreservesTitleWhenOnlyBodyChanges(t *testing.T) {
+	pool := newTestPool(t)
+	store := NewNoteStore(pool)
+
+	created, err := store.Create(context.Background(), "My Note", strPtr("text"), "Hello", "DEFAULT", false, false, nil, nil)
+	require.NoError(t, err)
+
+	id, err := parseNoteName(*created.Name)
+	require.NoError(t, err)
+
+	items := []*notes.ListItem{
+		{Text: &notes.TextContent{Text: strPtr("New list")}, Checked: boolPtr(false)},
+	}
+
+	updated, err := store.Update(context.Background(), id, nil, strPtr("list"), strPtr(""), nil, nil, nil, nil, items)
+	require.NoError(t, err)
+	assert.Equal(t, "My Note", *updated.Title)
+	require.NotNil(t, updated.Body.List)
+	assert.Equal(t, "New list", *updated.Body.List.ListItems[0].Text.Text)
+}
+
 func TestNoteNotFound(t *testing.T) {
 	pool := newTestPool(t)
 	store := NewNoteStore(pool)
