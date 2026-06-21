@@ -23,7 +23,7 @@ import (
 
 func main() {
 	var (
-		hostF     = flag.String("host", "localhost", "Server host (valid values: localhost)")
+		hostF     = flag.String("host", "0.0.0.0", "Server host (valid values: localhost, 0.0.0.0)")
 		domainF   = flag.String("domain", "", "Host domain name (overrides host domain specified in service design)")
 		httpPortF = flag.String("http-port", "", "HTTP port (overrides host HTTP port specified in service design)")
 		secureF   = flag.Bool("secure", false, "Use secure scheme (https or grpcs)")
@@ -129,8 +129,33 @@ func main() {
 			handleHTTPServer(ctx, u, mediaEndpoints, labelsEndpoints, notesEndpoints, permissionsEndpoints, &wg, errc, *dbgF, attachmentStore)
 		}
 
+	case "0.0.0.0":
+		{
+			addr := "http://0.0.0.0:8080"
+			u, err := url.Parse(addr)
+			if err != nil {
+				log.Fatalf(ctx, err, "invalid URL %#v\n", addr)
+			}
+			if *secureF {
+				u.Scheme = "https"
+			}
+			if *domainF != "" {
+				u.Host = *domainF
+			}
+			if *httpPortF != "" {
+				h, _, err := net.SplitHostPort(u.Host)
+				if err != nil {
+					log.Fatalf(ctx, err, "invalid URL %#v\n", u.Host)
+				}
+				u.Host = net.JoinHostPort(h, *httpPortF)
+			} else if u.Port() == "" {
+				u.Host = net.JoinHostPort(u.Host, "80")
+			}
+			handleHTTPServer(ctx, u, mediaEndpoints, labelsEndpoints, notesEndpoints, permissionsEndpoints, &wg, errc, *dbgF, attachmentStore)
+		}
+
 	default:
-		log.Fatal(ctx, fmt.Errorf("invalid host argument: %q (valid hosts: localhost)", *hostF))
+		log.Fatal(ctx, fmt.Errorf("invalid host argument: %q (valid hosts: localhost, 0.0.0.0)", *hostF))
 	}
 
 	log.Printf(ctx, "exiting (%v)", <-errc)
