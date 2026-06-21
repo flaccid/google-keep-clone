@@ -22,7 +22,7 @@ func BuildCreatePayload(labelsCreateBody string) (*labels.CreatePayload, error) 
 	{
 		err = json.Unmarshal([]byte(labelsCreateBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"displayName\": \"Facere aspernatur atque.\"\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"displayName\": \"Non dolore voluptatem ipsa.\"\n   }'")
 		}
 	}
 	v := &labels.CreatePayload{

@@ -104,7 +104,7 @@ func TestListNotes(t *testing.T) {
 	_, err = store.Create(context.Background(), "Note 2", strPtr("text"), "Two", "DEFAULT", false, false, nil, nil)
 	require.NoError(t, err)
 
-	res, err := store.List(context.Background(), nil, nil, nil)
+	res, err := store.List(context.Background(), nil, nil, nil, nil)
 	require.NoError(t, err)
 	assert.Len(t, res.Notes, 2)
 }
@@ -119,12 +119,12 @@ func TestListNotesWithPagination(t *testing.T) {
 	}
 
 	pageSize := 2
-	res, err := store.List(context.Background(), &pageSize, nil, nil)
+	res, err := store.List(context.Background(), &pageSize, nil, nil, nil)
 	require.NoError(t, err)
 	assert.Len(t, res.Notes, 2)
 	require.NotNil(t, res.NextPageToken)
 
-	res2, err := store.List(context.Background(), &pageSize, res.NextPageToken, nil)
+	res2, err := store.List(context.Background(), &pageSize, res.NextPageToken, nil, nil)
 	require.NoError(t, err)
 	assert.Len(t, res2.Notes, 2)
 	require.NotNil(t, res2.NextPageToken)
@@ -237,7 +237,7 @@ func TestListTrashedExcluded(t *testing.T) {
 	_, err = store.SetTrashed(context.Background(), tid, true)
 	require.NoError(t, err)
 
-	res, err := store.List(context.Background(), nil, nil, nil)
+	res, err := store.List(context.Background(), nil, nil, nil, nil)
 	require.NoError(t, err)
 	assert.Len(t, res.Notes, 1)
 	assert.Equal(t, "Active", *res.Notes[0].Title)

@@ -23,7 +23,7 @@ func BuildCreatePayload(notesCreateBody string) (*notes.CreatePayload, error) {
 	{
 		err = json.Unmarshal([]byte(notesCreateBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"archived\": false,\n      \"body\": {\n         \"list\": {\n            \"listItems\": [\n               {\n                  \"checked\": false,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Reiciendis aut modi ducimus qui voluptas.\"\n                  }\n               },\n               {\n                  \"checked\": false,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Reiciendis aut modi ducimus qui voluptas.\"\n                  }\n               }\n            ]\n         },\n         \"text\": {\n            \"text\": \"Reiciendis aut modi ducimus qui voluptas.\"\n         }\n      },\n      \"color\": \"TEAL\",\n      \"labels\": [\n         \"Ut at.\",\n         \"Deleniti ad quia deserunt consequatur saepe non.\"\n      ],\n      \"pinned\": false,\n      \"title\": \"9th\"\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"archived\": true,\n      \"body\": {\n         \"list\": {\n            \"listItems\": [\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Accusamus quod itaque.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Accusamus quod itaque.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Accusamus quod itaque.\"\n                  }\n               }\n            ]\n         },\n         \"text\": {\n            \"text\": \"Accusamus quod itaque.\"\n         }\n      },\n      \"color\": \"GRAY\",\n      \"labels\": [\n         \"Nihil qui autem.\",\n         \"Aut modi.\"\n      ],\n      \"pinned\": true,\n      \"title\": \"o2e\"\n   }'")
 		}
 	}
 	v := &notes.NoteRequest{
@@ -65,7 +65,7 @@ func BuildGetPayload(notesGetID string) (*notes.GetPayload, error) {
 
 // BuildListPayload builds the payload for the notes list endpoint from CLI
 // flags.
-func BuildListPayload(notesListPageSize string, notesListPageToken string, notesListFilter string) (*notes.ListPayload, error) {
+func BuildListPayload(notesListPageSize string, notesListPageToken string, notesListFilter string, notesListSearch string) (*notes.ListPayload, error) {
 	var err error
 	var pageSize *int
 	{
@@ -91,10 +91,17 @@ func BuildListPayload(notesListPageSize string, notesListPageToken string, notes
 			filter = &notesListFilter
 		}
 	}
+	var search *string
+	{
+		if notesListSearch != "" {
+			search = &notesListSearch
+		}
+	}
 	v := &notes.ListPayload{}
 	v.PageSize = pageSize
 	v.PageToken = pageToken
 	v.Filter = filter
+	v.Search = search
 
 	return v, nil
 }
@@ -107,7 +114,7 @@ func BuildUpdatePayload(notesUpdateBody string, notesUpdateID string) (*notes.Up
 	{
 		err = json.Unmarshal([]byte(notesUpdateBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"archived\": false,\n      \"body\": {\n         \"list\": {\n            \"listItems\": [\n               {\n                  \"checked\": false,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Reiciendis aut modi ducimus qui voluptas.\"\n                  }\n               },\n               {\n                  \"checked\": false,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Reiciendis aut modi ducimus qui voluptas.\"\n                  }\n               }\n            ]\n         },\n         \"text\": {\n            \"text\": \"Reiciendis aut modi ducimus qui voluptas.\"\n         }\n      },\n      \"color\": \"RED\",\n      \"labels\": [\n         \"Odio velit sunt ut tempore voluptatem quae.\",\n         \"Consequatur aliquid consectetur.\",\n         \"Ipsa officia modi excepturi laboriosam ut.\"\n      ],\n      \"pinned\": false,\n      \"title\": \"vx3\"\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"archived\": false,\n      \"body\": {\n         \"list\": {\n            \"listItems\": [\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Accusamus quod itaque.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Accusamus quod itaque.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Accusamus quod itaque.\"\n                  }\n               }\n            ]\n         },\n         \"text\": {\n            \"text\": \"Accusamus quod itaque.\"\n         }\n      },\n      \"color\": \"GREEN\",\n      \"labels\": [\n         \"Velit sunt ut.\",\n         \"Voluptatem quae et consequatur aliquid consectetur est.\",\n         \"Officia modi excepturi.\",\n         \"Ut similique consectetur laudantium aliquid.\"\n      ],\n      \"pinned\": false,\n      \"title\": \"x3d\"\n   }'")
 		}
 	}
 	var id string

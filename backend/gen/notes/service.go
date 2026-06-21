@@ -131,6 +131,8 @@ type ListPayload struct {
 	// Filter for list results. Valid fields: createTime, updateTime, trashTime,
 	// trashed.
 	Filter *string
+	// Search term to filter notes by title and body text.
+	Search *string
 }
 
 // The newly created note.

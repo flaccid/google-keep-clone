@@ -2,17 +2,30 @@ package api
 
 import (
 	"context"
-	"fmt"
+
+	"github.com/google/uuid"
 
 	media "github.com/flaccid/google-keep-clone/backend/gen/media"
+	"github.com/flaccid/google-keep-clone/backend/store"
 )
 
-type MediaService struct{}
+type MediaService struct {
+	attachmentStore *store.AttachmentStore
+}
 
-func NewMediaService() media.Service {
-	return &MediaService{}
+func NewMediaService(attachmentStore *store.AttachmentStore) media.Service {
+	return &MediaService{attachmentStore: attachmentStore}
 }
 
 func (s *MediaService) Download(ctx context.Context, p *media.DownloadPayload) (res []byte, err error) {
-	return nil, fmt.Errorf("not implemented")
+	noteID, err := uuid.Parse(p.NoteID)
+	if err != nil {
+		return nil, err
+	}
+	attachmentID, err := uuid.Parse(p.AttachmentID)
+	if err != nil {
+		return nil, err
+	}
+	data, _, err := s.attachmentStore.GetByID(ctx, noteID, attachmentID)
+	return data, err
 }

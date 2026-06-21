@@ -35,9 +35,9 @@ func UsageCommands() []string {
 
 // UsageExamples produces an example of a valid invocation of the CLI tool.
 func UsageExamples() string {
-	return os.Args[0] + " " + "media download --note-id \"Aut nesciunt omnis.\" --attachment-id \"Odit necessitatibus et non.\"" + "\n" +
+	return os.Args[0] + " " + "media download --note-id \"Qui quos voluptatibus.\" --attachment-id \"Voluptatibus aut.\"" + "\n" +
 		os.Args[0] + " " + "labels list" + "\n" +
-		os.Args[0] + " " + "notes create --body '{\n      \"archived\": false,\n      \"body\": {\n         \"list\": {\n            \"listItems\": [\n               {\n                  \"checked\": false,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Reiciendis aut modi ducimus qui voluptas.\"\n                  }\n               },\n               {\n                  \"checked\": false,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Reiciendis aut modi ducimus qui voluptas.\"\n                  }\n               }\n            ]\n         },\n         \"text\": {\n            \"text\": \"Reiciendis aut modi ducimus qui voluptas.\"\n         }\n      },\n      \"color\": \"TEAL\",\n      \"labels\": [\n         \"Ut at.\",\n         \"Deleniti ad quia deserunt consequatur saepe non.\"\n      ],\n      \"pinned\": false,\n      \"title\": \"9th\"\n   }'" + "\n" +
+		os.Args[0] + " " + "notes create --body '{\n      \"archived\": true,\n      \"body\": {\n         \"list\": {\n            \"listItems\": [\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Accusamus quod itaque.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Accusamus quod itaque.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Accusamus quod itaque.\"\n                  }\n               }\n            ]\n         },\n         \"text\": {\n            \"text\": \"Accusamus quod itaque.\"\n         }\n      },\n      \"color\": \"GRAY\",\n      \"labels\": [\n         \"Nihil qui autem.\",\n         \"Aut modi.\"\n      ],\n      \"pinned\": true,\n      \"title\": \"o2e\"\n   }'" + "\n" +
 		os.Args[0] + " " + "permissions batch-create --body '{\n      \"requests\": [\n         {\n            \"email\": \"Id beatae aliquid consequuntur quisquam occaecati dolor.\",\n            \"role\": \"OWNER\"\n         },\n         {\n            \"email\": \"Id beatae aliquid consequuntur quisquam occaecati dolor.\",\n            \"role\": \"OWNER\"\n         },\n         {\n            \"email\": \"Id beatae aliquid consequuntur quisquam occaecati dolor.\",\n            \"role\": \"OWNER\"\n         },\n         {\n            \"email\": \"Id beatae aliquid consequuntur quisquam occaecati dolor.\",\n            \"role\": \"OWNER\"\n         }\n      ]\n   }' --note-id \"Sed ipsam dignissimos velit.\"" + "\n" +
 		""
 }
@@ -80,6 +80,7 @@ func ParseEndpoint(
 		notesListPageSizeFlag  = notesListFlags.String("page-size", "", "")
 		notesListPageTokenFlag = notesListFlags.String("page-token", "", "")
 		notesListFilterFlag    = notesListFlags.String("filter", "", "")
+		notesListSearchFlag    = notesListFlags.String("search", "", "")
 
 		notesUpdateFlags    = flag.NewFlagSet("update", flag.ExitOnError)
 		notesUpdateBodyFlag = notesUpdateFlags.String("body", "REQUIRED", "")
@@ -296,7 +297,7 @@ func ParseEndpoint(
 				data, err = notesc.BuildGetPayload(*notesGetIDFlag)
 			case "list":
 				endpoint = c.List()
-				data, err = notesc.BuildListPayload(*notesListPageSizeFlag, *notesListPageTokenFlag, *notesListFilterFlag)
+				data, err = notesc.BuildListPayload(*notesListPageSizeFlag, *notesListPageTokenFlag, *notesListFilterFlag, *notesListSearchFlag)
 			case "update":
 				endpoint = c.Update()
 				data, err = notesc.BuildUpdatePayload(*notesUpdateBodyFlag, *notesUpdateIDFlag)
@@ -368,7 +369,7 @@ func mediaDownloadUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "media download --note-id \"Aut nesciunt omnis.\" --attachment-id \"Odit necessitatibus et non.\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "media download --note-id \"Qui quos voluptatibus.\" --attachment-id \"Voluptatibus aut.\"")
 }
 
 // labelsUsage displays the usage of the labels command and its subcommands.
@@ -414,7 +415,7 @@ func labelsCreateUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "labels create --body '{\n      \"displayName\": \"Facere aspernatur atque.\"\n   }'")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "labels create --body '{\n      \"displayName\": \"Non dolore voluptatem ipsa.\"\n   }'")
 }
 
 func labelsDeleteUsage() {
@@ -432,7 +433,7 @@ func labelsDeleteUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "labels delete --id \"Libero omnis magnam non dolore.\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "labels delete --id \"Eum deleniti ad quia.\"")
 }
 
 // notesUsage displays the usage of the notes command and its subcommands.
@@ -470,7 +471,7 @@ func notesCreateUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes create --body '{\n      \"archived\": false,\n      \"body\": {\n         \"list\": {\n            \"listItems\": [\n               {\n                  \"checked\": false,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Reiciendis aut modi ducimus qui voluptas.\"\n                  }\n               },\n               {\n                  \"checked\": false,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Reiciendis aut modi ducimus qui voluptas.\"\n                  }\n               }\n            ]\n         },\n         \"text\": {\n            \"text\": \"Reiciendis aut modi ducimus qui voluptas.\"\n         }\n      },\n      \"color\": \"TEAL\",\n      \"labels\": [\n         \"Ut at.\",\n         \"Deleniti ad quia deserunt consequatur saepe non.\"\n      ],\n      \"pinned\": false,\n      \"title\": \"9th\"\n   }'")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes create --body '{\n      \"archived\": true,\n      \"body\": {\n         \"list\": {\n            \"listItems\": [\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Accusamus quod itaque.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Accusamus quod itaque.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Accusamus quod itaque.\"\n                  }\n               }\n            ]\n         },\n         \"text\": {\n            \"text\": \"Accusamus quod itaque.\"\n         }\n      },\n      \"color\": \"GRAY\",\n      \"labels\": [\n         \"Nihil qui autem.\",\n         \"Aut modi.\"\n      ],\n      \"pinned\": true,\n      \"title\": \"o2e\"\n   }'")
 }
 
 func notesGetUsage() {
@@ -497,6 +498,7 @@ func notesListUsage() {
 	fmt.Fprint(os.Stderr, " -page-size INT")
 	fmt.Fprint(os.Stderr, " -page-token STRING")
 	fmt.Fprint(os.Stderr, " -filter STRING")
+	fmt.Fprint(os.Stderr, " -search STRING")
 	fmt.Fprintln(os.Stderr)
 
 	// Description
@@ -507,10 +509,11 @@ func notesListUsage() {
 	fmt.Fprintln(os.Stderr, `    -page-size INT: `)
 	fmt.Fprintln(os.Stderr, `    -page-token STRING: `)
 	fmt.Fprintln(os.Stderr, `    -filter STRING: `)
+	fmt.Fprintln(os.Stderr, `    -search STRING: `)
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes list --page-size 542319687695366341 --page-token \"Optio soluta dolorum id eum dolorem.\" --filter \"Voluptatibus inventore ipsam.\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes list --page-size 542319687695366341 --page-token \"Optio soluta dolorum id eum dolorem.\" --filter \"Voluptatibus inventore ipsam.\" --search \"Ut delectus.\"")
 }
 
 func notesUpdateUsage() {
@@ -530,7 +533,7 @@ func notesUpdateUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes update --body '{\n      \"archived\": false,\n      \"body\": {\n         \"list\": {\n            \"listItems\": [\n               {\n                  \"checked\": false,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Reiciendis aut modi ducimus qui voluptas.\"\n                  }\n               },\n               {\n                  \"checked\": false,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Reiciendis aut modi ducimus qui voluptas.\"\n                  }\n               }\n            ]\n         },\n         \"text\": {\n            \"text\": \"Reiciendis aut modi ducimus qui voluptas.\"\n         }\n      },\n      \"color\": \"RED\",\n      \"labels\": [\n         \"Odio velit sunt ut tempore voluptatem quae.\",\n         \"Consequatur aliquid consectetur.\",\n         \"Ipsa officia modi excepturi laboriosam ut.\"\n      ],\n      \"pinned\": false,\n      \"title\": \"vx3\"\n   }' --id \"Consectetur laudantium aliquid provident ratione.\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes update --body '{\n      \"archived\": false,\n      \"body\": {\n         \"list\": {\n            \"listItems\": [\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Accusamus quod itaque.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Accusamus quod itaque.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Accusamus quod itaque.\"\n                  }\n               }\n            ]\n         },\n         \"text\": {\n            \"text\": \"Accusamus quod itaque.\"\n         }\n      },\n      \"color\": \"GREEN\",\n      \"labels\": [\n         \"Velit sunt ut.\",\n         \"Voluptatem quae et consequatur aliquid consectetur est.\",\n         \"Officia modi excepturi.\",\n         \"Ut similique consectetur laudantium aliquid.\"\n      ],\n      \"pinned\": false,\n      \"title\": \"x3d\"\n   }' --id \"Ratione velit aut est veritatis.\"")
 }
 
 func notesDeleteUsage() {
@@ -548,7 +551,7 @@ func notesDeleteUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes delete --id \"Asperiores dicta.\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes delete --id \"Commodi et quisquam dignissimos.\"")
 }
 
 func notesPinUsage() {
@@ -566,7 +569,7 @@ func notesPinUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes pin --id \"Commodi et quisquam dignissimos.\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes pin --id \"Id quidem vero eos aliquid tenetur.\"")
 }
 
 func notesUnpinUsage() {
@@ -584,7 +587,7 @@ func notesUnpinUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes unpin --id \"Excepturi iure ut.\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes unpin --id \"Enim earum.\"")
 }
 
 func notesArchiveUsage() {

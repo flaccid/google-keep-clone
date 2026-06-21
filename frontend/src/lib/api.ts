@@ -17,10 +17,11 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
 export const api = {
   notes: {
-    list: (pageSize?: number, pageToken?: string) => {
+    list: (pageSize?: number, pageToken?: string, search?: string) => {
       const params = new URLSearchParams()
       if (pageSize) params.set("pageSize", String(pageSize))
       if (pageToken) params.set("pageToken", pageToken)
+      if (search) params.set("search", search)
       const qs = params.toString()
       return request<ListNotesResponse>(`/v1/notes${qs ? "?" + qs : ""}`)
     },

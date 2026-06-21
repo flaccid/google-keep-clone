@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { api } from "@/lib/api"
 import type { Note } from "@/lib/types"
 import NoteCard from "@/components/NoteCard"
@@ -10,15 +10,27 @@ import Link from "next/link"
 export default function HomePage() {
   const [notes, setNotes] = useState<Note[]>([])
   const [showCreate, setShowCreate] = useState(false)
+  const [search, setSearch] = useState("")
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (searchTerm?: string) => {
     try {
-      const res = await api.notes.list()
+      const res = await api.notes.list(undefined, undefined, searchTerm)
       setNotes(res.notes || [])
     } catch {}
   }, [])
 
-  useEffect(() => { load() }, [load])
+  useEffect(() => {
+    load(search || undefined)
+  }, [load])
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      load(search || undefined)
+    }, 300)
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
+  }, [search, load])
 
   const active = notes.filter((n) => !n.archived && !n.trashed && !n.pinned)
   const pinned = notes.filter((n) => n.pinned && !n.archived && !n.trashed)
@@ -28,6 +40,8 @@ export default function HomePage() {
       <div className="flex items-center gap-4 mb-6">
         <input
           placeholder="Search notes..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
           className="flex-1 max-w-md px-4 py-2 rounded-lg border border-gray-200 text-sm outline-none focus:border-blue-400"
         />
         <div className="flex gap-3 text-sm">

@@ -109,7 +109,7 @@ func (s *NoteStore) GetByName(ctx context.Context, name string) (*notes.Note, er
 	return s.GetByID(ctx, id)
 }
 
-func (s *NoteStore) List(ctx context.Context, pageSize *int, pageToken *string, filter *string) (*notes.ListNotesResponse, error) {
+func (s *NoteStore) List(ctx context.Context, pageSize *int, pageToken *string, filter *string, search *string) (*notes.ListNotesResponse, error) {
 	limit := 20
 	if pageSize != nil && *pageSize > 0 {
 		limit = *pageSize
@@ -126,12 +126,20 @@ func (s *NoteStore) List(ctx context.Context, pageSize *int, pageToken *string, 
 		where = "WHERE " + *filter
 	}
 
-	rows, err := s.pool.Query(ctx, fmt.Sprintf(`
+	var searchCondition string
+	if search != nil && *search != "" {
+		like := "%" + *search + "%"
+		searchCondition = fmt.Sprintf(`AND (title ILIKE '%s' OR body_text ILIKE '%s')`, like, like)
+	}
+
+	query := fmt.Sprintf(`
 		SELECT id, title, body_type, body_text, color, pinned, archived, trashed, trash_time, created_at, updated_at
-		FROM notes %s
+		FROM notes %s%s
 		ORDER BY pinned DESC, updated_at DESC
 		LIMIT $1 OFFSET $2
-	`, where), limit, offset)
+	`, where, searchCondition)
+
+	rows, err := s.pool.Query(ctx, query, limit, offset)
 	if err != nil {
 		return nil, fmt.Errorf("query notes: %w", err)
 	}

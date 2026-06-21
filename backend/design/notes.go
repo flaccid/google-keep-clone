@@ -45,6 +45,7 @@ var _ = Service("notes", func() {
 			Attribute("pageSize", Int, "The maximum number of results to return.")
 			Attribute("pageToken", String, "The previous page's nextPageToken field.")
 			Attribute("filter", String, "Filter for list results. Valid fields: createTime, updateTime, trashTime, trashed.")
+			Attribute("search", String, "Search term to filter notes by title and body text.")
 		})
 
 		Result(ListNotesResponse, "A page of notes.")
@@ -54,6 +55,7 @@ var _ = Service("notes", func() {
 			Param("pageSize")
 			Param("pageToken")
 			Param("filter")
+			Param("search")
 		})
 	})
 

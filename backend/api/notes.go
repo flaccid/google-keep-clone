@@ -78,7 +78,7 @@ func (s *NotesService) Get(ctx context.Context, p *notes.GetPayload) (res *notes
 }
 
 func (s *NotesService) List(ctx context.Context, p *notes.ListPayload) (res *notes.ListNotesResponse, err error) {
-	return s.noteStore.List(ctx, p.PageSize, p.PageToken, p.Filter)
+	return s.noteStore.List(ctx, p.PageSize, p.PageToken, p.Filter, p.Search)
 }
 
 func (s *NotesService) Update(ctx context.Context, p *notes.UpdatePayload) (res *notes.Note, err error) {

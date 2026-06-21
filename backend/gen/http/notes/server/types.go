@@ -967,11 +967,12 @@ func NewGetPayload(id string) *notes.GetPayload {
 }
 
 // NewListPayload builds a notes service list endpoint payload.
-func NewListPayload(pageSize *int, pageToken *string, filter *string) *notes.ListPayload {
+func NewListPayload(pageSize *int, pageToken *string, filter *string, search *string) *notes.ListPayload {
 	v := &notes.ListPayload{}
 	v.PageSize = pageSize
 	v.PageToken = pageToken
 	v.Filter = filter
+	v.Search = search
 
 	return v
 }

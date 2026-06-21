@@ -57,13 +57,15 @@ func main() {
 	defer pool.Close()
 
 	var (
-		mediaSvc       media.Service
-		labelsSvc      labels.Service
-		notesSvc       notes.Service
-		permissionsSvc permissions.Service
+		attachmentStore *store.AttachmentStore
+		mediaSvc        media.Service
+		labelsSvc       labels.Service
+		notesSvc        notes.Service
+		permissionsSvc  permissions.Service
 	)
 	{
-		mediaSvc = api.NewMediaService()
+		attachmentStore = store.NewAttachmentStore(pool)
+		mediaSvc = api.NewMediaService(attachmentStore)
 		labelsSvc = api.NewLabelsService(store.NewLabelStore(pool))
 		notesSvc = api.NewNotesService(store.NewNoteStore(pool))
 		permissionsSvc = api.NewPermissionsService(store.NewPermissionStore(pool))
@@ -124,7 +126,7 @@ func main() {
 			} else if u.Port() == "" {
 				u.Host = net.JoinHostPort(u.Host, "80")
 			}
-			handleHTTPServer(ctx, u, mediaEndpoints, labelsEndpoints, notesEndpoints, permissionsEndpoints, &wg, errc, *dbgF)
+			handleHTTPServer(ctx, u, mediaEndpoints, labelsEndpoints, notesEndpoints, permissionsEndpoints, &wg, errc, *dbgF, attachmentStore)
 		}
 
 	default:

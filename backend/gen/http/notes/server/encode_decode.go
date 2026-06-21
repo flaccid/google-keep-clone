@@ -112,6 +112,7 @@ func DecodeListRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.De
 			pageSize  *int
 			pageToken *string
 			filter    *string
+			search    *string
 			err       error
 		)
 		qp := r.URL.Query()
@@ -134,10 +135,14 @@ func DecodeListRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.De
 		if filterRaw != "" {
 			filter = &filterRaw
 		}
+		searchRaw := qp.Get("search")
+		if searchRaw != "" {
+			search = &searchRaw
+		}
 		if err != nil {
 			return payload, err
 		}
-		payload = NewListPayload(pageSize, pageToken, filter)
+		payload = NewListPayload(pageSize, pageToken, filter, search)
 
 		return payload, nil
 	}

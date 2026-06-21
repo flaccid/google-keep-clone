@@ -188,6 +188,9 @@ func EncodeListRequest(encoder func(*http.Request) goahttp.Encoder) func(*http.R
 		if p.Filter != nil {
 			values.Add("filter", *p.Filter)
 		}
+		if p.Search != nil {
+			values.Add("search", *p.Search)
+		}
 		req.URL.RawQuery = values.Encode()
 		return nil
 	}
