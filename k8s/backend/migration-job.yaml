@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-migrate
+  namespace: google-keep-clone
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-weight": "-5"
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: migrate
+          image: flaccid/google-keep-clone-backend:latest
+          command: ["./keep_server", "--migrate-only"]
+          env:
+            - name: DATABASE_URL
+              value: postgres://keep:keep@postgres:5432/keep?sslmode=disable

@@ -3,6 +3,8 @@ kind: Ingress
 metadata:
   name: google-keep-clone
   namespace: google-keep-clone
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: nginx
   rules:
@@ -10,6 +12,13 @@ spec:
       http:
         paths:
           - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 3000
+          - path: /v1
             pathType: Prefix
             backend:
               service:
