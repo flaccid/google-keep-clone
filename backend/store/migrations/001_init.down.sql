@@ -1,0 +1,6 @@
+DROP TABLE IF EXISTS attachments;
+DROP TABLE IF EXISTS permissions;
+DROP TABLE IF EXISTS note_labels;
+DROP TABLE IF EXISTS labels;
+DROP TABLE IF EXISTS list_items;
+DROP TABLE IF EXISTS notes;
