@@ -1,4 +1,4 @@
-import type { Note, NoteRequest, ListNotesResponse, Label } from "./types"
+import type { Note, NoteRequest, ListNotesResponse, Label, Attachment } from "./types"
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(path, {
@@ -36,6 +36,18 @@ export const api = {
     unarchive: (id: string) => request<Note>(`/v1/notes/${id}:unarchive`, { method: "POST" }),
     trash: (id: string) => request<Note>(`/v1/notes/${id}:trash`, { method: "POST" }),
     restore: (id: string) => request<Note>(`/v1/notes/${id}:restore`, { method: "POST" }),
+    uploadAttachment: async (noteId: string, file: File) => {
+      const res = await fetch(`/v1/notes/${noteId}/attachments`, {
+        method: "POST",
+        headers: { "Content-Type": file.type || "application/octet-stream" },
+        body: file,
+      })
+      if (!res.ok) {
+        const text = await res.text().catch(() => "")
+        throw new Error(`${res.status} ${res.statusText}: ${text}`)
+      }
+      return res.json() as Promise<Attachment>
+    },
   },
   labels: {
     list: () => request<Label[]>("/v1/labels"),

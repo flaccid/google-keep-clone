@@ -45,6 +45,11 @@ export interface ListNotesResponse {
   nextPageToken?: string | null
 }
 
+export interface Attachment {
+  name?: string
+  mimeType?: string[]
+}
+
 export interface Label {
   name?: string
   displayName?: string

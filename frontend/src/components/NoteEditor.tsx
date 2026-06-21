@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import type { Note } from "@/lib/types"
 import { api } from "@/lib/api"
 
@@ -22,20 +22,33 @@ export default function NoteEditor({
   const [text, setText] = useState(note?.body?.text?.text || "")
   const [color, setColor] = useState(note?.color || "DEFAULT")
   const [saving, setSaving] = useState(false)
+  const [files, setFiles] = useState<File[]>([])
+  const [uploading, setUploading] = useState(false)
+  const fileRef = useRef<HTMLInputElement>(null)
 
   const id = note?.name?.replace("notes/", "") || ""
 
   async function handleSave() {
     setSaving(true)
+    let savedId = id
     try {
-      if (id) {
-        await api.notes.update(id, { title, body: { text: { text } }, color })
+      if (savedId) {
+        await api.notes.update(savedId, { title, body: { text: { text } }, color })
       } else {
-        await api.notes.create({ title, body: { text: { text } }, color })
+        const created = await api.notes.create({ title, body: { text: { text } }, color })
+        savedId = created.name?.replace("notes/", "") || ""
+      }
+      if (files.length > 0 && savedId) {
+        setUploading(true)
+        for (const f of files) {
+          await api.notes.uploadAttachment(savedId, f)
+        }
+        setFiles([])
       }
       onSave()
     } finally {
       setSaving(false)
+      setUploading(false)
     }
   }
 
@@ -43,6 +56,12 @@ export default function NoteEditor({
     if (!id || !onDelete) return
     await api.notes.trash(id)
     onDelete()
+  }
+
+  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.files) {
+      setFiles(Array.from(e.target.files))
+    }
   }
 
   const colorBg: Record<string, string> = {
@@ -96,12 +115,34 @@ export default function NoteEditor({
           )}
           <button
             onClick={handleSave}
-            disabled={saving}
+            disabled={saving || uploading}
             className="px-4 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50"
           >
-            {saving ? "Saving..." : "Save"}
+            {uploading ? "Uploading..." : saving ? "Saving..." : "Save"}
           </button>
         </div>
+      </div>
+
+      <div className="mt-4 pt-4 border-t border-gray-100">
+        <input
+          ref={fileRef}
+          type="file"
+          multiple
+          onChange={handleFileChange}
+          className="hidden"
+        />
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          className="text-xs text-gray-500 hover:text-gray-700 mr-3"
+        >
+          Attach files
+        </button>
+        {files.length > 0 && (
+          <span className="text-xs text-gray-400">
+            {files.length} file(s) selected
+          </span>
+        )}
       </div>
     </div>
   )
