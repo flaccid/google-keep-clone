@@ -93,3 +93,5 @@ jobs:
           context: ./frontend
           push: true
           tags: ${{ env.DOCKER_IMAGE_FRONTEND }}:latest,${{ env.DOCKER_IMAGE_FRONTEND }}:${{ github.sha }}
+          build-args: |
+            API_UPSTREAM_URL=http://backend:8080

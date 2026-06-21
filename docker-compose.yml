@@ -31,10 +31,10 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        API_UPSTREAM_URL: http://backend:8080
     ports:
       - "3000:3000"
-    environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8080
     depends_on:
       - backend
 

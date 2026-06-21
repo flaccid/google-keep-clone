@@ -1,9 +1,11 @@
+ARG API_UPSTREAM_URL
 FROM node:22-alpine AS builder
 WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
-RUN npm run build
+ARG API_UPSTREAM_URL
+RUN API_UPSTREAM_URL=$API_UPSTREAM_URL npm run build
 
 FROM node:22-alpine AS runner
 WORKDIR /app
