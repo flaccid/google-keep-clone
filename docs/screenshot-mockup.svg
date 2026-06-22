@@ -1,0 +1,242 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 720" width="1200" height="720" font-family="'Google Sans','Roboto',system-ui,-apple-system,sans-serif">
+  <defs>
+    <linearGradient id="shore" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#e0f7fa"/><stop offset="33%" stop-color="#b2ebf2"/><stop offset="66%" stop-color="#80deea"/><stop offset="100%" stop-color="#4dd0e1"/>
+    </linearGradient>
+    <linearGradient id="sunset" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fff3e0"/><stop offset="20%" stop-color="#ffe0b2"/><stop offset="40%" stop-color="#ffcc80"/><stop offset="60%" stop-color="#ffab91"/><stop offset="80%" stop-color="#ef9a9a"/><stop offset="100%" stop-color="#ce93d8"/>
+    </linearGradient>
+    <linearGradient id="bloom" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fce4ec"/><stop offset="25%" stop-color="#f8bbd0"/><stop offset="50%" stop-color="#e1bee7"/><stop offset="75%" stop-color="#d1c4e9"/><stop offset="100%" stop-color="#c5cae9"/>
+    </linearGradient>
+    <clipPath id="rounded"><rect width="1200" height="720" rx="12"/></clipPath>
+    <filter id="cardShadow" x="-2%" y="-2%" width="104%" height="108%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.1"/>
+    </filter>
+    <filter id="headerShadow" x="0" y="0" width="100%" height="120%">
+      <feDropShadow dx="0" dy="1" stdDeviation="1" flood-opacity="0.06"/>
+    </filter>
+  </defs>
+
+  <g clip-path="url(#rounded)">
+    <!-- Page background -->
+    <rect width="1200" height="720" fill="#ffffff"/>
+
+    <!-- Header -->
+    <rect width="1200" height="64" fill="#ffffff" filter="url(#headerShadow)"/>
+    <line x1="0" y1="64" x2="1200" y2="64" stroke="#f3f4f6" stroke-width="1"/>
+
+    <!-- Hamburger -->
+    <g transform="translate(20,22)" fill="none" stroke="#5f6368" stroke-width="2" stroke-linecap="round">
+      <line x1="4" y1="4" x2="20" y2="4"/><line x1="4" y1="10" x2="20" y2="10"/><line x1="4" y1="16" x2="20" y2="16"/>
+    </g>
+
+    <!-- Logo bulb -->
+    <circle cx="66" cy="32" r="10" fill="#fbbf24" opacity="0.9"/>
+    <rect x="63" y="38" width="6" height="4" rx="1" fill="#f59e0b"/>
+    <!-- Keep text -->
+    <text x="84" y="38" font-size="20" font-weight="500" fill="#374151">Keep</text>
+
+    <!-- Search bar -->
+    <rect x="200" y="14" width="520" height="36" rx="18" fill="#f3f4f6"/>
+    <!-- Search icon -->
+    <g transform="translate(214,24)" fill="none" stroke="#9ca3af" stroke-width="2">
+      <circle cx="7" cy="7" r="6"/><line x1="11" y1="11" x2="15" y2="15"/>
+    </g>
+    <text x="240" y="37" font-size="14" fill="#9ca3af">Search notes...</text>
+
+    <!-- Settings gear (simplified) -->
+    <g transform="translate(1148,22)" fill="none" stroke="#5f6368" stroke-width="1.5">
+      <circle cx="10" cy="10" r="3"/><circle cx="10" cy="10" r="8" stroke-dasharray="3 3.5"/>
+    </g>
+
+    <!-- Refresh icon -->
+    <g transform="translate(1108,24)" fill="none" stroke="#5f6368" stroke-width="1.5">
+      <path d="M1 4a9 9 0 0 1 15.4 2M19 16a9 9 0 0 1-15.4-2"/>
+      <polyline points="1 1 1 5 5 5"/><polyline points="19 19 19 15 15 15"/>
+    </g>
+
+    <!-- Sidebar -->
+    <rect x="0" y="64" width="288" height="656" fill="#ffffff"/>
+    <line x1="288" y1="64" x2="288" y2="720" stroke="#f3f4f6" stroke-width="1" opacity="0.5"/>
+
+    <!-- Sidebar items -->
+    <!-- Notes (active) -->
+    <rect x="8" y="80" width="272" height="40" rx="0 20 20 0" fill="#fefce8"/>
+    <g transform="translate(28,88)" fill="none" stroke="#374151" stroke-width="2">
+      <path d="M9 18a2 2 0 0 0 2-2H7a2 2 0 0 0 2 2zm0-16C5.13 2 2 5.13 2 9c0 2.38 1.19 4.47 3 5.74V17h8v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7z"/>
+    </g>
+    <circle cx="37" cy="100" r="8" fill="#fbbf24" opacity="0.15"/>
+    <text x="60" y="105" font-size="14" font-weight="500" fill="#374151">Notes</text>
+
+    <!-- Reminders -->
+    <g transform="translate(28,132)" fill="none" stroke="#6b7280" stroke-width="1.5">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+    </g>
+    <text x="60" y="149" font-size="14" fill="#6b7280">Reminders</text>
+
+    <!-- Archive -->
+    <g transform="translate(28,176)" fill="none" stroke="#6b7280" stroke-width="1.5">
+      <rect x="2" y="2" width="16" height="4" rx="1"/><path d="M3 6v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V6"/><path d="M8 10h4"/>
+    </g>
+    <text x="60" y="193" font-size="14" fill="#6b7280">Archive</text>
+
+    <!-- Trash -->
+    <g transform="translate(28,220)" fill="none" stroke="#6b7280" stroke-width="1.5">
+      <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+    </g>
+    <text x="60" y="237" font-size="14" fill="#6b7280">Trash</text>
+
+    <!-- Labels divider -->
+    <line x1="20" y1="268" x2="268" y2="268" stroke="#e5e7eb" stroke-width="1"/>
+    <text x="28" y="292" font-size="11" fill="#9ca3af" font-weight="500" letter-spacing="1">LABELS</text>
+
+    <!-- Label: Work -->
+    <circle cx="37" cy="316" r="8" fill="none" stroke="#d1d5db" stroke-width="1.5"/>
+    <text x="37" y="320" font-size="9" fill="#6b7280" text-anchor="middle">W</text>
+    <text x="56" y="320" font-size="13" fill="#6b7280">Work</text>
+
+    <!-- Label: Personal -->
+    <circle cx="37" cy="346" r="8" fill="none" stroke="#d1d5db" stroke-width="1.5"/>
+    <text x="37" y="350" font-size="9" fill="#6b7280" text-anchor="middle">P</text>
+    <text x="56" y="350" font-size="13" fill="#6b7280">Personal</text>
+
+    <!-- Label: Ideas -->
+    <circle cx="37" cy="376" r="8" fill="none" stroke="#d1d5db" stroke-width="1.5"/>
+    <text x="37" y="380" font-size="9" fill="#6b7280" text-anchor="middle">I</text>
+    <text x="56" y="380" font-size="13" fill="#6b7280">Ideas</text>
+
+    <!-- Edit labels -->
+    <g transform="translate(28,402)" fill="none" stroke="#9ca3af" stroke-width="1.5">
+      <path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/>
+    </g>
+    <text x="56" y="419" font-size="13" fill="#9ca3af">Edit labels</text>
+
+    <!-- Main content area -->
+    <!-- "Take a note..." bar -->
+    <rect x="324" y="84" width="540" height="48" rx="8" fill="#ffffff" stroke="#e5e7eb" stroke-width="1" filter="url(#cardShadow)"/>
+    <text x="348" y="113" font-size="14" fill="#9ca3af">Take a note...</text>
+    <!-- List icon -->
+    <g transform="translate(816,98)" fill="none" stroke="#9ca3af" stroke-width="1.5">
+      <rect x="0" y="0" width="4" height="4" rx="1"/><line x1="8" y1="2" x2="16" y2="2"/>
+      <rect x="0" y="7" width="4" height="4" rx="1"/><line x1="8" y1="9" x2="16" y2="9"/>
+    </g>
+    <!-- Pin icon -->
+    <g transform="translate(842,96)" fill="none" stroke="#9ca3af" stroke-width="1.5">
+      <path d="M12 2L8 6v4l-4 2v2h6l-1 6h2l-1-6h6v-2l-4-2V6z" transform="scale(0.8)"/>
+    </g>
+
+    <!-- Section: PINNED -->
+    <text x="324" y="160" font-size="11" fill="#9ca3af" font-weight="500" letter-spacing="1">PINNED</text>
+
+    <!-- Note cards row 1 (pinned) -->
+    <!-- Card 1: Yellow - Shopping list (checklist) -->
+    <rect x="324" y="172" width="206" height="180" rx="8" fill="#fff8e1" stroke="#ffd54f" stroke-width="1" filter="url(#cardShadow)"/>
+    <!-- Pin icon (filled) -->
+    <g transform="translate(502,180)" fill="#ca8a04" stroke="#ca8a04" stroke-width="1">
+      <circle cx="5" cy="3" r="2"/><line x1="5" y1="5" x2="5" y2="12"/><line x1="2" y1="12" x2="8" y2="12"/>
+    </g>
+    <text x="340" y="196" font-size="13" font-weight="600" fill="#1f2937">Shopping List</text>
+    <!-- Checklist items -->
+    <circle cx="346" cy="218" r="5" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+    <text x="358" y="222" font-size="12" fill="#374151">Eggs</text>
+    <circle cx="346" cy="238" r="5" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+    <text x="358" y="242" font-size="12" fill="#374151">Bread</text>
+    <circle cx="346" cy="258" r="5" fill="none" stroke="#9ca3af" stroke-width="1.5"/>
+    <text x="358" y="262" font-size="12" fill="#374151">Milk</text>
+    <!-- Completed section -->
+    <line x1="340" y1="278" x2="418" y2="278" stroke="#e5e7eb" stroke-width="1"/>
+    <text x="422" y="282" font-size="10" fill="#9ca3af">2 completed</text>
+    <line x1="492" y1="278" x2="518" y2="278" stroke="#e5e7eb" stroke-width="1"/>
+    <circle cx="346" cy="298" r="5" fill="#9ca3af"/>
+    <text x="358" y="302" font-size="12" fill="#9ca3af" text-decoration="line-through">Butter</text>
+    <circle cx="346" cy="318" r="5" fill="#9ca3af"/>
+    <text x="358" y="322" font-size="12" fill="#9ca3af" text-decoration="line-through">Cheese</text>
+    <!-- Label chip -->
+    <rect x="340" y="334" width="56" height="16" rx="3" fill="#f3f4f6"/>
+    <text x="348" y="345" font-size="10" fill="#6b7280">Personal</text>
+
+    <!-- Card 2: Shore theme - Meeting notes -->
+    <rect x="542" y="172" width="206" height="160" rx="8" fill="url(#shore)" stroke="#80cbc4" stroke-width="1" filter="url(#cardShadow)"/>
+    <g transform="translate(720,180)" fill="#ca8a04" stroke="#ca8a04" stroke-width="1">
+      <circle cx="5" cy="3" r="2"/><line x1="5" y1="5" x2="5" y2="12"/><line x1="2" y1="12" x2="8" y2="12"/>
+    </g>
+    <text x="558" y="196" font-size="13" font-weight="600" fill="#1f2937">Meeting Notes</text>
+    <text x="558" y="216" font-size="12" fill="#374151">Discuss Q3 roadmap with</text>
+    <text x="558" y="232" font-size="12" fill="#374151">the team. Key topics:</text>
+    <text x="558" y="252" font-size="12" fill="#374151">- API v2 migration plan</text>
+    <text x="558" y="268" font-size="12" fill="#374151">- Performance benchmarks</text>
+    <text x="558" y="284" font-size="12" fill="#374151">- New hire onboarding</text>
+    <!-- Label chips -->
+    <rect x="558" y="302" width="40" height="16" rx="3" fill="rgba(0,0,0,0.07)"/>
+    <text x="564" y="313" font-size="10" fill="#4b5563">Work</text>
+
+    <!-- Card 3: Blue - API ideas -->
+    <rect x="760" y="172" width="206" height="140" rx="8" fill="#e3f2fd" stroke="#90caf9" stroke-width="1" filter="url(#cardShadow)"/>
+    <g transform="translate(938,180)" fill="#ca8a04" stroke="#ca8a04" stroke-width="1">
+      <circle cx="5" cy="3" r="2"/><line x1="5" y1="5" x2="5" y2="12"/><line x1="2" y1="12" x2="8" y2="12"/>
+    </g>
+    <text x="776" y="196" font-size="13" font-weight="600" fill="#1f2937">API Design Ideas</text>
+    <text x="776" y="216" font-size="12" fill="#374151">Consider using gRPC for</text>
+    <text x="776" y="232" font-size="12" fill="#374151">internal services. REST stays</text>
+    <text x="776" y="248" font-size="12" fill="#374151">for public-facing endpoints.</text>
+    <text x="776" y="268" font-size="12" fill="#374151">Benchmark: 2x throughput</text>
+    <!-- Label chips -->
+    <rect x="776" y="286" width="40" height="16" rx="3" fill="rgba(0,0,0,0.07)"/>
+    <text x="782" y="297" font-size="10" fill="#4b5563">Ideas</text>
+
+    <!-- Section: OTHERS -->
+    <text x="324" y="384" font-size="11" fill="#9ca3af" font-weight="500" letter-spacing="1">OTHERS</text>
+
+    <!-- Note cards row 2 -->
+    <!-- Card 4: Default (white) -->
+    <rect x="324" y="396" width="206" height="120" rx="8" fill="#ffffff" stroke="#e5e7eb" stroke-width="1" filter="url(#cardShadow)"/>
+    <text x="340" y="420" font-size="13" font-weight="600" fill="#1f2937">Weekend Plans</text>
+    <text x="340" y="440" font-size="12" fill="#374151">Saturday: hiking at the</text>
+    <text x="340" y="456" font-size="12" fill="#374151">national park. Pack lunch</text>
+    <text x="340" y="472" font-size="12" fill="#374151">and water. Start early!</text>
+    <rect x="340" y="492" width="56" height="16" rx="3" fill="#f3f4f6"/>
+    <text x="348" y="503" font-size="10" fill="#6b7280">Personal</text>
+
+    <!-- Card 5: Sunset theme -->
+    <rect x="542" y="396" width="206" height="120" rx="8" fill="url(#sunset)" stroke="#ffab91" stroke-width="1" filter="url(#cardShadow)"/>
+    <text x="558" y="420" font-size="13" font-weight="600" fill="#1f2937">Book Recommendations</text>
+    <text x="558" y="440" font-size="12" fill="#374151">1. Designing Data-Intensive</text>
+    <text x="558" y="456" font-size="12" fill="#374151">   Applications</text>
+    <text x="558" y="472" font-size="12" fill="#374151">2. The Pragmatic Programmer</text>
+    <text x="558" y="488" font-size="12" fill="#374151">3. Clean Architecture</text>
+
+    <!-- Card 6: Green -->
+    <rect x="760" y="396" width="206" height="120" rx="8" fill="#e8f5e9" stroke="#a5d6a7" stroke-width="1" filter="url(#cardShadow)"/>
+    <text x="776" y="420" font-size="13" font-weight="600" fill="#1f2937">Workout Routine</text>
+    <text x="776" y="440" font-size="12" fill="#374151">Mon: Upper body</text>
+    <text x="776" y="456" font-size="12" fill="#374151">Wed: Cardio + core</text>
+    <text x="776" y="472" font-size="12" fill="#374151">Fri: Lower body</text>
+    <text x="776" y="488" font-size="12" fill="#374151">Sun: Rest or yoga</text>
+
+    <!-- Card 7: Bloom theme -->
+    <rect x="978" y="396" width="206" height="120" rx="8" fill="url(#bloom)" stroke="#e1bee7" stroke-width="1" filter="url(#cardShadow)"/>
+    <text x="994" y="420" font-size="13" font-weight="600" fill="#1f2937">Gift Ideas</text>
+    <text x="994" y="440" font-size="12" fill="#374151">For Mum: garden tools set</text>
+    <text x="994" y="456" font-size="12" fill="#374151">For Dad: espresso machine</text>
+    <text x="994" y="472" font-size="12" fill="#374151">For Amy: art supplies kit</text>
+
+    <!-- Card 8: Pink - partial (cut off at bottom) -->
+    <rect x="978" y="172" width="206" height="150" rx="8" fill="#fce4ec" stroke="#f48fb1" stroke-width="1" filter="url(#cardShadow)"/>
+    <text x="994" y="196" font-size="13" font-weight="600" fill="#1f2937">Recipe: Pasta Carbonara</text>
+    <text x="994" y="216" font-size="12" fill="#374151">400g spaghetti, 200g</text>
+    <text x="994" y="232" font-size="12" fill="#374151">guanciale, 4 egg yolks,</text>
+    <text x="994" y="248" font-size="12" fill="#374151">100g pecorino romano,</text>
+    <text x="994" y="264" font-size="12" fill="#374151">black pepper. Cook pasta</text>
+    <text x="994" y="280" font-size="12" fill="#374151">al dente, crisp guanciale...</text>
+    <!-- Label chips -->
+    <rect x="994" y="296" width="56" height="16" rx="3" fill="rgba(0,0,0,0.07)"/>
+    <text x="1002" y="307" font-size="10" fill="#6b7280">Personal</text>
+
+    <!-- Browser chrome hint (thin line at top) -->
+    <rect width="1200" height="1" fill="#e5e7eb"/>
+  </g>
+
+  <!-- Outer border -->
+  <rect width="1200" height="720" rx="12" fill="none" stroke="#d1d5db" stroke-width="1"/>
+</svg>

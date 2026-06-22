@@ -9,6 +9,10 @@
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![GitHub Release](https://img.shields.io/github/v/release/flaccid/google-keep-clone)](https://github.com/flaccid/google-keep-clone/releases)
 
+<p align="center">
+  <img src="docs/screenshot-mockup.svg" alt="Google Keep Clone — note grid with colored cards, sidebar navigation, and search" width="900" />
+</p>
+
 ---
 
 ## ✨ Features
