@@ -5,5 +5,5 @@ metadata:
   namespace: google-keep-clone
 data:
   emails.txt: |
-    chris@fordham.id.au
+    admin@example.com
     redacted@example.com

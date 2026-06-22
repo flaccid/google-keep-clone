@@ -68,4 +68,4 @@ Two separate Dockerfiles, not a monorepo root one:
 - Deployed via `kubectl apply -f k8s/`
 - Postgres uses StatefulSet with PVC; `wait-for-postgres` init container on backend
 - OAuth2 proxy (Google provider) deployed as separate deployment with two ingress resources
-- Ingress hostname: `keep.fordham.id.au`
+- Ingress hostname: `keep.example.com`

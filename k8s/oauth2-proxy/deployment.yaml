@@ -13,16 +13,28 @@ spec:
       labels:
         app: oauth2-proxy
     spec:
+      serviceAccountName: oauth2-proxy
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: oauth2-proxy
           image: quay.io/oauth2-proxy/oauth2-proxy:latest
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+            runAsUser: 65534
+            runAsGroup: 65534
           args:
             - --provider=google
             - --authenticated-emails-file=/etc/oauth2-proxy/emails.txt
             - --client-id=$(CLIENT_ID)
             - --client-secret=$(CLIENT_SECRET)
             - --cookie-secret=$(COOKIE_SECRET)
-            - --redirect-url=https://keep.fordham.id.au/oauth2/callback
+            - --redirect-url=https://keep.example.com/oauth2/callback
             - --cookie-secure=true
             - --http-address=0.0.0.0:4180
             - --set-authorization-header=true
@@ -46,6 +58,7 @@ spec:
           volumeMounts:
             - name: emails
               mountPath: /etc/oauth2-proxy
+              readOnly: true
           ports:
             - containerPort: 4180
           resources:

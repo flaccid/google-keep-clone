@@ -13,11 +13,31 @@ spec:
       labels:
         app: backend
     spec:
+      serviceAccountName: backend
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       initContainers:
         - name: wait-for-postgres
           image: postgres:16-alpine
-          command: ['sh', '-c', 'until pg_isready -h postgres -U keep -d keep; do echo waiting for postgres; sleep 2; done']
+          command: ['sh', '-c', 'until pg_isready -h postgres -U "$POSTGRES_USER" -d "$POSTGRES_DB"; do echo waiting for postgres; sleep 2; done']
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
           env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: username
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: database
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
@@ -27,6 +47,13 @@ spec:
         - name: backend
           image: flaccid/google-keep-clone-backend:latest
           imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+            runAsUser: 10001
+            runAsGroup: 10001
           ports:
             - containerPort: 8080
           env:
@@ -35,6 +62,8 @@ spec:
                 secretKeyRef:
                   name: backend
                   key: database-url
+            - name: ATTACHMENT_STORE_DIR
+              value: /data/attachments
           resources:
             requests:
               cpu: "100m"
@@ -52,3 +81,9 @@ spec:
               path: /v1/notes
               port: 8080
             initialDelaySeconds: 5
+          volumeMounts:
+            - name: attachment-store
+              mountPath: /data/attachments
+      volumes:
+        - name: attachment-store
+          emptyDir: {}

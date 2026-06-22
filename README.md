@@ -291,7 +291,7 @@ Components (all in namespace `google-keep-clone`):
 | OAuth2 Proxy | Deployment + Service | Google OAuth, email whitelist |
 | Ingress | 2 Ingress resources | Main (auth-protected) + `/oauth2` (unauthenticated) |
 
-**Ingress hostname:** `keep.fordham.id.au` (Cloudflare tunnel to ingress-nginx)
+**Ingress hostname:** `keep.example.com` (Cloudflare tunnel to ingress-nginx)
 
 To update images:
 ```bash
@@ -364,7 +364,7 @@ This is a personal R&D project, but issues and PRs are welcome! Feel free to ope
 
 ## License and Authors
 
-- Author: Chris Fordham (<chris@fordham.id.au>)
+- Author: Chris Fordham (<chris@example.com>)
 
 ```text
 Copyright 2026, Chris Fordham

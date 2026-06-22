@@ -5,11 +5,15 @@ metadata:
   namespace: google-keep-clone
   annotations:
     nginx.ingress.kubernetes.io/auth-url: http://oauth2-proxy.google-keep-clone.svc.cluster.local/oauth2/auth
-    nginx.ingress.kubernetes.io/auth-signin: https://keep.fordham.id.au/oauth2/start?rd=$escaped_request_uri
+    nginx.ingress.kubernetes.io/auth-signin: https://keep.example.com/oauth2/start?rd=$escaped_request_uri
 spec:
   ingressClassName: nginx
+  tls:
+    - hosts:
+        - keep.example.com
+      secretName: keep-tls
   rules:
-    - host: keep.fordham.id.au
+    - host: keep.example.com
       http:
         paths:
           - path: /
@@ -35,7 +39,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: keep.fordham.id.au
+    - host: keep.example.com
       http:
         paths:
           - path: /oauth2

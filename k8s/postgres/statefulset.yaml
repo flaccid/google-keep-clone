@@ -14,19 +14,37 @@ spec:
       labels:
         app: postgres
     spec:
+      serviceAccountName: postgres
+      securityContext:
+        runAsNonRoot: true
+        fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: postgres
           image: postgres:16-alpine
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            runAsUser: 999
+            runAsGroup: 999
           env:
             - name: POSTGRES_USER
-              value: keep
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: username
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: postgres
                   key: password
             - name: POSTGRES_DB
-              value: keep
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: database
 
           ports:
             - containerPort: 5432

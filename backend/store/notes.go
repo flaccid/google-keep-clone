@@ -118,7 +118,9 @@ func (s *NoteStore) List(ctx context.Context, pageSize *int, pageToken *string, 
 
 	var offset int
 	if pageToken != nil && *pageToken != "" {
-		fmt.Sscanf(*pageToken, "%d", &offset)
+		if _, err := fmt.Sscanf(*pageToken, "%d", &offset); err != nil {
+			return nil, fmt.Errorf("invalid page token: %w", err)
+		}
 	}
 
 	var conditions []string
@@ -138,7 +140,9 @@ func (s *NoteStore) List(ctx context.Context, pageSize *int, pageToken *string, 
 	if search != nil && *search != "" {
 		argIdx++
 		conditions = append(conditions, fmt.Sprintf(`(title ILIKE $%d OR body_text ILIKE $%d)`, argIdx, argIdx))
-		args = append(args, "%"+*search+"%")
+		term := strings.ReplaceAll(*search, "%", `\%`)
+		term = strings.ReplaceAll(term, "_", `\_`)
+		args = append(args, "%"+term+"%")
 	}
 
 	argIdx++

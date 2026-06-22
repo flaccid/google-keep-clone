@@ -13,10 +13,22 @@ spec:
       labels:
         app: frontend
     spec:
+      serviceAccountName: frontend
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: frontend
           image: flaccid/google-keep-clone-frontend:latest
           imagePullPolicy: Always
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+            runAsUser: 10002
+            runAsGroup: 10002
           ports:
             - containerPort: 3000
           resources:

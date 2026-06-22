@@ -54,10 +54,11 @@ func handleHTTPServer(ctx context.Context, u *url.URL, mediaEndpoints *media.End
 	)
 	{
 		eh := errorHandler(ctx)
-		mediaServer = mediasvr.New(mediaEndpoints, mux, dec, enc, eh, nil)
-		labelsServer = labelssvr.New(labelsEndpoints, mux, dec, enc, eh, nil)
-		notesServer = notessvr.New(notesEndpoints, mux, dec, enc, eh, nil)
-		permissionsServer = permissionssvr.New(permissionsEndpoints, mux, dec, enc, eh, nil)
+		sf := sanitizingFormatter
+		mediaServer = mediasvr.New(mediaEndpoints, mux, dec, enc, eh, sf)
+		labelsServer = labelssvr.New(labelsEndpoints, mux, dec, enc, eh, sf)
+		notesServer = notessvr.New(notesEndpoints, mux, dec, enc, eh, sf)
+		permissionsServer = permissionssvr.New(permissionsEndpoints, mux, dec, enc, eh, sf)
 	}
 
 	mediasvr.Mount(mux, mediaServer)
@@ -155,6 +156,8 @@ func securityHeaders(next http.Handler) http.Handler {
 		w.Header().Set("X-Frame-Options", "DENY")
 		w.Header().Set("Referrer-Policy", "no-referrer")
 		w.Header().Set("X-XSS-Protection", "0")
+		w.Header().Set("Strict-Transport-Security", "max-age=63072000; includeSubDomains")
+		w.Header().Set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), interest-cohort=()")
 		next.ServeHTTP(w, r)
 	})
 }
@@ -172,6 +175,15 @@ func uploadHandler(attachStore *store.AttachmentStore, mux goahttp.Muxer) http.H
 		contentType := r.Header.Get("Content-Type")
 		if contentType == "" || len(contentType) > 256 {
 			contentType = "application/octet-stream"
+		}
+		allowed := map[string]bool{
+			"image/jpeg": true, "image/png": true, "image/gif": true,
+			"image/webp": true, "image/svg+xml": true, "application/pdf": true,
+			"text/plain": true, "application/octet-stream": true,
+		}
+		if !allowed[contentType] {
+			http.Error(w, `{"error":"unsupported content type"}`, http.StatusUnsupportedMediaType)
+			return
 		}
 		data, err := io.ReadAll(io.LimitReader(r.Body, 32<<20))
 		if err != nil {
@@ -196,4 +208,12 @@ func errorHandler(logCtx context.Context) func(context.Context, http.ResponseWri
 	return func(ctx context.Context, w http.ResponseWriter, err error) {
 		log.Printf(logCtx, "ERROR: %s", err.Error())
 	}
+}
+
+func sanitizingFormatter(ctx context.Context, err error) goahttp.Statuser {
+	resp := goahttp.NewErrorResponse(ctx, err)
+	if se, ok := resp.(*goahttp.ErrorResponse); ok && se.Fault {
+		se.Message = "internal server error"
+	}
+	return resp
 }
