@@ -55,7 +55,7 @@ export default function Sidebar({
             <Link
               key={href}
               href={href}
-              className={`flex items-center gap-4 mx-2 px-4 py-2.5 rounded-r-full text-sm transition-colors ${
+              className={`flex items-center gap-4 mx-2 px-4 py-2.5 rounded-r-full text-base font-medium transition-colors ${
                 showFull ? "" : "justify-center"
               } ${
                 active
@@ -71,7 +71,7 @@ export default function Sidebar({
       </nav>
 
       {showFull && (
-        <div className="border-t border-gray-100 dark:border-[#3c4043] mt-2 pt-2">
+        <div className="mt-2">
           <p className="px-6 text-xs font-medium text-gray-400 dark:text-[#9aa0a6] uppercase tracking-wide mb-1">
             Labels
           </p>
@@ -81,7 +81,7 @@ export default function Sidebar({
               <Link
                 key={l.name}
                 href={`/labels/${id}`}
-                className="flex items-center gap-4 mx-2 px-4 py-2 rounded-r-full text-sm text-gray-600 dark:text-[#bdc1c6] hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+                className="flex items-center gap-4 mx-2 px-4 py-2 rounded-r-full text-base font-medium text-gray-600 dark:text-[#bdc1c6] hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
               >
                 <span className="w-5 h-5 rounded-full border border-gray-300 dark:border-[#5f6368] flex items-center justify-center text-[10px] text-gray-400 dark:text-[#9aa0a6]">
                   {l.displayName?.charAt(0).toUpperCase()}
@@ -96,7 +96,7 @@ export default function Sidebar({
               onChange={(e) => setNewLabel(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && createLabel()}
               placeholder="Create new label..."
-              className="flex-1 text-sm bg-transparent outline-none placeholder-gray-400 dark:placeholder-[#9aa0a6] text-gray-900 dark:text-[#e8eaed]"
+              className="flex-1 text-base bg-transparent outline-none placeholder-gray-400 dark:placeholder-[#9aa0a6] text-gray-900 dark:text-[#e8eaed]"
             />
             <button onClick={createLabel} className="text-gray-400 dark:text-[#9aa0a6] hover:text-gray-600 dark:hover:text-[#e8eaed]">
               <Plus size={16} />

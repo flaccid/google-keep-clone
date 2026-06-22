@@ -28,7 +28,7 @@ export default function Header({
         <Menu size={20} className="text-gray-600 dark:text-[#e8eaed]" />
       </button>
 
-      <span className="text-xl font-semibold text-gray-700 dark:text-[#e8eaed] hidden sm:inline">Keep</span>
+      <span className="text-2xl font-bold text-gray-700 dark:text-[#e8eaed] hidden sm:inline">Keep</span>
 
       <div className="flex-1 flex justify-center">
         <div className="relative w-full max-w-xl">
