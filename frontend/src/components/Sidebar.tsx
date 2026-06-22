@@ -32,7 +32,7 @@ export default function Sidebar({ open }: { open: boolean }) {
 
   return (
     <aside
-      className={`fixed left-0 top-16 h-[calc(100vh-4rem)] w-72 bg-white dark:bg-[#2d2e30] border-r border-gray-100 dark:border-[#5f6368] z-40 transition-transform duration-200 overflow-y-auto scrollbar-thin ${
+      className={`fixed left-0 top-16 h-[calc(100vh-4rem)] w-72 bg-white dark:bg-[#202124] z-40 transition-transform duration-200 overflow-y-auto scrollbar-thin ${
         open ? "translate-x-0" : "-translate-x-72"
       }`}
     >
@@ -56,7 +56,7 @@ export default function Sidebar({ open }: { open: boolean }) {
         })}
       </nav>
 
-      <div className="border-t border-gray-100 dark:border-[#5f6368] mt-2 pt-2">
+      <div className="border-t border-gray-100 dark:border-[#3c4043] mt-2 pt-2">
         <p className="px-6 text-xs font-medium text-gray-400 dark:text-[#9aa0a6] uppercase tracking-wide mb-1">
           Labels
         </p>

@@ -19,7 +19,7 @@ export default function Header({
   const { dark, toggle } = useTheme()
 
   return (
-    <header className="fixed top-0 left-0 right-0 h-16 bg-white dark:bg-[#2d2e30] border-b border-gray-100 dark:border-[#5f6368] flex items-center gap-4 px-4 z-50">
+    <header className="fixed top-0 left-0 right-0 h-16 bg-white dark:bg-[#202124] border-b border-gray-100 dark:border-[#3c4043] flex items-center gap-4 px-4 z-50">
       <button
         onClick={onToggleSidebar}
         className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors"
