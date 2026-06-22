@@ -1,9 +1,9 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import type { Note, ListItem as ListItemType } from "@/lib/types"
+import type { Note, ListItem as ListItemType, Label } from "@/lib/types"
 import { api } from "@/lib/api"
-import { Pin, Palette, Image, ListChecks, Type, X, Check } from "lucide-react"
+import { Pin, Palette, Image, ListChecks, Type, X, Check, Tag } from "lucide-react"
 
 const COLOR_OPTIONS = [
   "DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL",
@@ -71,9 +71,13 @@ export default function NoteEditor({
   const [pinned, setPinned] = useState(note?.pinned || false)
   const [saving, setSaving] = useState(false)
   const [files, setFiles] = useState<File[]>([])
+  const [selectedLabels, setSelectedLabels] = useState<string[]>(note?.labels || [])
+  const [showLabelPicker, setShowLabelPicker] = useState(false)
+  const [availableLabels, setAvailableLabels] = useState<Label[]>([])
   const fileRef = useRef<HTMLInputElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const listEndRef = useRef<HTMLDivElement>(null)
+  const labelPickerRef = useRef<HTMLDivElement>(null)
 
   const id = note?.name?.replace("notes/", "") || ""
   const isNew = !id
@@ -83,7 +87,20 @@ export default function NoteEditor({
     if (expanded && inputRef.current) {
       inputRef.current.focus()
     }
+    if (expanded) {
+      api.labels.list().then((labels) => setAvailableLabels(labels)).catch(() => {})
+    }
   }, [expanded])
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (labelPickerRef.current && !labelPickerRef.current.contains(e.target as Node)) {
+        setShowLabelPicker(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClick)
+    return () => document.removeEventListener("mousedown", handleClick)
+  }, [])
 
   const handleCloseRef = useRef(handleClose)
   handleCloseRef.current = handleClose
@@ -118,14 +135,15 @@ export default function NoteEditor({
     let savedId = id
     try {
       const body = buildBody()
+      const labels = selectedLabels.length > 0 ? selectedLabels : undefined
       if (savedId) {
-        const payload: any = { title, body, color }
+        const payload: any = { title, body, color, labels }
         if (pinned !== !!note?.pinned) payload.pinned = pinned
         await api.notes.update(savedId, payload)
       } else {
         const items = mode === "list" ? listItems.filter((li) => li.text.trim()) : []
         if (!title && !text && items.length === 0 && files.length === 0) return
-        const created = await api.notes.create({ title, body, color, pinned })
+        const created = await api.notes.create({ title, body, color, pinned, labels })
         savedId = created.name?.replace("notes/", "") || ""
       }
       if (files.length > 0 && savedId) {
@@ -155,6 +173,8 @@ export default function NoteEditor({
     setColor("DEFAULT")
     setPinned(false)
     setFiles([])
+    setSelectedLabels([])
+    setShowLabelPicker(false)
     onClose?.()
   }
 
@@ -392,6 +412,60 @@ export default function NoteEditor({
           />
           {files.length > 0 && (
             <span className="text-xs text-gray-400 dark:text-[#9aa0a6] ml-1">{files.length} file(s)</span>
+          )}
+
+          <div className="relative" ref={labelPickerRef}>
+            <button
+              onClick={() => setShowLabelPicker(!showLabelPicker)}
+              className="p-1.5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 text-gray-500 dark:text-[#9aa0a6]"
+              title="Labels"
+            >
+              <Tag size={16} />
+            </button>
+            {showLabelPicker && (
+              <div className="absolute bottom-full left-0 mb-1 bg-white dark:bg-[#2d2e30] rounded-lg shadow-lg border border-gray-200 dark:border-[#5f6368] z-10 min-w-[180px] max-h-48 overflow-y-auto py-1">
+                {availableLabels.length === 0 && (
+                  <p className="px-3 py-2 text-xs text-gray-400 dark:text-[#9aa0a6]">No labels yet</p>
+                )}
+                {availableLabels.map((label) => {
+                  const displayName = label.displayName || ""
+                  const checked = selectedLabels.includes(displayName)
+                  return (
+                    <label
+                      key={label.name}
+                      className="flex items-center gap-2 px-3 py-1.5 hover:bg-black/5 dark:hover:bg-white/10 cursor-pointer text-sm"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => {
+                          setSelectedLabels((prev) =>
+                            checked
+                              ? prev.filter((n) => n !== displayName)
+                              : [...prev, displayName]
+                          )
+                        }}
+                        className="accent-blue-500"
+                      />
+                      <span className="text-gray-700 dark:text-[#e8eaed]">{displayName}</span>
+                    </label>
+                  )
+                })}
+              </div>
+            )}
+          </div>
+
+          {selectedLabels.length > 0 && (
+            <div className="flex items-center gap-1 ml-1">
+              {selectedLabels.slice(0, 3).map((l) => (
+                <span key={l} className="text-[10px] bg-black/10 dark:bg-white/10 text-gray-600 dark:text-[#c4c7c5] px-1.5 py-0.5 rounded">
+                  {l}
+                </span>
+              ))}
+              {selectedLabels.length > 3 && (
+                <span className="text-[10px] text-gray-400 dark:text-[#9aa0a6]">+{selectedLabels.length - 3}</span>
+              )}
+            </div>
           )}
         </div>
 

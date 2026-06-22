@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react"
 import { useParams } from "next/navigation"
 import { api } from "@/lib/api"
-import type { Note } from "@/lib/types"
+import type { Note, Label } from "@/lib/types"
 import NoteCard from "@/components/NoteCard"
 import NoteModal from "@/components/NoteModal"
 
@@ -11,11 +11,14 @@ export default function LabelNotesPage() {
   const { id } = useParams<{ id: string }>()
   const [notes, setNotes] = useState<Note[]>([])
   const [openNoteId, setOpenNoteId] = useState<string | null>(null)
+  const [label, setLabel] = useState<Label | null>(null)
 
   const load = useCallback(async () => {
     try {
-      const res = await api.notes.list()
-      setNotes((res.notes || []).filter((n) => n.labels?.some((l) => l.replace("labels/", "") === id)))
+      const [labels, res] = await Promise.all([api.labels.list(), api.notes.list()])
+      const found = labels.find((l) => l.name === `labels/${id}`) || null
+      setLabel(found)
+      setNotes((res.notes || []).filter((n) => found && n.labels?.includes(found.displayName || "")))
     } catch {}
   }, [id])
 
@@ -23,7 +26,7 @@ export default function LabelNotesPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-6">
-      <h2 className="text-xs font-medium text-gray-400 dark:text-[#9aa0a6] uppercase tracking-wide mb-3">Label: {id}</h2>
+      <h2 className="text-xs font-medium text-gray-400 dark:text-[#9aa0a6] uppercase tracking-wide mb-3">Label: {label?.displayName || id}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
         {notes.map((n) => (
           <NoteCard key={n.name} note={n} onUpdate={load} onOpen={setOpenNoteId} />
