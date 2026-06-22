@@ -291,7 +291,7 @@ Components (all in namespace `google-keep-clone`):
 | OAuth2 Proxy | Deployment + Service | Google OAuth, email whitelist |
 | Ingress | 2 Ingress resources | Main (auth-protected) + `/oauth2` (unauthenticated) |
 
-**Ingress hostname:** `keep.example.com` (Cloudflare tunnel to ingress-nginx)
+**Ingress hostname:** `keep.example.com`
 
 To update images:
 ```bash
