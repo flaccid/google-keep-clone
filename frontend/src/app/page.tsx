@@ -38,7 +38,7 @@ export default function HomePage() {
   const pinned = notes.filter((n) => n.pinned && !n.archived && !n.trashed)
 
   return (
-    <div className="max-w-5xl mx-auto px-6 py-6">
+    <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
       <div className="mb-6">
         <NoteEditor
           onSave={() => { setEditorOpen(false); load() }}
@@ -49,7 +49,7 @@ export default function HomePage() {
       {pinned.length > 0 && (
         <div className="mb-8">
           <h2 className="text-xs font-medium text-gray-400 dark:text-[#9aa0a6] uppercase tracking-wide mb-3">Pinned</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
             {pinned.map((n) => (
               <NoteCard key={n.name} note={n} onUpdate={load} onOpen={setOpenNoteId} />
             ))}
@@ -60,7 +60,7 @@ export default function HomePage() {
       <h2 className="text-xs font-medium text-gray-400 dark:text-[#9aa0a6] uppercase tracking-wide mb-3">
         {pinned.length > 0 ? "Others" : "Notes"}
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
         {active.map((n) => (
           <NoteCard key={n.name} note={n} onUpdate={load} onOpen={setOpenNoteId} />
         ))}

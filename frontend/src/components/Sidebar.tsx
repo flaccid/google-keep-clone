@@ -18,10 +18,14 @@ export default function Sidebar({
   expanded,
   hover,
   onHoverChange,
+  isMobile = false,
+  onNavigate,
 }: {
   expanded: boolean
   hover: boolean
   onHoverChange: (v: boolean) => void
+  isMobile?: boolean
+  onNavigate?: () => void
 }) {
   const pathname = usePathname()
   const [labels, setLabels] = useState<Label[]>([])
@@ -42,8 +46,10 @@ export default function Sidebar({
 
   return (
     <aside
-      className={`fixed left-0 top-16 h-[calc(100vh-4rem)] z-40 transition-all duration-200 overflow-y-auto scrollbar-thin ${
-        showFull ? "w-72 shadow-xl" : "w-[68px]"
+      className={`fixed left-0 top-16 h-[calc(100vh-4rem)] z-40 transition-all duration-200 overflow-y-auto scrollbar-thin bg-white dark:bg-[#202124] ${
+        isMobile
+          ? expanded ? "w-72 shadow-xl translate-x-0" : "w-72 -translate-x-full"
+          : showFull ? "w-72 shadow-xl" : "w-[68px]"
       }`}
       onMouseEnter={() => onHoverChange(true)}
       onMouseLeave={() => onHoverChange(false)}
@@ -55,6 +61,7 @@ export default function Sidebar({
             <Link
               key={href}
               href={href}
+              onClick={onNavigate}
               className={`flex items-center gap-4 mx-2 px-4 py-2.5 rounded-r-full text-base font-medium transition-colors ${
                 showFull ? "" : "justify-center"
               } ${
@@ -81,6 +88,7 @@ export default function Sidebar({
               <Link
                 key={l.name}
                 href={`/labels/${id}`}
+                onClick={onNavigate}
                 className="flex items-center gap-4 mx-2 px-4 py-2 rounded-r-full text-base font-medium text-gray-600 dark:text-[#bdc1c6] hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
               >
                 <span className="w-5 h-5 rounded-full border border-gray-300 dark:border-[#5f6368] flex items-center justify-center text-[10px] text-gray-400 dark:text-[#9aa0a6]">
@@ -104,6 +112,7 @@ export default function Sidebar({
           </div>
           <Link
             href="/labels"
+            onClick={onNavigate}
             className="flex items-center gap-4 mx-2 px-4 py-2.5 rounded-r-full text-base font-medium text-gray-600 dark:text-[#bdc1c6] hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
           >
             <PenLine size={20} strokeWidth={1.5} />

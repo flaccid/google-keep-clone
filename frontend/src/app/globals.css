@@ -27,6 +27,15 @@
 
 body {
   font-family: "Google Sans", "Roboto", system-ui, -apple-system, sans-serif;
+  -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
+}
+
+/* Prevent iOS bounce and improve touch scrolling */
+@supports (-webkit-touch-callout: none) {
+  body {
+    min-height: -webkit-fill-available;
+  }
 }
 
 @layer utilities {

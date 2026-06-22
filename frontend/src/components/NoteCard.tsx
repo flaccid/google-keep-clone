@@ -141,10 +141,10 @@ export default function NoteCard({
     >
       <button
         onClick={togglePin}
-        className={`absolute top-1.5 right-1.5 p-1 rounded-full transition-opacity ${
+        className={`absolute top-1.5 right-1.5 p-2 sm:p-1 rounded-full transition-opacity ${
           note.pinned
             ? "opacity-100 text-yellow-600"
-            : "opacity-0 group-hover:opacity-100 text-gray-400 dark:text-[#9aa0a6] hover:text-gray-600 dark:hover:text-[#e8eaed]"
+            : "sm:opacity-0 sm:group-hover:opacity-100 text-gray-400 dark:text-[#9aa0a6] hover:text-gray-600 dark:hover:text-[#e8eaed]"
         }`}
         title={note.pinned ? "Unpin note" : "Pin note"}
       >
@@ -205,7 +205,7 @@ export default function NoteCard({
         </div>
       )}
 
-      <div className="flex items-center gap-0.5 px-1 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="flex items-center gap-0.5 px-1 py-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
         <button onClick={toggleArchive} className="p-1.5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 text-gray-500 dark:text-[#9aa0a6]" title={note.archived ? "Unarchive" : "Archive"}>
           <Archive size={16} />
         </button>

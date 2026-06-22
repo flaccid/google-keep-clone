@@ -27,8 +27,8 @@ export default function NoteModal({
   if (!note) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 bg-black/50">
-      <div className="w-full max-w-2xl px-4 py-6">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-0 sm:pt-16 bg-black/50">
+      <div className="w-full max-w-2xl px-0 sm:px-4 py-0 sm:py-6 h-full sm:h-auto">
         <NoteEditor
           note={note}
           onSave={onClose}

@@ -45,7 +45,7 @@ export default function LabelsPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-6">
+    <div className="max-w-3xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
       <h2 className="text-xs font-medium text-gray-400 dark:text-[#9aa0a6] uppercase tracking-wide mb-3">Edit labels</h2>
 
       <div className="space-y-0.5 mb-6">
@@ -72,8 +72,8 @@ export default function LabelsPage() {
                     {l.displayName?.charAt(0).toUpperCase()}
                   </span>
                   <span className="flex-1 text-sm text-gray-900 dark:text-[#e8eaed]">{l.displayName}</span>
-                  <button onClick={() => startEdit(id, l.displayName || "")} className="opacity-0 group-hover:opacity-100 p-1 text-gray-400 dark:text-[#9aa0a6] hover:text-gray-600 dark:hover:text-[#e8eaed] transition-opacity"><Pencil size={14} /></button>
-                  <button onClick={() => remove(id)} className="opacity-0 group-hover:opacity-100 p-1 text-red-400 dark:text-red-500 hover:text-red-600 transition-opacity"><Trash2 size={14} /></button>
+                  <button onClick={() => startEdit(id, l.displayName || "")} className="sm:opacity-0 sm:group-hover:opacity-100 p-1.5 sm:p-1 text-gray-400 dark:text-[#9aa0a6] hover:text-gray-600 dark:hover:text-[#e8eaed] transition-opacity"><Pencil size={14} /></button>
+                  <button onClick={() => remove(id)} className="sm:opacity-0 sm:group-hover:opacity-100 p-1.5 sm:p-1 text-red-400 dark:text-red-500 hover:text-red-600 transition-opacity"><Trash2 size={14} /></button>
                 </>
               )}
             </div>

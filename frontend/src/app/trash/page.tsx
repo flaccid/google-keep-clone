@@ -44,22 +44,22 @@ export default function TrashPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-6">
+    <div className="max-w-3xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
       <h2 className="text-xs font-medium text-gray-400 dark:text-[#9aa0a6] uppercase tracking-wide mb-3">Trash</h2>
       <div className="space-y-2">
         {notes.map((n) => {
           const id = n.name?.replace("notes/", "") || ""
           return (
-            <div key={n.name} className="flex items-center justify-between bg-white dark:bg-[#2d2e30] rounded-lg border border-gray-200 dark:border-[#5f6368] p-3">
-              <div className="flex items-center gap-3">
-                <span className="text-sm font-medium text-gray-900 dark:text-[#e8eaed]">{n.title || "Untitled"}</span>
-                <span className="text-xs text-gray-400 dark:text-[#9aa0a6]">{n.trashTime}</span>
+            <div key={n.name} className="flex flex-col sm:flex-row sm:items-center justify-between bg-white dark:bg-[#2d2e30] rounded-lg border border-gray-200 dark:border-[#5f6368] p-3 gap-2 sm:gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <span className="text-sm font-medium text-gray-900 dark:text-[#e8eaed] truncate">{n.title || "Untitled"}</span>
+                <span className="text-xs text-gray-400 dark:text-[#9aa0a6] whitespace-nowrap">{n.trashTime}</span>
               </div>
-              <div className="flex gap-2">
-                <button onClick={() => restore(n)} className="text-xs text-blue-600 dark:text-blue-400 hover:underline">
+              <div className="flex gap-3 sm:gap-2 flex-shrink-0">
+                <button onClick={() => restore(n)} className="text-xs text-blue-600 dark:text-blue-400 hover:underline py-1">
                   Restore
                 </button>
-                <button onClick={() => removePermanently(n)} className="text-xs text-red-500 dark:text-red-400 hover:underline">
+                <button onClick={() => removePermanently(n)} className="text-xs text-red-500 dark:text-red-400 hover:underline py-1">
                   Delete forever
                 </button>
               </div>
