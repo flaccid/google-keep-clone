@@ -88,7 +88,102 @@ helm install google-keep-clone ./charts \
 
 > **Note:** `ingress.tlsSecretName` is set to empty because local clusters don't have TLS. For production, set it to your cert-manager secret name and keep `oauth2Proxy.cookieSecure: true`.
 
-## 5. Access
+## 5. ArgoCD
+
+### Application manifest (Helm source)
+
+```yaml
+# google-keep-clone.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: google-keep-clone
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/flaccid/google-keep-clone
+    targetRevision: HEAD
+    path: charts
+    helm:
+      valuesObject:
+        ingress:
+          host: keep.example.com
+        oauth2Proxy:
+          clientId: YOUR_CLIENT_ID
+          clientSecret: YOUR_CLIENT_SECRET
+          cookieSecret: YOUR_COOKIE_SECRET
+          redirectUrl: https://keep.example.com/oauth2/callback
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: google-keep-clone
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+```
+
+Apply with:
+
+```bash
+kubectl apply -f google-keep-clone.yaml
+```
+
+ArgoCD will sync the chart, creating all resources in the `google-keep-clone` namespace. Secrets can also be managed via [Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets) or [External Secrets Operator](https://external-secrets.io) instead of putting values in the Application manifest.
+
+### App of Apps (multi-source)
+
+For a GitOps repository that manages multiple applications:
+
+```yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: root
+  namespace: argocd
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/your-org/gitops-repo
+    targetRevision: HEAD
+    path: apps/google-keep-clone
+  destination:
+    server: https://kubernetes.default.svc
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+```
+
+Then in `apps/google-keep-clone/kustomization.yaml`:
+
+```yaml
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+helmCharts:
+  - name: google-keep-clone
+    repo: https://github.com/flaccid/google-keep-clone
+    version: 0.1.0
+    releaseName: google-keep-clone
+    namespace: google-keep-clone
+    valuesFile: values.yaml
+```
+
+Alternatively, use a raw Application pointing to the `k8s/` directory:
+
+```yaml
+spec:
+  source:
+    repoURL: https://github.com/flaccid/google-keep-clone
+    targetRevision: HEAD
+    path: k8s
+```
+
+> **Note:** The raw `k8s/` directory approach doesn't support the Helm value overrides — you'd need to patch resources directly with Kustomize.
+
+## 6. Access
 
 Add an entry to `/etc/hosts` (for kind clusters):
 
