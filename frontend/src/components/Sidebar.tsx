@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Lightbulb, Bell, Archive, Trash2, Plus } from "lucide-react"
+import { Lightbulb, Bell, Archive, Trash2, Plus, PenLine } from "lucide-react"
 import { api } from "@/lib/api"
 import type { Label } from "@/lib/types"
 
@@ -102,6 +102,13 @@ export default function Sidebar({
               <Plus size={16} />
             </button>
           </div>
+          <Link
+            href="/labels"
+            className="flex items-center gap-4 mx-2 px-4 py-2.5 rounded-r-full text-base font-medium text-gray-600 dark:text-[#bdc1c6] hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+          >
+            <PenLine size={20} strokeWidth={1.5} />
+            <span>Edit labels</span>
+          </Link>
         </div>
       )}
     </aside>

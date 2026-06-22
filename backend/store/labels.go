@@ -58,6 +58,24 @@ func (s *LabelStore) Create(ctx context.Context, displayName string) (*labels.La
 	}, nil
 }
 
+func (s *LabelStore) Update(ctx context.Context, id string, displayName string) (*labels.Label, error) {
+	uid, err := uuid.Parse(id)
+	if err != nil {
+		return nil, fmt.Errorf("invalid label id: %w", err)
+	}
+
+	_, err = s.pool.Exec(ctx, `UPDATE labels SET display_name = $1 WHERE id = $2`, displayName, uid)
+	if err != nil {
+		return nil, fmt.Errorf("update label: %w", err)
+	}
+
+	resourceName := fmt.Sprintf("labels/%s", uid.String())
+	return &labels.Label{
+		Name:        &resourceName,
+		DisplayName: &displayName,
+	}, nil
+}
+
 func (s *LabelStore) Delete(ctx context.Context, id string) error {
 	uid, err := uuid.Parse(id)
 	if err != nil {

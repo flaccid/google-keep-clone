@@ -32,6 +32,22 @@ var _ = Service("labels", func() {
 		})
 	})
 
+	Method("update", func() {
+		Description("Updates the display name of a label.")
+
+		Payload(func() {
+			Attribute("id", String, "The ID of the label to update.")
+			Attribute("displayName", String, "The new display name for the label.")
+			Required("id", "displayName")
+		})
+
+		Result(Label, "The updated label.")
+
+		HTTP(func() {
+			PATCH("/v1/labels/{id}")
+		})
+	})
+
 	Method("delete", func() {
 		Description("Deletes a label.")
 

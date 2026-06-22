@@ -21,6 +21,7 @@ type Server struct {
 	Mounts []*MountPoint
 	List   http.Handler
 	Create http.Handler
+	Update http.Handler
 	Delete http.Handler
 }
 
@@ -53,10 +54,12 @@ func New(
 		Mounts: []*MountPoint{
 			{"List", "GET", "/v1/labels"},
 			{"Create", "POST", "/v1/labels"},
+			{"Update", "PATCH", "/v1/labels/{id}"},
 			{"Delete", "DELETE", "/v1/labels/{id}"},
 		},
 		List:   NewListHandler(e.List, mux, decoder, encoder, errhandler, formatter),
 		Create: NewCreateHandler(e.Create, mux, decoder, encoder, errhandler, formatter),
+		Update: NewUpdateHandler(e.Update, mux, decoder, encoder, errhandler, formatter),
 		Delete: NewDeleteHandler(e.Delete, mux, decoder, encoder, errhandler, formatter),
 	}
 }
@@ -68,6 +71,7 @@ func (s *Server) Service() string { return "labels" }
 func (s *Server) Use(m func(http.Handler) http.Handler) {
 	s.List = m(s.List)
 	s.Create = m(s.Create)
+	s.Update = m(s.Update)
 	s.Delete = m(s.Delete)
 }
 
@@ -78,6 +82,7 @@ func (s *Server) MethodNames() []string { return labels.MethodNames[:] }
 func Mount(mux goahttp.Muxer, h *Server) {
 	MountListHandler(mux, h.List)
 	MountCreateHandler(mux, h.Create)
+	MountUpdateHandler(mux, h.Update)
 	MountDeleteHandler(mux, h.Delete)
 }
 
@@ -162,6 +167,59 @@ func NewCreateHandler(
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
 		ctx = context.WithValue(ctx, goa.MethodKey, "create")
+		ctx = context.WithValue(ctx, goa.ServiceKey, "labels")
+		payload, err := decodeRequest(r)
+		if err != nil {
+			if err := encodeError(ctx, w, err); err != nil && errhandler != nil {
+				errhandler(ctx, w, err)
+			}
+			return
+		}
+		res, err := endpoint(ctx, payload)
+		if err != nil {
+			if err := encodeError(ctx, w, err); err != nil && errhandler != nil {
+				errhandler(ctx, w, err)
+			}
+			return
+		}
+		if err := encodeResponse(ctx, w, res); err != nil {
+			if errhandler != nil {
+				errhandler(ctx, w, err)
+			}
+		}
+	})
+}
+
+// MountUpdateHandler configures the mux to serve the "labels" service "update"
+// endpoint.
+func MountUpdateHandler(mux goahttp.Muxer, h http.Handler) {
+	f, ok := h.(http.HandlerFunc)
+	if !ok {
+		f = func(w http.ResponseWriter, r *http.Request) {
+			h.ServeHTTP(w, r)
+		}
+	}
+	mux.Handle("PATCH", "/v1/labels/{id}", f)
+}
+
+// NewUpdateHandler creates a HTTP handler which loads the HTTP request and
+// calls the "labels" service "update" endpoint.
+func NewUpdateHandler(
+	endpoint goa.Endpoint,
+	mux goahttp.Muxer,
+	decoder func(*http.Request) goahttp.Decoder,
+	encoder func(context.Context, http.ResponseWriter) goahttp.Encoder,
+	errhandler func(context.Context, http.ResponseWriter, error),
+	formatter func(ctx context.Context, err error) goahttp.Statuser,
+) http.Handler {
+	var (
+		decodeRequest  = DecodeUpdateRequest(mux, decoder)
+		encodeResponse = EncodeUpdateResponse(encoder)
+		encodeError    = goahttp.ErrorEncoder(encoder, formatter)
+	)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
+		ctx = context.WithValue(ctx, goa.MethodKey, "update")
 		ctx = context.WithValue(ctx, goa.ServiceKey, "labels")
 		payload, err := decodeRequest(r)
 		if err != nil {

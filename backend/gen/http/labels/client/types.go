@@ -18,9 +18,25 @@ type CreateRequestBody struct {
 	DisplayName string `form:"displayName" json:"displayName" xml:"displayName"`
 }
 
+// UpdateRequestBody is the type of the "labels" service "update" endpoint HTTP
+// request body.
+type UpdateRequestBody struct {
+	// The new display name for the label.
+	DisplayName string `form:"displayName" json:"displayName" xml:"displayName"`
+}
+
 // CreateResponseBody is the type of the "labels" service "create" endpoint
 // HTTP response body.
 type CreateResponseBody struct {
+	// The resource name of the label (e.g. 'labels/{uuid}').
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
+	// The display name of the label.
+	DisplayName *string `form:"displayName,omitempty" json:"displayName,omitempty" xml:"displayName,omitempty"`
+}
+
+// UpdateResponseBody is the type of the "labels" service "update" endpoint
+// HTTP response body.
+type UpdateResponseBody struct {
 	// The resource name of the label (e.g. 'labels/{uuid}').
 	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
 	// The display name of the label.
@@ -44,6 +60,15 @@ func NewCreateRequestBody(p *labels.CreatePayload) *CreateRequestBody {
 	return body
 }
 
+// NewUpdateRequestBody builds the HTTP request body from the payload of the
+// "update" endpoint of the "labels" service.
+func NewUpdateRequestBody(p *labels.UpdatePayload) *UpdateRequestBody {
+	body := &UpdateRequestBody{
+		DisplayName: p.DisplayName,
+	}
+	return body
+}
+
 // NewListLabelOK builds a "labels" service "list" endpoint result from a HTTP
 // "OK" response.
 func NewListLabelOK(body []*LabelResponse) []*labels.Label {
@@ -62,6 +87,17 @@ func NewListLabelOK(body []*LabelResponse) []*labels.Label {
 // NewCreateLabelOK builds a "labels" service "create" endpoint result from a
 // HTTP "OK" response.
 func NewCreateLabelOK(body *CreateResponseBody) *labels.Label {
+	v := &labels.Label{
+		Name:        body.Name,
+		DisplayName: body.DisplayName,
+	}
+
+	return v
+}
+
+// NewUpdateLabelOK builds a "labels" service "update" endpoint result from a
+// HTTP "OK" response.
+func NewUpdateLabelOK(body *UpdateResponseBody) *labels.Label {
 	v := &labels.Label{
 		Name:        body.Name,
 		DisplayName: body.DisplayName,

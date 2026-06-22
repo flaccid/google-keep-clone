@@ -72,6 +72,55 @@ func DecodeCreateRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.
 	}
 }
 
+// EncodeUpdateResponse returns an encoder for responses returned by the labels
+// update endpoint.
+func EncodeUpdateResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, any) error {
+	return func(ctx context.Context, w http.ResponseWriter, v any) error {
+		res, _ := v.(*labels.Label)
+		enc := encoder(ctx, w)
+		body := NewUpdateResponseBody(res)
+		w.WriteHeader(http.StatusOK)
+		return enc.Encode(body)
+	}
+}
+
+// DecodeUpdateRequest returns a decoder for requests sent to the labels update
+// endpoint.
+func DecodeUpdateRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (*labels.UpdatePayload, error) {
+	return func(r *http.Request) (*labels.UpdatePayload, error) {
+		var payload *labels.UpdatePayload
+		var (
+			body UpdateRequestBody
+			err  error
+		)
+		err = decoder(r).Decode(&body)
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				return payload, goa.MissingPayloadError()
+			}
+			var gerr *goa.ServiceError
+			if errors.As(err, &gerr) {
+				return payload, gerr
+			}
+			return payload, goa.DecodePayloadError(err.Error())
+		}
+		err = ValidateUpdateRequestBody(&body)
+		if err != nil {
+			return payload, err
+		}
+
+		var (
+			id string
+
+			params = mux.Vars(r)
+		)
+		id = params["id"]
+		payload = NewUpdatePayload(&body, id)
+
+		return payload, nil
+	}
+}
+
 // EncodeDeleteResponse returns an encoder for responses returned by the labels
 // delete endpoint.
 func EncodeDeleteResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, any) error {

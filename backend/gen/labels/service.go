@@ -17,6 +17,8 @@ type Service interface {
 	List(context.Context) (res []*Label, err error)
 	// Creates a new label.
 	Create(context.Context, *CreatePayload) (res *Label, err error)
+	// Updates the display name of a label.
+	Update(context.Context, *UpdatePayload) (res *Label, err error)
 	// Deletes a label.
 	Delete(context.Context, *DeletePayload) (err error)
 }
@@ -35,7 +37,7 @@ const ServiceName = "labels"
 // MethodNames lists the service method names as defined in the design. These
 // are the same values that are set in the endpoint request contexts under the
 // MethodKey key.
-var MethodNames = [3]string{"list", "create", "delete"}
+var MethodNames = [4]string{"list", "create", "update", "delete"}
 
 // CreatePayload is the payload type of the labels service create method.
 type CreatePayload struct {
@@ -55,4 +57,12 @@ type Label struct {
 	Name *string
 	// The display name of the label.
 	DisplayName *string
+}
+
+// UpdatePayload is the payload type of the labels service update method.
+type UpdatePayload struct {
+	// The ID of the label to update.
+	ID string
+	// The new display name for the label.
+	DisplayName string
 }

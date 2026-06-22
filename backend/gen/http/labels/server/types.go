@@ -19,6 +19,13 @@ type CreateRequestBody struct {
 	DisplayName *string `form:"displayName,omitempty" json:"displayName,omitempty" xml:"displayName,omitempty"`
 }
 
+// UpdateRequestBody is the type of the "labels" service "update" endpoint HTTP
+// request body.
+type UpdateRequestBody struct {
+	// The new display name for the label.
+	DisplayName *string `form:"displayName,omitempty" json:"displayName,omitempty" xml:"displayName,omitempty"`
+}
+
 // ListResponseBody is the type of the "labels" service "list" endpoint HTTP
 // response body.
 type ListResponseBody []*LabelResponse
@@ -26,6 +33,15 @@ type ListResponseBody []*LabelResponse
 // CreateResponseBody is the type of the "labels" service "create" endpoint
 // HTTP response body.
 type CreateResponseBody struct {
+	// The resource name of the label (e.g. 'labels/{uuid}').
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
+	// The display name of the label.
+	DisplayName *string `form:"displayName,omitempty" json:"displayName,omitempty" xml:"displayName,omitempty"`
+}
+
+// UpdateResponseBody is the type of the "labels" service "update" endpoint
+// HTTP response body.
+type UpdateResponseBody struct {
 	// The resource name of the label (e.g. 'labels/{uuid}').
 	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
 	// The display name of the label.
@@ -64,11 +80,31 @@ func NewCreateResponseBody(res *labels.Label) *CreateResponseBody {
 	return body
 }
 
+// NewUpdateResponseBody builds the HTTP response body from the result of the
+// "update" endpoint of the "labels" service.
+func NewUpdateResponseBody(res *labels.Label) *UpdateResponseBody {
+	body := &UpdateResponseBody{
+		Name:        res.Name,
+		DisplayName: res.DisplayName,
+	}
+	return body
+}
+
 // NewCreatePayload builds a labels service create endpoint payload.
 func NewCreatePayload(body *CreateRequestBody) *labels.CreatePayload {
 	v := &labels.CreatePayload{
 		DisplayName: *body.DisplayName,
 	}
+
+	return v
+}
+
+// NewUpdatePayload builds a labels service update endpoint payload.
+func NewUpdatePayload(body *UpdateRequestBody, id string) *labels.UpdatePayload {
+	v := &labels.UpdatePayload{
+		DisplayName: *body.DisplayName,
+	}
+	v.ID = id
 
 	return v
 }
@@ -83,6 +119,14 @@ func NewDeletePayload(id string) *labels.DeletePayload {
 
 // ValidateCreateRequestBody runs the validations defined on CreateRequestBody
 func ValidateCreateRequestBody(body *CreateRequestBody) (err error) {
+	if body.DisplayName == nil {
+		err = goa.MergeErrors(err, goa.MissingFieldError("displayName", "body"))
+	}
+	return
+}
+
+// ValidateUpdateRequestBody runs the validations defined on UpdateRequestBody
+func ValidateUpdateRequestBody(body *UpdateRequestBody) (err error) {
 	if body.DisplayName == nil {
 		err = goa.MergeErrors(err, goa.MissingFieldError("displayName", "body"))
 	}

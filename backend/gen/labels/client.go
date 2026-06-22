@@ -17,14 +17,16 @@ import (
 type Client struct {
 	ListEndpoint   goa.Endpoint
 	CreateEndpoint goa.Endpoint
+	UpdateEndpoint goa.Endpoint
 	DeleteEndpoint goa.Endpoint
 }
 
 // NewClient initializes a "labels" service client given the endpoints.
-func NewClient(list, create, delete_ goa.Endpoint) *Client {
+func NewClient(list, create, update, delete_ goa.Endpoint) *Client {
 	return &Client{
 		ListEndpoint:   list,
 		CreateEndpoint: create,
+		UpdateEndpoint: update,
 		DeleteEndpoint: delete_,
 	}
 }
@@ -43,6 +45,16 @@ func (c *Client) List(ctx context.Context) (res []*Label, err error) {
 func (c *Client) Create(ctx context.Context, p *CreatePayload) (res *Label, err error) {
 	var ires any
 	ires, err = c.CreateEndpoint(ctx, p)
+	if err != nil {
+		return
+	}
+	return ires.(*Label), nil
+}
+
+// Update calls the "update" endpoint of the "labels" service.
+func (c *Client) Update(ctx context.Context, p *UpdatePayload) (res *Label, err error) {
+	var ires any
+	ires, err = c.UpdateEndpoint(ctx, p)
 	if err != nil {
 		return
 	}

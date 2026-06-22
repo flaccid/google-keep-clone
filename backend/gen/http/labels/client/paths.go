@@ -21,6 +21,11 @@ func CreateLabelsPath() string {
 	return "/v1/labels"
 }
 
+// UpdateLabelsPath returns the URL path to the labels service update HTTP endpoint.
+func UpdateLabelsPath(id string) string {
+	return fmt.Sprintf("/v1/labels/%v", id)
+}
+
 // DeleteLabelsPath returns the URL path to the labels service delete HTTP endpoint.
 func DeleteLabelsPath(id string) string {
 	return fmt.Sprintf("/v1/labels/%v", id)

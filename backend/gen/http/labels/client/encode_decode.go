@@ -136,6 +136,83 @@ func DecodeCreateResponse(decoder func(*http.Response) goahttp.Decoder, restoreB
 	}
 }
 
+// BuildUpdateRequest instantiates a HTTP request object with method and path
+// set to call the "labels" service "update" endpoint
+func (c *Client) BuildUpdateRequest(ctx context.Context, v any) (*http.Request, error) {
+	var (
+		id string
+	)
+	{
+		p, ok := v.(*labels.UpdatePayload)
+		if !ok {
+			return nil, goahttp.ErrInvalidType("labels", "update", "*labels.UpdatePayload", v)
+		}
+		id = p.ID
+	}
+	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: UpdateLabelsPath(id)}
+	req, err := http.NewRequest("PATCH", u.String(), nil)
+	if err != nil {
+		return nil, goahttp.ErrInvalidURL("labels", "update", u.String(), err)
+	}
+	if ctx != nil {
+		req = req.WithContext(ctx)
+	}
+
+	return req, nil
+}
+
+// EncodeUpdateRequest returns an encoder for requests sent to the labels
+// update server.
+func EncodeUpdateRequest(encoder func(*http.Request) goahttp.Encoder) func(*http.Request, any) error {
+	return func(req *http.Request, v any) error {
+		p, ok := v.(*labels.UpdatePayload)
+		if !ok {
+			return goahttp.ErrInvalidType("labels", "update", "*labels.UpdatePayload", v)
+		}
+		body := NewUpdateRequestBody(p)
+		if err := encoder(req).Encode(&body); err != nil {
+			return goahttp.ErrEncodingError("labels", "update", err)
+		}
+		return nil
+	}
+}
+
+// DecodeUpdateResponse returns a decoder for responses returned by the labels
+// update endpoint. restoreBody controls whether the response body should be
+// restored after having been read.
+func DecodeUpdateResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (any, error) {
+	return func(resp *http.Response) (any, error) {
+		if restoreBody {
+			b, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return nil, err
+			}
+			resp.Body = io.NopCloser(bytes.NewBuffer(b))
+			defer func() {
+				resp.Body = io.NopCloser(bytes.NewBuffer(b))
+			}()
+		} else {
+			defer resp.Body.Close()
+		}
+		switch resp.StatusCode {
+		case http.StatusOK:
+			var (
+				body UpdateResponseBody
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("labels", "update", err)
+			}
+			res := NewUpdateLabelOK(&body)
+			return res, nil
+		default:
+			body, _ := io.ReadAll(resp.Body)
+			return nil, goahttp.ErrInvalidResponse("labels", "update", resp.StatusCode, string(body))
+		}
+	}
+}
+
 // BuildDeleteRequest instantiates a HTTP request object with method and path
 // set to call the "labels" service "delete" endpoint
 func (c *Client) BuildDeleteRequest(ctx context.Context, v any) (*http.Request, error) {

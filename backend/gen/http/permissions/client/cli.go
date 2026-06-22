@@ -22,7 +22,7 @@ func BuildBatchCreatePayload(permissionsBatchCreateBody string, permissionsBatch
 	{
 		err = json.Unmarshal([]byte(permissionsBatchCreateBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"requests\": [\n         {\n            \"email\": \"Id beatae aliquid consequuntur quisquam occaecati dolor.\",\n            \"role\": \"OWNER\"\n         },\n         {\n            \"email\": \"Id beatae aliquid consequuntur quisquam occaecati dolor.\",\n            \"role\": \"OWNER\"\n         },\n         {\n            \"email\": \"Id beatae aliquid consequuntur quisquam occaecati dolor.\",\n            \"role\": \"OWNER\"\n         },\n         {\n            \"email\": \"Id beatae aliquid consequuntur quisquam occaecati dolor.\",\n            \"role\": \"OWNER\"\n         }\n      ]\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"requests\": [\n         {\n            \"email\": \"Corporis ad natus velit numquam qui.\",\n            \"role\": \"WRITER\"\n         },\n         {\n            \"email\": \"Corporis ad natus velit numquam qui.\",\n            \"role\": \"WRITER\"\n         }\n      ]\n   }'")
 		}
 	}
 	var noteID string
@@ -56,7 +56,7 @@ func BuildBatchDeletePayload(permissionsBatchDeleteBody string, permissionsBatch
 	{
 		err = json.Unmarshal([]byte(permissionsBatchDeleteBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"names\": [\n         \"Iusto recusandae.\",\n         \"Sunt voluptate illo ut hic.\",\n         \"Voluptate porro corporis ad natus.\"\n      ]\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"names\": [\n         \"Dolores est omnis veniam dolores officia aut.\",\n         \"Nostrum ut ut dolorum.\"\n      ]\n   }'")
 		}
 	}
 	var noteID string

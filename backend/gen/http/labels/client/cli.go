@@ -32,6 +32,29 @@ func BuildCreatePayload(labelsCreateBody string) (*labels.CreatePayload, error) 
 	return v, nil
 }
 
+// BuildUpdatePayload builds the payload for the labels update endpoint from
+// CLI flags.
+func BuildUpdatePayload(labelsUpdateBody string, labelsUpdateID string) (*labels.UpdatePayload, error) {
+	var err error
+	var body UpdateRequestBody
+	{
+		err = json.Unmarshal([]byte(labelsUpdateBody), &body)
+		if err != nil {
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"displayName\": \"Eum deleniti ad quia.\"\n   }'")
+		}
+	}
+	var id string
+	{
+		id = labelsUpdateID
+	}
+	v := &labels.UpdatePayload{
+		DisplayName: body.DisplayName,
+	}
+	v.ID = id
+
+	return v, nil
+}
+
 // BuildDeletePayload builds the payload for the labels delete endpoint from
 // CLI flags.
 func BuildDeletePayload(labelsDeleteID string) (*labels.DeletePayload, error) {

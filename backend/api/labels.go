@@ -23,6 +23,10 @@ func (s *LabelsService) Create(ctx context.Context, p *labels.CreatePayload) (re
 	return s.labelStore.Create(ctx, p.DisplayName)
 }
 
+func (s *LabelsService) Update(ctx context.Context, p *labels.UpdatePayload) (res *labels.Label, err error) {
+	return s.labelStore.Update(ctx, p.ID, p.DisplayName)
+}
+
 func (s *LabelsService) Delete(ctx context.Context, p *labels.DeletePayload) (err error) {
 	return s.labelStore.Delete(ctx, p.ID)
 }

@@ -54,6 +54,8 @@ export const api = {
     list: () => request<Label[]>("/v1/labels"),
     create: (displayName: string) =>
       request<Label>("/v1/labels", { method: "POST", body: JSON.stringify({ displayName }) }),
+    update: (id: string, displayName: string) =>
+      request<Label>(`/v1/labels/${id}`, { method: "PATCH", body: JSON.stringify({ displayName }) }),
     delete: (id: string) =>
       request<void>(`/v1/labels/${id}`, { method: "DELETE" }),
   },
