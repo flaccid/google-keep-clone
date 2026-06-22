@@ -331,31 +331,7 @@ Once the app is running (either path), here are the key things you can do:
 
 ---
 
-# API reference
-
-All endpoints are at `/v1/...` and proxied through Next.js (no CORS required). Full details in the README, or visit `/openapi` for the interactive Swagger UI.
-
-| Method | Path | Purpose |
-|--------|------|---------|
-| `POST` | `/v1/notes` | Create a note |
-| `GET` | `/v1/notes` | List notes (`?search=term&filter=archived=true&pageSize=20&pageToken=abc`) |
-| `GET` | `/v1/notes/{id}` | Get a note |
-| `PATCH` | `/v1/notes/{id}` | Update a note (title, body, color, labels) |
-| `DELETE` | `/v1/notes/{id}` | Permanently delete |
-| `POST` | `/v1/notes/{id}:pin` | Pin |
-| `POST` | `/v1/notes/{id}:unpin` | Unpin |
-| `POST` | `/v1/notes/{id}:archive` | Archive |
-| `POST` | `/v1/notes/{id}:unarchive` | Unarchive |
-| `POST` | `/v1/notes/{id}:trash` | Trash |
-| `POST` | `/v1/notes/{id}:restore` | Restore from trash |
-| `GET` | `/v1/labels` | List labels |
-| `POST` | `/v1/labels` | Create a label |
-| `PATCH` | `/v1/labels/{id}` | Rename a label |
-| `DELETE` | `/v1/labels/{id}` | Delete a label |
-| `POST` | `/v1/notes/{id}/permissions:batchCreate` | Share a note |
-| `POST` | `/v1/notes/{id}/permissions:batchDelete` | Unshare a note |
-| `POST` | `/v1/notes/{id}/attachments` | Upload a file |
-| `GET` | `/v1/notes/{id}/attachments/{aid}` | Download an attachment |
+See the full [API reference](api-reference.md) for all endpoints, query parameters, and colour values.
 
 ---
 
