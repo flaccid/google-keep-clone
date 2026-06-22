@@ -34,8 +34,8 @@ export default function Header({
         <span className="text-2xl font-medium text-gray-700 dark:text-[#e8eaed]">Keep</span>
       </Link>
 
-      <div className="flex-1 flex justify-center">
-        <div className="relative w-full max-w-xl">
+      <div className="flex-1">
+        <div className="relative w-full max-w-2xl">
           <input
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
