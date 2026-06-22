@@ -206,11 +206,8 @@ export default function NoteEditor({
       e.preventDefault()
       addListItem(index)
       setTimeout(() => {
-        const inputs = listEndRef.current?.parentElement?.querySelectorAll("input[type=text]")
-        if (inputs) {
-          const next = inputs[index + 1] as HTMLInputElement
-          next?.focus()
-        }
+        const next = document.querySelector(`[data-li="${index + 1}"]`) as HTMLInputElement
+        next?.focus()
       }, 0)
     }
     if (e.key === "Backspace" && listItems[index].text === "" && listItems.length > 1) {
@@ -279,6 +276,7 @@ export default function NoteEditor({
                     className="flex-shrink-0 w-4 h-4 rounded-full border-2 border-gray-400 dark:border-[#9aa0a6] hover:border-gray-600"
                   />
                   <input
+                    data-li={origIndex}
                     value={item.text}
                     onChange={(e) => updateListItem(origIndex, e.target.value)}
                     onKeyDown={(e) => handleListItemKeyDown(e, origIndex)}
@@ -315,6 +313,7 @@ export default function NoteEditor({
                     <Check size={10} className="text-white" strokeWidth={3} />
                   </button>
                   <input
+                    data-li={origIndex}
                     value={item.text}
                     onChange={(e) => updateListItem(origIndex, e.target.value)}
                     onKeyDown={(e) => handleListItemKeyDown(e, origIndex)}
