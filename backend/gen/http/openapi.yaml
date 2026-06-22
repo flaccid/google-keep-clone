@@ -1401,6 +1401,14 @@ definitions:
                     - PINK
                     - BROWN
                     - GRAY
+                    - THEME_SHORE
+                    - THEME_BLOOM
+                    - THEME_PLUM
+                    - THEME_NIGHT
+                    - THEME_BAMBOO
+                    - THEME_CANDY
+                    - THEME_SUNSET
+                    - THEME_OCEAN
             createTime:
                 type: string
                 description: Output only. When this note was created (RFC3339 format).
@@ -1583,7 +1591,7 @@ definitions:
             color:
                 type: string
                 description: The color of the note.
-                example: TEAL
+                example: THEME_CANDY
                 enum:
                     - DEFAULT
                     - RED
@@ -1597,6 +1605,14 @@ definitions:
                     - PINK
                     - BROWN
                     - GRAY
+                    - THEME_SHORE
+                    - THEME_BLOOM
+                    - THEME_PLUM
+                    - THEME_NIGHT
+                    - THEME_BAMBOO
+                    - THEME_CANDY
+                    - THEME_SUNSET
+                    - THEME_OCEAN
             labels:
                 type: array
                 items:
@@ -1649,7 +1665,7 @@ definitions:
                             text: Accusamus quod itaque.
                 text:
                     text: Accusamus quod itaque.
-            color: GREEN
+            color: PURPLE
             labels:
                 - Quia aut distinctio tempore ipsa cupiditate.
                 - Voluptates ut ut velit dolor.

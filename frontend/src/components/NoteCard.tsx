@@ -5,19 +5,52 @@ import { api } from "@/lib/api"
 import { Pin, Archive, Trash2, Palette, MoreHorizontal } from "lucide-react"
 import { useState } from "react"
 
-const COLORS: Record<string, string> = {
-  DEFAULT: "bg-white dark:bg-[#202124] border-gray-200 dark:border-[#5f6368]",
-  RED: "bg-keep-red dark:bg-[#202124] border-red-200 dark:border-[#5f6368]",
-  ORANGE: "bg-keep-orange dark:bg-[#202124] border-orange-200 dark:border-[#5f6368]",
-  YELLOW: "bg-keep-yellow dark:bg-[#202124] border-yellow-200 dark:border-[#5f6368]",
-  GREEN: "bg-keep-green dark:bg-[#202124] border-green-200 dark:border-[#5f6368]",
-  TEAL: "bg-keep-teal dark:bg-[#202124] border-teal-200 dark:border-[#5f6368]",
-  BLUE: "bg-keep-blue dark:bg-[#202124] border-blue-200 dark:border-[#5f6368]",
-  DARK_BLUE: "bg-keep-dark-blue dark:bg-[#202124] border-indigo-200 dark:border-[#5f6368]",
-  PURPLE: "bg-keep-purple dark:bg-[#202124] border-purple-200 dark:border-[#5f6368]",
-  PINK: "bg-keep-pink dark:bg-[#202124] border-pink-200 dark:border-[#5f6368]",
-  BROWN: "bg-keep-brown dark:bg-[#202124] border-brown-200 dark:border-[#5f6368]",
-  GRAY: "bg-keep-gray dark:bg-[#202124] border-gray-200 dark:border-[#5f6368]",
+const THEME_NAMES = ["THEME_SHORE", "THEME_BLOOM", "THEME_PLUM", "THEME_NIGHT", "THEME_BAMBOO", "THEME_CANDY", "THEME_SUNSET", "THEME_OCEAN"]
+
+const BG_CLASSES: Record<string, string> = {
+  DEFAULT: "bg-white dark:bg-[#202124]",
+  RED: "bg-keep-red dark:bg-[#202124]",
+  ORANGE: "bg-keep-orange dark:bg-[#202124]",
+  YELLOW: "bg-keep-yellow dark:bg-[#202124]",
+  GREEN: "bg-keep-green dark:bg-[#202124]",
+  TEAL: "bg-keep-teal dark:bg-[#202124]",
+  BLUE: "bg-keep-blue dark:bg-[#202124]",
+  CERULEAN: "bg-keep-cerulean dark:bg-[#202124]",
+  PURPLE: "bg-keep-purple dark:bg-[#202124]",
+  PINK: "bg-keep-pink dark:bg-[#202124]",
+  BROWN: "bg-keep-brown dark:bg-[#202124]",
+  GRAY: "bg-keep-gray dark:bg-[#202124]",
+  THEME_SHORE: "bg-theme-shore dark:bg-theme-shore-dark",
+  THEME_BLOOM: "bg-theme-bloom dark:bg-theme-bloom-dark",
+  THEME_PLUM: "bg-theme-plum dark:bg-theme-plum-dark",
+  THEME_NIGHT: "bg-theme-night dark:bg-theme-night-dark",
+  THEME_BAMBOO: "bg-theme-bamboo dark:bg-theme-bamboo-dark",
+  THEME_CANDY: "bg-theme-candy dark:bg-theme-candy-dark",
+  THEME_SUNSET: "bg-theme-sunset dark:bg-theme-sunset-dark",
+  THEME_OCEAN: "bg-theme-ocean dark:bg-theme-ocean-dark",
+}
+
+const BORDER_CLASSES: Record<string, string> = {
+  DEFAULT: "border-gray-200 dark:border-[#5f6368]",
+  RED: "border-red-200 dark:border-[#5f6368]",
+  ORANGE: "border-orange-200 dark:border-[#5f6368]",
+  YELLOW: "border-yellow-200 dark:border-[#5f6368]",
+  GREEN: "border-green-200 dark:border-[#5f6368]",
+  TEAL: "border-teal-200 dark:border-[#5f6368]",
+  BLUE: "border-blue-200 dark:border-[#5f6368]",
+  CERULEAN: "border-sky-200 dark:border-[#5f6368]",
+  PURPLE: "border-purple-200 dark:border-[#5f6368]",
+  PINK: "border-pink-200 dark:border-[#5f6368]",
+  BROWN: "border-amber-200 dark:border-[#5f6368]",
+  GRAY: "border-gray-200 dark:border-[#5f6368]",
+  THEME_SHORE: "border-amber-300 dark:border-[#5f6368]",
+  THEME_BLOOM: "border-amber-300 dark:border-[#5f6368]",
+  THEME_PLUM: "border-amber-300 dark:border-[#5f6368]",
+  THEME_NIGHT: "border-amber-300 dark:border-[#5f6368]",
+  THEME_BAMBOO: "border-amber-300 dark:border-[#5f6368]",
+  THEME_CANDY: "border-amber-300 dark:border-[#5f6368]",
+  THEME_SUNSET: "border-amber-300 dark:border-[#5f6368]",
+  THEME_OCEAN: "border-amber-300 dark:border-[#5f6368]",
 }
 
 const COLOR_DOTS: Record<string, string> = {
@@ -27,14 +60,15 @@ const COLOR_DOTS: Record<string, string> = {
   GREEN: "bg-keep-green border border-green-300",
   TEAL: "bg-keep-teal border border-teal-300",
   BLUE: "bg-keep-blue border border-keep-blue-dark",
-  DARK_BLUE: "bg-keep-dark-blue border border-blue-300",
+  CERULEAN: "bg-keep-cerulean border border-blue-300",
   PURPLE: "bg-keep-purple border border-purple-300",
   PINK: "bg-keep-pink border border-pink-300",
   BROWN: "bg-keep-brown border border-amber-300",
   GRAY: "bg-keep-gray border border-gray-300",
+  ...Object.fromEntries(THEME_NAMES.map((t) => [t, "bg-white/50 border border-amber-300"])),
 }
 
-const COLOR_VALUES = ["DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "DARK_BLUE", "PURPLE", "PINK", "BROWN", "GRAY"]
+const COLOR_VALUES = ["DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY"]
 
 function noteTitle(note: Note): string {
   return note.title || ""
@@ -61,7 +95,9 @@ export default function NoteCard({
   onOpen?: (id: string) => void
 }) {
   const [showPalette, setShowPalette] = useState(false)
-  const colorClass = COLORS[note.color || "DEFAULT"] || COLORS.DEFAULT
+  const noteColor = note.color || "DEFAULT"
+  const bgClass = BG_CLASSES[noteColor] || BG_CLASSES.DEFAULT
+  const borderClass = BORDER_CLASSES[noteColor] || BORDER_CLASSES.DEFAULT
   const id = noteId(note.name)
 
   async function togglePin(e: React.MouseEvent) {
@@ -100,7 +136,7 @@ export default function NoteCard({
 
   return (
     <div
-      className={`${colorClass} rounded-lg border shadow-sm hover:shadow-lg dark:hover:shadow-xl dark:hover:shadow-black/30 transition-shadow cursor-pointer relative group`}
+      className={`${bgClass} ${borderClass} rounded-lg border shadow-sm hover:shadow-lg dark:hover:shadow-xl dark:hover:shadow-black/30 transition-shadow cursor-pointer relative group`}
       onClick={() => onOpen?.(id)}
     >
       <button
@@ -178,15 +214,31 @@ export default function NoteCard({
             <Palette size={16} />
           </button>
           {showPalette && (
-            <div className="absolute bottom-full left-0 mb-1 flex gap-0.5 p-1.5 bg-white dark:bg-[#2d2e30] rounded-lg shadow-lg border border-gray-200 dark:border-[#5f6368] z-10" onClick={(e) => e.stopPropagation()}>
-              {COLOR_VALUES.map((c) => (
-                <button
-                  key={c}
-                  onClick={(e) => changeColor(e, c)}
-                  className={`w-5 h-5 rounded-full ${COLOR_DOTS[c]} ${c === (note.color || "DEFAULT") ? "ring-2 ring-blue-500" : ""}`}
-                  title={c}
-                />
-              ))}
+            <div className="absolute bottom-full left-0 mb-1 bg-white dark:bg-[#2d2e30] rounded-lg shadow-lg border border-gray-200 dark:border-[#5f6368] z-10 p-2 min-w-[200px]" onClick={(e) => e.stopPropagation()}>
+              <p className="text-[11px] font-medium text-gray-400 dark:text-[#9aa0a6] uppercase tracking-wide mb-1.5 px-0.5">Themes</p>
+              <div className="grid grid-cols-4 gap-1 mb-2">
+                {THEME_NAMES.map((t) => (
+                  <button
+                    key={t}
+                    onClick={(e) => changeColor(e, t)}
+                    className={`w-9 h-9 rounded-lg ${t === noteColor ? "ring-2 ring-blue-500" : "ring-1 ring-black/10 dark:ring-white/20"} overflow-hidden`}
+                    title={t.replace("THEME_", "").replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (l) => l.toUpperCase())}
+                  >
+                    <div className={`w-full h-full ${BG_CLASSES[t] || ""}`} />
+                  </button>
+                ))}
+              </div>
+              <p className="text-[11px] font-medium text-gray-400 dark:text-[#9aa0a6] uppercase tracking-wide mb-1.5 px-0.5">Colors</p>
+              <div className="flex gap-0.5 flex-wrap">
+                {COLOR_VALUES.map((c) => (
+                  <button
+                    key={c}
+                    onClick={(e) => changeColor(e, c)}
+                    className={`w-5 h-5 rounded-full ${COLOR_DOTS[c]} ${c === noteColor ? "ring-2 ring-blue-500" : ""}`}
+                    title={c === "DEFAULT" ? "Default" : c.charAt(0) + c.slice(1).toLowerCase()}
+                  />
+                ))}
+              </div>
             </div>
           )}
         </div>

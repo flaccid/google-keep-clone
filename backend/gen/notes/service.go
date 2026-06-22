@@ -67,7 +67,8 @@ type Attachment struct {
 	MimeType []string
 }
 
-// The color of a note. Matches Google Keep's color palette.
+// The color or theme of a note. Matches Google Keep's color palette and
+// background themes.
 type ColorValue string
 
 // CreatePayload is the payload type of the notes service create method.

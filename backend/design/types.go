@@ -5,8 +5,9 @@ import (
 )
 
 var ColorValue = Type("ColorValue", String, func() {
-	Description("The color of a note. Matches Google Keep's color palette.")
-	Enum("DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY")
+	Description("The color or theme of a note. Matches Google Keep's color palette and background themes.")
+	Enum("DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY",
+		"THEME_SHORE", "THEME_BLOOM", "THEME_PLUM", "THEME_NIGHT", "THEME_BAMBOO", "THEME_CANDY", "THEME_SUNSET", "THEME_OCEAN")
 })
 
 var Role = Type("Role", String, func() {

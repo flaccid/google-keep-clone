@@ -351,7 +351,7 @@ paths:
                                             text: Accusamus quod itaque.
                                 text:
                                     text: Accusamus quod itaque.
-                            color: GRAY
+                            color: CERULEAN
                             labels:
                                 - Nihil qui autem.
                                 - Aut modi.
@@ -521,7 +521,7 @@ paths:
                                                 text: Voluptas dolor minus.
                                     text:
                                         text: Voluptas dolor minus.
-                                color: PINK
+                                color: THEME_BLOOM
                                 createTime: Qui beatae quas.
                                 labels:
                                     - Fuga provident reprehenderit quidem.
@@ -615,7 +615,7 @@ paths:
                                             text: Accusamus quod itaque.
                                 text:
                                     text: Accusamus quod itaque.
-                            color: GREEN
+                            color: PURPLE
                             labels:
                                 - Velit sunt ut.
                                 - Voluptatem quae et consequatur aliquid consectetur est.
@@ -674,7 +674,7 @@ paths:
                                                 text: Voluptas dolor minus.
                                     text:
                                         text: Voluptas dolor minus.
-                                color: RED
+                                color: THEME_CANDY
                                 createTime: Voluptas vero.
                                 labels:
                                     - Officiis et velit qui ex totam.
@@ -768,7 +768,7 @@ paths:
                                                 text: Voluptas dolor minus.
                                     text:
                                         text: Voluptas dolor minus.
-                                color: GRAY
+                                color: YELLOW
                                 createTime: Nulla quod.
                                 labels:
                                     - Et architecto et quis.
@@ -858,7 +858,7 @@ paths:
                                                 text: Voluptas dolor minus.
                                     text:
                                         text: Voluptas dolor minus.
-                                color: BLUE
+                                color: BROWN
                                 createTime: Fugiat veniam ipsam iure.
                                 labels:
                                     - Quia cumque.
@@ -955,7 +955,7 @@ paths:
                                                 text: Voluptas dolor minus.
                                     text:
                                         text: Voluptas dolor minus.
-                                color: ORANGE
+                                color: BROWN
                                 createTime: Itaque quasi eos.
                                 labels:
                                     - Recusandae in ab possimus eius eligendi.
@@ -1057,7 +1057,7 @@ paths:
                                                 text: Voluptas dolor minus.
                                     text:
                                         text: Voluptas dolor minus.
-                                color: TEAL
+                                color: THEME_BLOOM
                                 createTime: Rerum quia non.
                                 labels:
                                     - Quis voluptatem veritatis quo.
@@ -1151,7 +1151,7 @@ paths:
                                                 text: Voluptas dolor minus.
                                     text:
                                         text: Voluptas dolor minus.
-                                color: PURPLE
+                                color: THEME_BAMBOO
                                 createTime: Nobis cumque architecto ipsa.
                                 labels:
                                     - Vel molestias et ratione ipsam placeat rerum.
@@ -1260,7 +1260,7 @@ paths:
                                                 text: Voluptas dolor minus.
                                     text:
                                         text: Voluptas dolor minus.
-                                color: BROWN
+                                color: THEME_PLUM
                                 createTime: Deserunt ipsam non.
                                 labels:
                                     - Placeat quisquam adipisci.
@@ -2458,8 +2458,8 @@ components:
                     $ref: '#/components/schemas/Section'
                 color:
                     type: string
-                    description: The color of a note. Matches Google Keep's color palette.
-                    example: DEFAULT
+                    description: The color or theme of a note. Matches Google Keep's color palette and background themes.
+                    example: THEME_SHORE
                     enum:
                         - DEFAULT
                         - RED
@@ -2473,6 +2473,14 @@ components:
                         - PINK
                         - BROWN
                         - GRAY
+                        - THEME_SHORE
+                        - THEME_BLOOM
+                        - THEME_PLUM
+                        - THEME_NIGHT
+                        - THEME_BAMBOO
+                        - THEME_CANDY
+                        - THEME_SUNSET
+                        - THEME_OCEAN
                 createTime:
                     type: string
                     description: Output only. When this note was created (RFC3339 format).
@@ -2655,7 +2663,7 @@ components:
                     $ref: '#/components/schemas/Section'
                 color:
                     type: string
-                    description: The color of a note. Matches Google Keep's color palette.
+                    description: The color or theme of a note. Matches Google Keep's color palette and background themes.
                     example: PINK
                     enum:
                         - DEFAULT
@@ -2670,6 +2678,14 @@ components:
                         - PINK
                         - BROWN
                         - GRAY
+                        - THEME_SHORE
+                        - THEME_BLOOM
+                        - THEME_PLUM
+                        - THEME_NIGHT
+                        - THEME_BAMBOO
+                        - THEME_CANDY
+                        - THEME_SUNSET
+                        - THEME_OCEAN
                 labels:
                     type: array
                     items:

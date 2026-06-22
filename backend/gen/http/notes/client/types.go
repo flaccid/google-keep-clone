@@ -997,8 +997,8 @@ func ValidateCreateResponseBody(body *CreateResponseBody) (err error) {
 		}
 	}
 	if body.Color != nil {
-		if !(*body.Color == "DEFAULT" || *body.Color == "RED" || *body.Color == "ORANGE" || *body.Color == "YELLOW" || *body.Color == "GREEN" || *body.Color == "TEAL" || *body.Color == "BLUE" || *body.Color == "CERULEAN" || *body.Color == "PURPLE" || *body.Color == "PINK" || *body.Color == "BROWN" || *body.Color == "GRAY") {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.color", *body.Color, []any{"DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY"}))
+		if !(*body.Color == "DEFAULT" || *body.Color == "RED" || *body.Color == "ORANGE" || *body.Color == "YELLOW" || *body.Color == "GREEN" || *body.Color == "TEAL" || *body.Color == "BLUE" || *body.Color == "CERULEAN" || *body.Color == "PURPLE" || *body.Color == "PINK" || *body.Color == "BROWN" || *body.Color == "GRAY" || *body.Color == "THEME_SHORE" || *body.Color == "THEME_BLOOM" || *body.Color == "THEME_PLUM" || *body.Color == "THEME_NIGHT" || *body.Color == "THEME_BAMBOO" || *body.Color == "THEME_CANDY" || *body.Color == "THEME_SUNSET" || *body.Color == "THEME_OCEAN") {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.color", *body.Color, []any{"DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY", "THEME_SHORE", "THEME_BLOOM", "THEME_PLUM", "THEME_NIGHT", "THEME_BAMBOO", "THEME_CANDY", "THEME_SUNSET", "THEME_OCEAN"}))
 		}
 	}
 	return
@@ -1014,8 +1014,8 @@ func ValidateGetResponseBody(body *GetResponseBody) (err error) {
 		}
 	}
 	if body.Color != nil {
-		if !(*body.Color == "DEFAULT" || *body.Color == "RED" || *body.Color == "ORANGE" || *body.Color == "YELLOW" || *body.Color == "GREEN" || *body.Color == "TEAL" || *body.Color == "BLUE" || *body.Color == "CERULEAN" || *body.Color == "PURPLE" || *body.Color == "PINK" || *body.Color == "BROWN" || *body.Color == "GRAY") {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.color", *body.Color, []any{"DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY"}))
+		if !(*body.Color == "DEFAULT" || *body.Color == "RED" || *body.Color == "ORANGE" || *body.Color == "YELLOW" || *body.Color == "GREEN" || *body.Color == "TEAL" || *body.Color == "BLUE" || *body.Color == "CERULEAN" || *body.Color == "PURPLE" || *body.Color == "PINK" || *body.Color == "BROWN" || *body.Color == "GRAY" || *body.Color == "THEME_SHORE" || *body.Color == "THEME_BLOOM" || *body.Color == "THEME_PLUM" || *body.Color == "THEME_NIGHT" || *body.Color == "THEME_BAMBOO" || *body.Color == "THEME_CANDY" || *body.Color == "THEME_SUNSET" || *body.Color == "THEME_OCEAN") {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.color", *body.Color, []any{"DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY", "THEME_SHORE", "THEME_BLOOM", "THEME_PLUM", "THEME_NIGHT", "THEME_BAMBOO", "THEME_CANDY", "THEME_SUNSET", "THEME_OCEAN"}))
 		}
 	}
 	return
@@ -1043,8 +1043,8 @@ func ValidateUpdateResponseBody(body *UpdateResponseBody) (err error) {
 		}
 	}
 	if body.Color != nil {
-		if !(*body.Color == "DEFAULT" || *body.Color == "RED" || *body.Color == "ORANGE" || *body.Color == "YELLOW" || *body.Color == "GREEN" || *body.Color == "TEAL" || *body.Color == "BLUE" || *body.Color == "CERULEAN" || *body.Color == "PURPLE" || *body.Color == "PINK" || *body.Color == "BROWN" || *body.Color == "GRAY") {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.color", *body.Color, []any{"DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY"}))
+		if !(*body.Color == "DEFAULT" || *body.Color == "RED" || *body.Color == "ORANGE" || *body.Color == "YELLOW" || *body.Color == "GREEN" || *body.Color == "TEAL" || *body.Color == "BLUE" || *body.Color == "CERULEAN" || *body.Color == "PURPLE" || *body.Color == "PINK" || *body.Color == "BROWN" || *body.Color == "GRAY" || *body.Color == "THEME_SHORE" || *body.Color == "THEME_BLOOM" || *body.Color == "THEME_PLUM" || *body.Color == "THEME_NIGHT" || *body.Color == "THEME_BAMBOO" || *body.Color == "THEME_CANDY" || *body.Color == "THEME_SUNSET" || *body.Color == "THEME_OCEAN") {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.color", *body.Color, []any{"DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY", "THEME_SHORE", "THEME_BLOOM", "THEME_PLUM", "THEME_NIGHT", "THEME_BAMBOO", "THEME_CANDY", "THEME_SUNSET", "THEME_OCEAN"}))
 		}
 	}
 	return
@@ -1060,8 +1060,8 @@ func ValidatePinResponseBody(body *PinResponseBody) (err error) {
 		}
 	}
 	if body.Color != nil {
-		if !(*body.Color == "DEFAULT" || *body.Color == "RED" || *body.Color == "ORANGE" || *body.Color == "YELLOW" || *body.Color == "GREEN" || *body.Color == "TEAL" || *body.Color == "BLUE" || *body.Color == "CERULEAN" || *body.Color == "PURPLE" || *body.Color == "PINK" || *body.Color == "BROWN" || *body.Color == "GRAY") {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.color", *body.Color, []any{"DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY"}))
+		if !(*body.Color == "DEFAULT" || *body.Color == "RED" || *body.Color == "ORANGE" || *body.Color == "YELLOW" || *body.Color == "GREEN" || *body.Color == "TEAL" || *body.Color == "BLUE" || *body.Color == "CERULEAN" || *body.Color == "PURPLE" || *body.Color == "PINK" || *body.Color == "BROWN" || *body.Color == "GRAY" || *body.Color == "THEME_SHORE" || *body.Color == "THEME_BLOOM" || *body.Color == "THEME_PLUM" || *body.Color == "THEME_NIGHT" || *body.Color == "THEME_BAMBOO" || *body.Color == "THEME_CANDY" || *body.Color == "THEME_SUNSET" || *body.Color == "THEME_OCEAN") {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.color", *body.Color, []any{"DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY", "THEME_SHORE", "THEME_BLOOM", "THEME_PLUM", "THEME_NIGHT", "THEME_BAMBOO", "THEME_CANDY", "THEME_SUNSET", "THEME_OCEAN"}))
 		}
 	}
 	return
@@ -1077,8 +1077,8 @@ func ValidateUnpinResponseBody(body *UnpinResponseBody) (err error) {
 		}
 	}
 	if body.Color != nil {
-		if !(*body.Color == "DEFAULT" || *body.Color == "RED" || *body.Color == "ORANGE" || *body.Color == "YELLOW" || *body.Color == "GREEN" || *body.Color == "TEAL" || *body.Color == "BLUE" || *body.Color == "CERULEAN" || *body.Color == "PURPLE" || *body.Color == "PINK" || *body.Color == "BROWN" || *body.Color == "GRAY") {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.color", *body.Color, []any{"DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY"}))
+		if !(*body.Color == "DEFAULT" || *body.Color == "RED" || *body.Color == "ORANGE" || *body.Color == "YELLOW" || *body.Color == "GREEN" || *body.Color == "TEAL" || *body.Color == "BLUE" || *body.Color == "CERULEAN" || *body.Color == "PURPLE" || *body.Color == "PINK" || *body.Color == "BROWN" || *body.Color == "GRAY" || *body.Color == "THEME_SHORE" || *body.Color == "THEME_BLOOM" || *body.Color == "THEME_PLUM" || *body.Color == "THEME_NIGHT" || *body.Color == "THEME_BAMBOO" || *body.Color == "THEME_CANDY" || *body.Color == "THEME_SUNSET" || *body.Color == "THEME_OCEAN") {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.color", *body.Color, []any{"DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY", "THEME_SHORE", "THEME_BLOOM", "THEME_PLUM", "THEME_NIGHT", "THEME_BAMBOO", "THEME_CANDY", "THEME_SUNSET", "THEME_OCEAN"}))
 		}
 	}
 	return
@@ -1095,8 +1095,8 @@ func ValidateArchiveResponseBody(body *ArchiveResponseBody) (err error) {
 		}
 	}
 	if body.Color != nil {
-		if !(*body.Color == "DEFAULT" || *body.Color == "RED" || *body.Color == "ORANGE" || *body.Color == "YELLOW" || *body.Color == "GREEN" || *body.Color == "TEAL" || *body.Color == "BLUE" || *body.Color == "CERULEAN" || *body.Color == "PURPLE" || *body.Color == "PINK" || *body.Color == "BROWN" || *body.Color == "GRAY") {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.color", *body.Color, []any{"DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY"}))
+		if !(*body.Color == "DEFAULT" || *body.Color == "RED" || *body.Color == "ORANGE" || *body.Color == "YELLOW" || *body.Color == "GREEN" || *body.Color == "TEAL" || *body.Color == "BLUE" || *body.Color == "CERULEAN" || *body.Color == "PURPLE" || *body.Color == "PINK" || *body.Color == "BROWN" || *body.Color == "GRAY" || *body.Color == "THEME_SHORE" || *body.Color == "THEME_BLOOM" || *body.Color == "THEME_PLUM" || *body.Color == "THEME_NIGHT" || *body.Color == "THEME_BAMBOO" || *body.Color == "THEME_CANDY" || *body.Color == "THEME_SUNSET" || *body.Color == "THEME_OCEAN") {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.color", *body.Color, []any{"DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY", "THEME_SHORE", "THEME_BLOOM", "THEME_PLUM", "THEME_NIGHT", "THEME_BAMBOO", "THEME_CANDY", "THEME_SUNSET", "THEME_OCEAN"}))
 		}
 	}
 	return
@@ -1113,8 +1113,8 @@ func ValidateUnarchiveResponseBody(body *UnarchiveResponseBody) (err error) {
 		}
 	}
 	if body.Color != nil {
-		if !(*body.Color == "DEFAULT" || *body.Color == "RED" || *body.Color == "ORANGE" || *body.Color == "YELLOW" || *body.Color == "GREEN" || *body.Color == "TEAL" || *body.Color == "BLUE" || *body.Color == "CERULEAN" || *body.Color == "PURPLE" || *body.Color == "PINK" || *body.Color == "BROWN" || *body.Color == "GRAY") {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.color", *body.Color, []any{"DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY"}))
+		if !(*body.Color == "DEFAULT" || *body.Color == "RED" || *body.Color == "ORANGE" || *body.Color == "YELLOW" || *body.Color == "GREEN" || *body.Color == "TEAL" || *body.Color == "BLUE" || *body.Color == "CERULEAN" || *body.Color == "PURPLE" || *body.Color == "PINK" || *body.Color == "BROWN" || *body.Color == "GRAY" || *body.Color == "THEME_SHORE" || *body.Color == "THEME_BLOOM" || *body.Color == "THEME_PLUM" || *body.Color == "THEME_NIGHT" || *body.Color == "THEME_BAMBOO" || *body.Color == "THEME_CANDY" || *body.Color == "THEME_SUNSET" || *body.Color == "THEME_OCEAN") {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.color", *body.Color, []any{"DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY", "THEME_SHORE", "THEME_BLOOM", "THEME_PLUM", "THEME_NIGHT", "THEME_BAMBOO", "THEME_CANDY", "THEME_SUNSET", "THEME_OCEAN"}))
 		}
 	}
 	return
@@ -1130,8 +1130,8 @@ func ValidateTrashResponseBody(body *TrashResponseBody) (err error) {
 		}
 	}
 	if body.Color != nil {
-		if !(*body.Color == "DEFAULT" || *body.Color == "RED" || *body.Color == "ORANGE" || *body.Color == "YELLOW" || *body.Color == "GREEN" || *body.Color == "TEAL" || *body.Color == "BLUE" || *body.Color == "CERULEAN" || *body.Color == "PURPLE" || *body.Color == "PINK" || *body.Color == "BROWN" || *body.Color == "GRAY") {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.color", *body.Color, []any{"DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY"}))
+		if !(*body.Color == "DEFAULT" || *body.Color == "RED" || *body.Color == "ORANGE" || *body.Color == "YELLOW" || *body.Color == "GREEN" || *body.Color == "TEAL" || *body.Color == "BLUE" || *body.Color == "CERULEAN" || *body.Color == "PURPLE" || *body.Color == "PINK" || *body.Color == "BROWN" || *body.Color == "GRAY" || *body.Color == "THEME_SHORE" || *body.Color == "THEME_BLOOM" || *body.Color == "THEME_PLUM" || *body.Color == "THEME_NIGHT" || *body.Color == "THEME_BAMBOO" || *body.Color == "THEME_CANDY" || *body.Color == "THEME_SUNSET" || *body.Color == "THEME_OCEAN") {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.color", *body.Color, []any{"DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY", "THEME_SHORE", "THEME_BLOOM", "THEME_PLUM", "THEME_NIGHT", "THEME_BAMBOO", "THEME_CANDY", "THEME_SUNSET", "THEME_OCEAN"}))
 		}
 	}
 	return
@@ -1148,8 +1148,8 @@ func ValidateRestoreResponseBody(body *RestoreResponseBody) (err error) {
 		}
 	}
 	if body.Color != nil {
-		if !(*body.Color == "DEFAULT" || *body.Color == "RED" || *body.Color == "ORANGE" || *body.Color == "YELLOW" || *body.Color == "GREEN" || *body.Color == "TEAL" || *body.Color == "BLUE" || *body.Color == "CERULEAN" || *body.Color == "PURPLE" || *body.Color == "PINK" || *body.Color == "BROWN" || *body.Color == "GRAY") {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.color", *body.Color, []any{"DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY"}))
+		if !(*body.Color == "DEFAULT" || *body.Color == "RED" || *body.Color == "ORANGE" || *body.Color == "YELLOW" || *body.Color == "GREEN" || *body.Color == "TEAL" || *body.Color == "BLUE" || *body.Color == "CERULEAN" || *body.Color == "PURPLE" || *body.Color == "PINK" || *body.Color == "BROWN" || *body.Color == "GRAY" || *body.Color == "THEME_SHORE" || *body.Color == "THEME_BLOOM" || *body.Color == "THEME_PLUM" || *body.Color == "THEME_NIGHT" || *body.Color == "THEME_BAMBOO" || *body.Color == "THEME_CANDY" || *body.Color == "THEME_SUNSET" || *body.Color == "THEME_OCEAN") {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.color", *body.Color, []any{"DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY", "THEME_SHORE", "THEME_BLOOM", "THEME_PLUM", "THEME_NIGHT", "THEME_BAMBOO", "THEME_CANDY", "THEME_SUNSET", "THEME_OCEAN"}))
 		}
 	}
 	return
@@ -1176,8 +1176,8 @@ func ValidateNoteResponseBody(body *NoteResponseBody) (err error) {
 		}
 	}
 	if body.Color != nil {
-		if !(*body.Color == "DEFAULT" || *body.Color == "RED" || *body.Color == "ORANGE" || *body.Color == "YELLOW" || *body.Color == "GREEN" || *body.Color == "TEAL" || *body.Color == "BLUE" || *body.Color == "CERULEAN" || *body.Color == "PURPLE" || *body.Color == "PINK" || *body.Color == "BROWN" || *body.Color == "GRAY") {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.color", *body.Color, []any{"DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY"}))
+		if !(*body.Color == "DEFAULT" || *body.Color == "RED" || *body.Color == "ORANGE" || *body.Color == "YELLOW" || *body.Color == "GREEN" || *body.Color == "TEAL" || *body.Color == "BLUE" || *body.Color == "CERULEAN" || *body.Color == "PURPLE" || *body.Color == "PINK" || *body.Color == "BROWN" || *body.Color == "GRAY" || *body.Color == "THEME_SHORE" || *body.Color == "THEME_BLOOM" || *body.Color == "THEME_PLUM" || *body.Color == "THEME_NIGHT" || *body.Color == "THEME_BAMBOO" || *body.Color == "THEME_CANDY" || *body.Color == "THEME_SUNSET" || *body.Color == "THEME_OCEAN") {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.color", *body.Color, []any{"DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY", "THEME_SHORE", "THEME_BLOOM", "THEME_PLUM", "THEME_NIGHT", "THEME_BAMBOO", "THEME_CANDY", "THEME_SUNSET", "THEME_OCEAN"}))
 		}
 	}
 	return

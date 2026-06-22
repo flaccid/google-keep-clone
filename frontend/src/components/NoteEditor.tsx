@@ -5,9 +5,11 @@ import type { Note, ListItem as ListItemType, Label } from "@/lib/types"
 import { api } from "@/lib/api"
 import { Pin, Palette, Image, ListChecks, Type, X, Check, Tag } from "lucide-react"
 
+const THEME_NAMES = ["THEME_SHORE", "THEME_BLOOM", "THEME_PLUM", "THEME_NIGHT", "THEME_BAMBOO", "THEME_CANDY", "THEME_SUNSET", "THEME_OCEAN"]
+
 const COLOR_OPTIONS = [
   "DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL",
-  "BLUE", "DARK_BLUE", "PURPLE", "PINK", "BROWN", "GRAY",
+  "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY",
 ]
 
 const COLOR_VALUES: Record<string, string> = {
@@ -18,11 +20,12 @@ const COLOR_VALUES: Record<string, string> = {
   GREEN: "bg-keep-green border border-green-300",
   TEAL: "bg-keep-teal border border-teal-300",
   BLUE: "bg-keep-blue border border-keep-blue-dark",
-  DARK_BLUE: "bg-keep-dark-blue border border-blue-300",
+  CERULEAN: "bg-keep-cerulean border border-blue-300",
   PURPLE: "bg-keep-purple border border-purple-300",
   PINK: "bg-keep-pink border border-pink-300",
   BROWN: "bg-keep-brown border border-amber-300",
   GRAY: "bg-keep-gray border border-gray-300",
+  ...Object.fromEntries(THEME_NAMES.map((t) => [t, "bg-white/50 dark:bg-white/10 border border-amber-300 dark:border-[#5f6368]"])),
 }
 
 const BG_COLORS: Record<string, string> = {
@@ -33,11 +36,19 @@ const BG_COLORS: Record<string, string> = {
   GREEN: "bg-keep-green dark:bg-[#202124]",
   TEAL: "bg-keep-teal dark:bg-[#202124]",
   BLUE: "bg-keep-blue dark:bg-[#202124]",
-  DARK_BLUE: "bg-keep-dark-blue dark:bg-[#202124]",
+  CERULEAN: "bg-keep-cerulean dark:bg-[#202124]",
   PURPLE: "bg-keep-purple dark:bg-[#202124]",
   PINK: "bg-keep-pink dark:bg-[#202124]",
   BROWN: "bg-keep-brown dark:bg-[#202124]",
   GRAY: "bg-keep-gray dark:bg-[#202124]",
+  THEME_SHORE: "bg-theme-shore dark:bg-theme-shore-dark",
+  THEME_BLOOM: "bg-theme-bloom dark:bg-theme-bloom-dark",
+  THEME_PLUM: "bg-theme-plum dark:bg-theme-plum-dark",
+  THEME_NIGHT: "bg-theme-night dark:bg-theme-night-dark",
+  THEME_BAMBOO: "bg-theme-bamboo dark:bg-theme-bamboo-dark",
+  THEME_CANDY: "bg-theme-candy dark:bg-theme-candy-dark",
+  THEME_SUNSET: "bg-theme-sunset dark:bg-theme-sunset-dark",
+  THEME_OCEAN: "bg-theme-ocean dark:bg-theme-ocean-dark",
 }
 
 function initListItems(note?: Note): Array<{ text: string; checked: boolean }> {
@@ -393,15 +404,31 @@ export default function NoteEditor({
               <Palette size={16} />
             </button>
             {showColors && (
-              <div className="absolute bottom-full left-0 mb-2 flex gap-0.5 p-1.5 bg-white dark:bg-[#2d2e30] rounded-lg shadow-lg border border-gray-200 dark:border-[#5f6368] z-10">
-                {COLOR_OPTIONS.map((c) => (
-                  <button
-                    key={c}
-                    onClick={() => setColor(c)}
-                    className={`w-5 h-5 rounded-full ${COLOR_VALUES[c]} ${c === color ? "ring-2 ring-blue-500" : ""}`}
-                    title={c}
-                  />
-                ))}
+              <div className="absolute bottom-full left-0 mb-2 bg-white dark:bg-[#2d2e30] rounded-lg shadow-lg border border-gray-200 dark:border-[#5f6368] z-10 p-2 min-w-[200px]">
+                <p className="text-[11px] font-medium text-gray-400 dark:text-[#9aa0a6] uppercase tracking-wide mb-1.5 px-0.5">Themes</p>
+                <div className="grid grid-cols-4 gap-1 mb-2">
+                  {THEME_NAMES.map((t) => (
+                    <button
+                      key={t}
+                      onClick={() => setColor(t)}
+                      className={`w-9 h-9 rounded-lg ${t === color ? "ring-2 ring-blue-500" : "ring-1 ring-black/10 dark:ring-white/20"} overflow-hidden`}
+                      title={t.replace("THEME_", "").replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (l) => l.toUpperCase())}
+                    >
+                      <div className={`w-full h-full ${BG_COLORS[t] || ""}`} />
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[11px] font-medium text-gray-400 dark:text-[#9aa0a6] uppercase tracking-wide mb-1.5 px-0.5">Colors</p>
+                <div className="flex gap-0.5 flex-wrap">
+                  {COLOR_OPTIONS.map((c) => (
+                    <button
+                      key={c}
+                      onClick={() => setColor(c)}
+                      className={`w-5 h-5 rounded-full ${COLOR_VALUES[c]} ${c === color ? "ring-2 ring-blue-500" : ""}`}
+                      title={c === "DEFAULT" ? "Default" : c.charAt(0) + c.slice(1).toLowerCase()}
+                    />
+                  ))}
+                </div>
               </div>
             )}
           </div>

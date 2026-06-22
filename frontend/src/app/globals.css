@@ -10,6 +10,7 @@
   --color-keep-teal: #e0f2f1;
   --color-keep-blue: #e3f2fd;
   --color-keep-dark-blue: #e8eaf6;
+  --color-keep-cerulean: #e0f3f8;
   --color-keep-purple: #f3e5f5;
   --color-keep-pink: #fce4ec;
   --color-keep-brown: #efebe9;
@@ -36,4 +37,54 @@ body {
     background: #ddd;
     border-radius: 3px;
   }
+}
+
+.bg-theme-shore {
+  background: linear-gradient(135deg, #e0f7fa 0%, #b2ebf2 30%, #80deea 60%, #4dd0e1 100%);
+}
+.bg-theme-bloom {
+  background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 25%, #e1bee7 50%, #d1c4e9 75%, #c5cae9 100%);
+}
+.bg-theme-plum {
+  background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 25%, #ce93d8 50%, #ba68c8 75%, #ab47bc 100%);
+}
+.bg-theme-night {
+  background: linear-gradient(135deg, #e8eaf6 0%, #c5cae9 25%, #9fa8da 50%, #7986cb 75%, #5c6bc0 100%);
+}
+.bg-theme-bamboo {
+  background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 25%, #a5d6a7 50%, #81c784 75%, #66bb6a 100%);
+}
+.bg-theme-candy {
+  background: linear-gradient(135deg, #fff8e1 0%, #ffecb3 20%, #f8bbd0 40%, #f48fb1 60%, #ce93d8 80%, #b39ddb 100%);
+}
+.bg-theme-sunset {
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 20%, #ffcc80 40%, #ffab91 60%, #ef9a9a 80%, #ce93d8 100%);
+}
+.bg-theme-ocean {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 25%, #90caf9 50%, #64b5f6 75%, #42a5f5 100%);
+}
+
+.bg-theme-shore-dark {
+  background: linear-gradient(135deg, #1a2a3a 0%, #1e3b4a 30%, #224b5a 60%, #265c6a 100%);
+}
+.bg-theme-bloom-dark {
+  background: linear-gradient(135deg, #2a1a2a 0%, #3a1e3a 25%, #4a2250 50%, #5a2660 75%, #6a2a70 100%);
+}
+.bg-theme-plum-dark {
+  background: linear-gradient(135deg, #2a1a30 0%, #3a1e45 25%, #4a2258 50%, #5a2668 75%, #6a2a78 100%);
+}
+.bg-theme-night-dark {
+  background: linear-gradient(135deg, #1a1a2e 0%, #1e2250 25%, #22286a 50%, #263080 75%, #2a3890 100%);
+}
+.bg-theme-bamboo-dark {
+  background: linear-gradient(135deg, #1a2a1a 0%, #1e3a1e 25%, #224a22 50%, #265a26 75%, #2a6a2a 100%);
+}
+.bg-theme-candy-dark {
+  background: linear-gradient(135deg, #2a1a1a 0%, #3a1e2a 20%, #4a2240 40%, #5a2650 60%, #6a2a60 80%, #7a2e70 100%);
+}
+.bg-theme-sunset-dark {
+  background: linear-gradient(135deg, #2a1a1a 0%, #3a2218 20%, #4a2a16 40%, #5a3020 60%, #6a3a2a 80%, #7a3e3a 100%);
+}
+.bg-theme-ocean-dark {
+  background: linear-gradient(135deg, #1a1a2e 0%, #1a2a4a 25%, #1a3a5a 50%, #1a4a6a 75%, #1a5a7a 100%);
 }
