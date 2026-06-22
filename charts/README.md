@@ -144,7 +144,7 @@ The `ATTACHMENT_STORE_DIR` env var is hardcoded to this path.
 | `oauth2Proxy.redirectUrl` | `https://keep.example.com/oauth2/callback` | OAuth callback URL |
 | `oauth2Proxy.cookieSecure` | `true` | Require secure cookies |
 | `oauth2Proxy.httpAddress` | `0.0.0.0:4180` | HTTP listen address |
-| `oauth2Proxy.authorizedEmails` | `[admin@example.com, redacted@example.com]` | List of authorized email addresses |
+| `oauth2Proxy.authorizedEmails` | `[admin@example.com, placeholder@example.com]` | List of authorized email addresses |
 
 ## Secrets
 

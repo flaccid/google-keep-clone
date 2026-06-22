@@ -82,7 +82,7 @@ oauth2Proxy:
   httpAddress: 0.0.0.0:4180
   authorizedEmails:
     - admin@example.com
-    - redacted@example.com
+    - placeholder@example.com
 
 secrets:
   existing:

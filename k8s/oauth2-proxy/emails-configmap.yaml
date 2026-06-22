@@ -6,4 +6,4 @@ metadata:
 data:
   emails.txt: |
     admin@example.com
-    redacted@example.com
+    placeholder@example.com

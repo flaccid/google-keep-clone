@@ -337,7 +337,7 @@ The Go backend serves plain HTTP on port 8080. In Kubernetes deployments, TLS is
 
 ### Dependency Management
 
-Security vulnerabilities are tracked via [`SECURITY.md`](SECURITY.md) (not committed to the public repo — contains pre-revocation credential details). CI should run `npm audit` and `govulncheck` to catch newly published vulnerabilities.
+Security vulnerabilities are tracked via CI tooling (`npm audit`, `govulncheck`) and [`SECURITY.md`](SECURITY.md) (kept local, not tracked in git).
 
 ---
 
