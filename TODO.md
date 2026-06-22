@@ -35,9 +35,10 @@
 
 - [x] Migrate from plain K8s manifests to a **Helm chart** for easier deployment
 - [ ] Add **Sealed Secrets** or **External Secrets Operator** for managing secrets in-cluster
-- [ ] Add **Horizontal Pod Autoscaler** for the frontend
-- [ ] Add **network policies** for the K8s namespace
-- [ ] Add **PodDisruptionBudget** for production deployments
+- [x] Add **Horizontal Pod Autoscaler** for the frontend
+- [x] Add **network policies** for the K8s namespace
+- [x] Add **PodDisruptionBudget** for production deployments
+- [ ] Add **cert-manager Certificate** resource for `keep-tls` — currently no cert-manager Certificate is provisioned; the TLS secret referenced by the ingress may be manually managed or externally provisioned
 
 ## Documentation
 
