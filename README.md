@@ -7,6 +7,7 @@
 [![Node Version](https://img.shields.io/badge/Node-22-339933?logo=nodedotjs)](https://nodejs.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs)](https://nextjs.org/)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
+[![GitHub Release](https://img.shields.io/github/v/release/flaccid/google-keep-clone)](https://github.com/flaccid/google-keep-clone/releases)
 
 ---
 
@@ -27,6 +28,7 @@
 | 📎 Attachment upload & download | ✅ |
 | 🔗 Share permissions (batch create/delete) | ✅ |
 | 🧭 Sidebar navigation (collapsible mini mode) | ✅ |
+| ☸️ Helm chart + ArgoCD deployment | ✅ |
 | 🏠 Kubernetes deployment (with OAuth2 proxy) | ✅ |
 | 📖 OpenAPI 3.0 docs (Swagger UI) | ✅ |
 
@@ -50,7 +52,9 @@
 
 **Infrastructure**
 - Docker Compose (local dev)
-- Kubernetes manifests (production-like deployment)
+- Helm chart (recommended deploy)
+- ArgoCD GitOps deployment
+- Kubernetes manifests (legacy)
 - OAuth2 Proxy with Google provider
 - GitHub Actions CI (lint → build → test → Docker push)
 
@@ -117,13 +121,9 @@
 │   ├── next.config.ts             #   Rewrites: /v1/* → backend
 │   ├── Dockerfile                 #   Multi-stage Next.js standalone
 │   └── package.json               #   Next.js 16, React 19, Tailwind v4
-├── k8s/                           # Kubernetes manifests
-│   ├── namespace.yaml
-│   ├── ingress.yaml               #   Two ingresses (auth + oauth2)
-│   ├── backend/                   #   Backend deployment, service, HPA
-│   ├── frontend/                  #   Frontend deployment, service
-│   ├── postgres/                  #   StatefulSet + service (PVC)
-│   └── oauth2-proxy/              #   OAuth2 proxy (Google provider)
+├── charts/                        # Helm chart (recommended deploy)
+├── k8s/                           # Kubernetes manifests (legacy)
+├── docs/                          # getting-started.md, api-reference.md
 ├── docker-compose.yml             # postgres + backend + frontend
 └── .github/workflows/ci.yml       # Lint → Build → Test → Docker push
 ```
@@ -135,6 +135,10 @@ See the [full API reference](docs/api-reference.md) for all endpoints, query par
 ---
 
 ## 🚀 Quick Start
+
+### Kubernetes (recommended)
+
+See the [getting-started guide](docs/getting-started.md) for cluster setup, OAuth2 configuration, Helm install, and ArgoCD deployment.
 
 ### Docker Compose
 
@@ -220,9 +224,9 @@ npm run lint    # ESLint
 
 ## ☸️ Kubernetes Deployment
 
-```bash
-kubectl apply -f k8s/
-```
+The recommended way is via the [Helm chart](charts/) — see the [getting-started guide](docs/getting-started.md) for complete instructions with Helm CLI or ArgoCD.
+
+You can also apply the raw [k8s/](k8s/) manifests (legacy) — note these lack the chart's value overrides, secret generation, and network policy egress rules.
 
 Components (all in namespace `google-keep-clone`):
 
@@ -234,23 +238,15 @@ Components (all in namespace `google-keep-clone`):
 | OAuth2 Proxy | Deployment + Service | Google OAuth, email whitelist |
 | Ingress | 2 Ingress resources | Main (auth-protected) + `/oauth2` (unauthenticated) |
 
-**Ingress hostname:** `keep.example.com`
-
-To update images:
-```bash
-kubectl set image deployment/backend backend=flaccid/google-keep-clone-backend:latest
-kubectl set image deployment/frontend frontend=flaccid/google-keep-clone-frontend:latest
-```
-
 ---
 
 ## 🔄 CI/CD Pipeline
 
 GitHub Actions runs on every push/PR to `main`:
 
-1. **Lint** — `go vet ./...`
+1. **Lint** — `go vet ./...` + `govulncheck` (continue-on-error)
 2. **Build & Test** — `go build ./...` + store integration tests (with PostgreSQL container)
-3. **Frontend** — `npm ci` + `npm run build` (includes TypeScript check)
+3. **Frontend** — `npm ci` + `npm audit --audit-level=moderate` (continue-on-error) + `npm run build`
 4. **Docker push** — On `main` only, pushes `flaccid/google-keep-clone-{backend,frontend}:latest` and `:{sha}`
 
 ---
