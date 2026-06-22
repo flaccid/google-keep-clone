@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { Menu, RefreshCw, Settings, Moon, Sun } from "lucide-react"
+import { Lightbulb, Menu, RefreshCw, Settings, Moon, Sun } from "lucide-react"
 import { useTheme } from "@/components/ThemeProvider"
 
 export default function Header({
@@ -29,7 +29,10 @@ export default function Header({
         <Menu size={20} className="text-gray-600 dark:text-[#e8eaed]" />
       </button>
 
-      <Link href="/" className="text-2xl font-bold text-gray-700 dark:text-[#e8eaed] hidden sm:inline hover:opacity-80">Keep</Link>
+      <Link href="/" className="hidden sm:flex items-center gap-2 hover:opacity-80">
+        <Lightbulb size={24} className="text-yellow-500" fill="currentColor" />
+        <span className="text-2xl font-medium text-gray-700 dark:text-[#e8eaed]">Keep</span>
+      </Link>
 
       <div className="flex-1 flex justify-center">
         <div className="relative w-full max-w-xl">
