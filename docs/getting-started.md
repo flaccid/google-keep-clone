@@ -47,7 +47,13 @@ http://localhost/oauth2/callback
 
 Save the **Client ID** and **Client Secret**.
 
-## 2. Install the chart
+## 2. Deploy
+
+Choose one of the following options.
+
+> **Note:** For local clusters without TLS, set `ingress.tlsSecretName=` and `oauth2Proxy.cookieSecure=false`. For production, use a cert-manager secret and keep `cookieSecure: true`.
+
+### Option A — Helm CLI
 
 ```bash
 # Generate a secure cookie secret
@@ -65,11 +71,7 @@ helm install google-keep-clone ./charts \
   --set secrets.create.oauth2Proxy.cookieSecret="$COOKIE_SECRET"
 ```
 
-> **Note:** `ingress.tlsSecretName` is set to empty because local clusters don't have TLS. For production, set it to your cert-manager secret name and keep `oauth2Proxy.cookieSecure: true`.
-
-## 3. ArgoCD (optional)
-
-### Application manifest (Helm source)
+### Option B — ArgoCD
 
 ```yaml
 # google-keep-clone.yaml
@@ -104,17 +106,15 @@ spec:
       - CreateNamespace=true
 ```
 
-Apply with:
-
 ```bash
 kubectl apply -f google-keep-clone.yaml
 ```
 
-ArgoCD will sync the chart, creating all resources in the `google-keep-clone` namespace. Secrets can also be managed via [Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets) or [External Secrets Operator](https://external-secrets.io) instead of putting values in the Application manifest.
+ArgoCD syncs the chart into the `google-keep-clone` namespace. Secrets can be managed via [Sealed Secrets](https://github.com/bitnami-labs/sealed-secrets) or [External Secrets Operator](https://external-secrets.io) instead of putting values in the manifest.
 
-### App of Apps (multi-source)
+#### App of Apps pattern
 
-For a GitOps repository that manages multiple applications:
+For a GitOps repository managing multiple applications:
 
 ```yaml
 apiVersion: argoproj.io/v1alpha1
@@ -130,13 +130,9 @@ spec:
     path: apps/google-keep-clone
   destination:
     server: https://kubernetes.default.svc
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
 ```
 
-Then in `apps/google-keep-clone/kustomization.yaml`:
+With `apps/google-keep-clone/kustomization.yaml`:
 
 ```yaml
 apiVersion: kustomize.config.k8s.io/v1beta1
@@ -150,7 +146,7 @@ helmCharts:
     valuesFile: values.yaml
 ```
 
-Alternatively, use a raw Application pointing to the `k8s/` directory:
+You can also point directly at the raw `k8s/` directory, though that loses Helm value overrides:
 
 ```yaml
 spec:
@@ -160,9 +156,7 @@ spec:
     path: k8s
 ```
 
-> **Note:** The raw `k8s/` directory approach doesn't support the Helm value overrides — you'd need to patch resources directly with Kustomize.
-
-## 4. Access
+## 3. Access
 
 Add an entry to `/etc/hosts` (for kind clusters):
 
