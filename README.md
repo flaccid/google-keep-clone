@@ -6,7 +6,7 @@
 [![Go Version](https://img.shields.io/badge/Go-1.25-00ADD8?logo=go)](https://go.dev/)
 [![Node Version](https://img.shields.io/badge/Node-22-339933?logo=nodedotjs)](https://nodejs.org/)
 [![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs)](https://nextjs.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 
 ---
 
@@ -344,6 +344,22 @@ This is a personal R&D project, but issues and PRs are welcome! Feel free to ope
 
 ---
 
-## 📄 License
+## License and Authors
 
-MIT
+- Author: Chris Fordham (<chris@fordham.id.au>)
+
+```text
+Copyright 2026, Chris Fordham
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
