@@ -125,7 +125,11 @@ func (s *NoteStore) List(ctx context.Context, pageSize *int, pageToken *string, 
 	var args []any
 
 	if filter != nil && *filter != "" {
-		conditions = append(conditions, *filter)
+		safe, err := safeFilter(*filter)
+		if err != nil {
+			return nil, fmt.Errorf("invalid filter: %w", err)
+		}
+		conditions = append(conditions, safe)
 	} else {
 		conditions = append(conditions, "trashed = false")
 	}
@@ -480,6 +484,34 @@ func (s *NoteStore) ensureLabelOnNote(ctx context.Context, tx pgx.Tx, noteID uui
 	}
 
 	return nil
+}
+
+var allowedFilterColumns = map[string]bool{
+	"trashed":  true,
+	"archived": true,
+	"pinned":   true,
+}
+
+func safeFilter(raw string) (string, error) {
+	parts := strings.Split(raw, " AND ")
+	var safeParts []string
+	for _, part := range parts {
+		part = strings.TrimSpace(part)
+		pairs := strings.SplitN(part, " = ", 2)
+		if len(pairs) != 2 {
+			return "", fmt.Errorf("malformed condition: %q", part)
+		}
+		col := strings.TrimSpace(pairs[0])
+		val := strings.TrimSpace(pairs[1])
+		if !allowedFilterColumns[col] {
+			return "", fmt.Errorf("disallowed column: %q", col)
+		}
+		if val != "true" && val != "false" {
+			return "", fmt.Errorf("disallowed value: %q", val)
+		}
+		safeParts = append(safeParts, fmt.Sprintf("%s = %s", col, val))
+	}
+	return strings.Join(safeParts, " AND "), nil
 }
 
 func parseNoteName(name string) (uuid.UUID, error) {

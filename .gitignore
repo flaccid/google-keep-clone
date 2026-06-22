@@ -22,3 +22,6 @@ pgdata/
 # Environment
 .env
 .env.local
+
+# Security audit (contains live credential details pre-revocation)
+SECURITY.md
