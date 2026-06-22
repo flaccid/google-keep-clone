@@ -32,6 +32,24 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
+  name: allow-backend-egress-to-postgres
+  namespace: {{ include "google-keep-clone.namespace" . }}
+  labels: {{- include "google-keep-clone.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels: {{- include "google-keep-clone.backend.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels: {{- include "google-keep-clone.postgres.selectorLabels" . | nindent 14 }}
+      ports:
+        - port: 5432
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
   name: allow-frontend-to-backend
   namespace: {{ include "google-keep-clone.namespace" . }}
   labels: {{- include "google-keep-clone.labels" . | nindent 4 }}
@@ -96,6 +114,24 @@ spec:
     - from:
         - podSelector:
             matchLabels: {{- include "google-keep-clone.backend.selectorLabels" . | nindent 14 }}
+      ports:
+        - port: 4180
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-backend-egress-to-oauth2
+  namespace: {{ include "google-keep-clone.namespace" . }}
+  labels: {{- include "google-keep-clone.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels: {{- include "google-keep-clone.backend.selectorLabels" . | nindent 6 }}
+  policyTypes:
+    - Egress
+  egress:
+    - to:
+        - podSelector:
+            matchLabels: {{- include "google-keep-clone.oauth2-proxy.selectorLabels" . | nindent 14 }}
       ports:
         - port: 4180
 ---
