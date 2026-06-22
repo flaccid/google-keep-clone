@@ -1,0 +1,34 @@
+{{- if .Values.podDisruptionBudget.enabled }}
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: backend
+  namespace: {{ include "google-keep-clone.namespace" . }}
+  labels: {{- include "google-keep-clone.labels" . | nindent 4 }}
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels: {{- include "google-keep-clone.backend.selectorLabels" . | nindent 6 }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: frontend
+  namespace: {{ include "google-keep-clone.namespace" . }}
+  labels: {{- include "google-keep-clone.labels" . | nindent 4 }}
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels: {{- include "google-keep-clone.frontend.selectorLabels" . | nindent 6 }}
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: postgres
+  namespace: {{ include "google-keep-clone.namespace" . }}
+  labels: {{- include "google-keep-clone.labels" . | nindent 4 }}
+spec:
+  maxUnavailable: 0
+  selector:
+    matchLabels: {{- include "google-keep-clone.postgres.selectorLabels" . | nindent 6 }}
+{{- end }}

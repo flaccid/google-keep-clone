@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: oauth2-proxy
+  namespace: {{ include "google-keep-clone.namespace" . }}
+  labels: {{- include "google-keep-clone.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.oauth2Proxy.replicas }}
+  selector:
+    matchLabels: {{- include "google-keep-clone.oauth2-proxy.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "google-keep-clone.oauth2-proxy.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: oauth2-proxy
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: oauth2-proxy
+          image: "{{ .Values.images.oauth2Proxy.repository }}:{{ .Values.images.oauth2Proxy.tag }}"
+          imagePullPolicy: {{ .Values.images.oauth2Proxy.pullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+            runAsUser: {{ .Values.oauth2Proxy.runAsUser }}
+            runAsGroup: {{ .Values.oauth2Proxy.runAsGroup }}
+          args:
+            - --provider={{ .Values.oauth2Proxy.provider }}
+            - --authenticated-emails-file=/etc/oauth2-proxy/emails.txt
+            - --client-id=$(CLIENT_ID)
+            - --client-secret=$(CLIENT_SECRET)
+            - --cookie-secret=$(COOKIE_SECRET)
+            - --redirect-url={{ .Values.oauth2Proxy.redirectUrl }}
+            - --cookie-secure={{ .Values.oauth2Proxy.cookieSecure }}
+            - --http-address={{ .Values.oauth2Proxy.httpAddress }}
+            - --set-authorization-header=true
+            - --pass-basic-auth=false
+          env:
+            - name: CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+{{- if .Values.secrets.create.oauth2Proxy.clientId }}
+                  name: oauth2-proxy-config
+{{- else }}
+                  name: {{ .Values.secrets.existing.oauth2Proxy }}
+{{- end }}
+                  key: client-id
+            - name: CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+{{- if .Values.secrets.create.oauth2Proxy.clientSecret }}
+                  name: oauth2-proxy-config
+{{- else }}
+                  name: {{ .Values.secrets.existing.oauth2Proxy }}
+{{- end }}
+                  key: client-secret
+            - name: COOKIE_SECRET
+              valueFrom:
+                secretKeyRef:
+{{- if .Values.secrets.create.oauth2Proxy.cookieSecret }}
+                  name: oauth2-proxy-config
+{{- else }}
+                  name: {{ .Values.secrets.existing.oauth2Proxy }}
+{{- end }}
+                  key: cookie-secret
+          volumeMounts:
+            - name: emails
+              mountPath: /etc/oauth2-proxy
+              readOnly: true
+          ports:
+            - containerPort: 4180
+          resources:
+            limits:
+              memory: {{ .Values.oauth2Proxy.resources.limits.memory }}
+              cpu: {{ .Values.oauth2Proxy.resources.limits.cpu }}
+            requests:
+              memory: {{ .Values.oauth2Proxy.resources.requests.memory }}
+              cpu: {{ .Values.oauth2Proxy.resources.requests.cpu }}
+      volumes:
+        - name: emails
+          configMap:
+            name: oauth2-proxy-emails

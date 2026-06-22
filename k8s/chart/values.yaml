@@ -1,0 +1,108 @@
+global:
+  namespace: google-keep-clone
+
+images:
+  backend:
+    repository: flaccid/google-keep-clone-backend
+    tag: latest
+    pullPolicy: Always
+  frontend:
+    repository: flaccid/google-keep-clone-frontend
+    tag: latest
+    pullPolicy: Always
+  postgres:
+    repository: postgres
+    tag: 16-alpine
+    pullPolicy: IfNotPresent
+  oauth2Proxy:
+    repository: quay.io/oauth2-proxy/oauth2-proxy
+    tag: latest
+    pullPolicy: IfNotPresent
+
+ingress:
+  host: keep.example.com
+  className: nginx
+  tlsSecretName: keep-tls
+
+postgres:
+  replicas: 1
+  storageSize: 1Gi
+  runAsUser: 999
+  runAsGroup: 999
+  fsGroup: 999
+
+backend:
+  replicas: 2
+  runAsUser: 10001
+  runAsGroup: 10001
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    cpuUtilization: 70
+
+frontend:
+  replicas: 2
+  runAsUser: 10002
+  runAsGroup: 10002
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+  hpa:
+    enabled: true
+    minReplicas: 2
+    maxReplicas: 10
+    cpuUtilization: 70
+
+oauth2Proxy:
+  replicas: 1
+  runAsUser: 65534
+  runAsGroup: 65534
+  resources:
+    requests:
+      cpu: 50m
+      memory: 64Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  provider: google
+  redirectUrl: https://keep.example.com/oauth2/callback
+  cookieSecure: true
+  httpAddress: 0.0.0.0:4180
+  authorizedEmails:
+    - admin@example.com
+    - redacted@example.com
+
+secrets:
+  existing:
+    backend: ""
+    postgres: ""
+    oauth2Proxy: ""
+  create:
+    backend:
+      databaseUrl: "postgres://keep:keep@postgres:5432/keep?sslmode=disable"
+    postgres:
+      username: keep
+      password: keep
+      database: keep
+    oauth2Proxy:
+      clientId: ""
+      clientSecret: ""
+      cookieSecret: ""
+
+networkPolicy:
+  enabled: true
+
+podDisruptionBudget:
+  enabled: true

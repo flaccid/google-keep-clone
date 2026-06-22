@@ -1,0 +1,105 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: {{ include "google-keep-clone.namespace" . }}
+  labels: {{- include "google-keep-clone.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.backend.replicas }}
+  selector:
+    matchLabels: {{- include "google-keep-clone.backend.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "google-keep-clone.backend.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: backend
+      securityContext:
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: wait-for-postgres
+          image: "{{ .Values.images.postgres.repository }}:{{ .Values.images.postgres.tag }}"
+          imagePullPolicy: {{ .Values.images.postgres.pullPolicy }}
+          command: ['sh', '-c', 'until pg_isready -h postgres -U "$POSTGRES_USER" -d "$POSTGRES_DB"; do echo waiting for postgres; sleep 2; done']
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+{{- if .Values.secrets.create.postgres.username }}
+                  name: postgres
+{{- else }}
+                  name: {{ .Values.secrets.existing.postgres }}
+{{- end }}
+                  key: username
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+{{- if .Values.secrets.create.postgres.database }}
+                  name: postgres
+{{- else }}
+                  name: {{ .Values.secrets.existing.postgres }}
+{{- end }}
+                  key: database
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+{{- if .Values.secrets.create.postgres.password }}
+                  name: postgres
+{{- else }}
+                  name: {{ .Values.secrets.existing.postgres }}
+{{- end }}
+                  key: password
+      containers:
+        - name: backend
+          image: "{{ .Values.images.backend.repository }}:{{ .Values.images.backend.tag }}"
+          imagePullPolicy: {{ .Values.images.backend.pullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: true
+            runAsUser: {{ .Values.backend.runAsUser }}
+            runAsGroup: {{ .Values.backend.runAsGroup }}
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+{{- if .Values.secrets.create.backend.databaseUrl }}
+                  name: backend
+{{- else }}
+                  name: {{ .Values.secrets.existing.backend }}
+{{- end }}
+                  key: database-url
+            - name: ATTACHMENT_STORE_DIR
+              value: /data/attachments
+          resources:
+            requests:
+              cpu: {{ .Values.backend.resources.requests.cpu }}
+              memory: {{ .Values.backend.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.backend.resources.limits.cpu }}
+              memory: {{ .Values.backend.resources.limits.memory }}
+          livenessProbe:
+            httpGet:
+              path: /v1/notes
+              port: 8080
+            initialDelaySeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /v1/notes
+              port: 8080
+            initialDelaySeconds: 5
+          volumeMounts:
+            - name: attachment-store
+              mountPath: /data/attachments
+      volumes:
+        - name: attachment-store
+          emptyDir: {}

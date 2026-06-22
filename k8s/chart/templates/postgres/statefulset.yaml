@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: {{ include "google-keep-clone.namespace" . }}
+  labels: {{- include "google-keep-clone.labels" . | nindent 4 }}
+spec:
+  serviceName: postgres
+  replicas: {{ .Values.postgres.replicas }}
+  selector:
+    matchLabels: {{- include "google-keep-clone.postgres.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels: {{- include "google-keep-clone.postgres.selectorLabels" . | nindent 8 }}
+    spec:
+      serviceAccountName: postgres
+      securityContext:
+        runAsNonRoot: true
+        fsGroup: {{ .Values.postgres.fsGroup }}
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: postgres
+          image: "{{ .Values.images.postgres.repository }}:{{ .Values.images.postgres.tag }}"
+          imagePullPolicy: {{ .Values.images.postgres.pullPolicy }}
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
+            runAsUser: {{ .Values.postgres.runAsUser }}
+            runAsGroup: {{ .Values.postgres.runAsGroup }}
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+{{- if .Values.secrets.create.postgres.username }}
+                  name: postgres
+{{- else }}
+                  name: {{ .Values.secrets.existing.postgres }}
+{{- end }}
+                  key: username
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+{{- if .Values.secrets.create.postgres.password }}
+                  name: postgres
+{{- else }}
+                  name: {{ .Values.secrets.existing.postgres }}
+{{- end }}
+                  key: password
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+{{- if .Values.secrets.create.postgres.database }}
+                  name: postgres
+{{- else }}
+                  name: {{ .Values.secrets.existing.postgres }}
+{{- end }}
+                  key: database
+          ports:
+            - containerPort: 5432
+          volumeMounts:
+            - name: pgdata
+              mountPath: /var/lib/postgresql/data
+              subPath: pgdata
+  volumeClaimTemplates:
+    - metadata:
+        name: pgdata
+        labels: {{- include "google-keep-clone.labels" . | nindent 10 }}
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: {{ .Values.postgres.storageSize }}

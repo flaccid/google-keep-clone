@@ -33,7 +33,7 @@
 
 ## Infrastructure
 
-- [ ] Migrate from plain K8s manifests to a **Helm chart** for easier deployment
+- [x] Migrate from plain K8s manifests to a **Helm chart** for easier deployment
 - [ ] Add **Sealed Secrets** or **External Secrets Operator** for managing secrets in-cluster
 - [ ] Add **Horizontal Pod Autoscaler** for the frontend
 - [ ] Add **network policies** for the K8s namespace

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: google-keep-clone
+description: Google Keep Clone — Go backend, Next.js frontend, PostgreSQL
+type: application
+version: 0.1.0
+appVersion: "0.1.0"

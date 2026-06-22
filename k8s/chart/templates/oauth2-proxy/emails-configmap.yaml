@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oauth2-proxy-emails
+  namespace: {{ include "google-keep-clone.namespace" . }}
+  labels: {{- include "google-keep-clone.labels" . | nindent 4 }}
+data:
+  emails.txt: |
+{{- range .Values.oauth2Proxy.authorizedEmails }}
+    {{ . }}
+{{- end }}
