@@ -323,6 +323,24 @@ GitHub Actions runs on every push/PR to `main`:
 
 ---
 
+## 🔒 Security Notes
+
+### Authentication
+
+This is an **R&D project** — authentication is not yet implemented. The API currently has no user isolation: anyone who can reach the backend can read, create, modify, or delete any note. The database schema includes a `permissions` table for future multi-user support, but no access control logic exists yet.
+
+For local development with Docker Compose, the backend is only accessible via the Next.js proxy on `localhost:3000`. For Kubernetes deployments, OAuth2 proxy provides authentication at the ingress level (see [Kubernetes Deployment](#-kubernetes-deployment)).
+
+### TLS / HTTPS
+
+The Go backend serves plain HTTP on port 8080. In Kubernetes deployments, TLS is terminated at the **ingress** (nginx-ingress with OAuth2 proxy). In local development with Docker Compose, traffic stays on `localhost`. The backend does not serve HTTPS directly.
+
+### Dependency Management
+
+Security vulnerabilities are tracked via [`SECURITY.md`](SECURITY.md) (not committed to the public repo — contains pre-revocation credential details). CI should run `npm audit` and `govulncheck` to catch newly published vulnerabilities.
+
+---
+
 ## 🗄️ Database Schema
 
 | Table | Purpose |

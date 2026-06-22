@@ -19,7 +19,10 @@ spec:
           command: ['sh', '-c', 'until pg_isready -h postgres -U keep -d keep; do echo waiting for postgres; sleep 2; done']
           env:
             - name: PGPASSWORD
-              value: keep
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: password
       containers:
         - name: backend
           image: flaccid/google-keep-clone-backend:latest
@@ -28,7 +31,10 @@ spec:
             - containerPort: 8080
           env:
             - name: DATABASE_URL
-              value: postgres://keep:keep@postgres:5432/keep?sslmode=disable
+              valueFrom:
+                secretKeyRef:
+                  name: backend
+                  key: database-url
           resources:
             requests:
               cpu: "100m"

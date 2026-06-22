@@ -21,7 +21,10 @@ spec:
             - name: POSTGRES_USER
               value: keep
             - name: POSTGRES_PASSWORD
-              value: keep
+              valueFrom:
+                secretKeyRef:
+                  name: postgres
+                  key: password
             - name: POSTGRES_DB
               value: keep
 

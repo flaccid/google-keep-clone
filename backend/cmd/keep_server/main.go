@@ -43,7 +43,7 @@ func main() {
 
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
-		dsn = "postgres://keep:keep@localhost:5432/keep?sslmode=disable"
+		log.Fatalf(ctx, fmt.Errorf("DATABASE_URL environment variable is required"), "")
 	}
 
 	if err := store.RunMigrations(dsn); err != nil {

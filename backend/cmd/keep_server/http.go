@@ -100,8 +100,16 @@ func handleHTTPServer(ctx context.Context, u *url.URL, mediaEndpoints *media.End
 		handler = debug.HTTP()(handler)
 	}
 	handler = log.HTTP(ctx)(handler)
+	handler = securityHeaders(handler)
 
-	srv := &http.Server{Addr: u.Host, Handler: handler, ReadHeaderTimeout: time.Second * 60}
+	srv := &http.Server{
+		Addr:              u.Host,
+		Handler:           handler,
+		ReadHeaderTimeout: 10 * time.Second,
+		ReadTimeout:       30 * time.Second,
+		WriteTimeout:      30 * time.Second,
+		IdleTimeout:       120 * time.Second,
+	}
 	for _, m := range mediaServer.Mounts {
 		log.Printf(ctx, "HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
 	}
@@ -140,6 +148,17 @@ func handleHTTPServer(ctx context.Context, u *url.URL, mediaEndpoints *media.End
 	}()
 }
 
+func securityHeaders(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Security-Policy", "default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:; font-src 'self' https://cdn.jsdelivr.net; connect-src 'self'")
+		w.Header().Set("X-Content-Type-Options", "nosniff")
+		w.Header().Set("X-Frame-Options", "DENY")
+		w.Header().Set("Referrer-Policy", "no-referrer")
+		w.Header().Set("X-XSS-Protection", "0")
+		next.ServeHTTP(w, r)
+	})
+}
+
 func uploadHandler(attachStore *store.AttachmentStore, mux goahttp.Muxer) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		noteID := mux.Vars(r)["noteId"]
@@ -151,6 +170,9 @@ func uploadHandler(attachStore *store.AttachmentStore, mux goahttp.Muxer) http.H
 		}
 
 		contentType := r.Header.Get("Content-Type")
+		if contentType == "" || len(contentType) > 256 {
+			contentType = "application/octet-stream"
+		}
 		data, err := io.ReadAll(io.LimitReader(r.Body, 32<<20))
 		if err != nil {
 			http.Error(w, `{"error":"failed to read body"}`, http.StatusInternalServerError)
@@ -160,7 +182,7 @@ func uploadHandler(attachStore *store.AttachmentStore, mux goahttp.Muxer) http.H
 
 		att, err := attachStore.Upload(r.Context(), nid, contentType, data)
 		if err != nil {
-			http.Error(w, fmt.Sprintf(`{"error":"%s"}`, err.Error()), http.StatusInternalServerError)
+			http.Error(w, `{"error":"upload failed"}`, http.StatusInternalServerError)
 			return
 		}
 

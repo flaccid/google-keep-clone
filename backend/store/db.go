@@ -11,7 +11,7 @@ import (
 func Connect(ctx context.Context) (*pgxpool.Pool, error) {
 	dsn := os.Getenv("DATABASE_URL")
 	if dsn == "" {
-		dsn = "postgres://keep:keep@localhost:5432/keep?sslmode=disable"
+		return nil, fmt.Errorf("DATABASE_URL environment variable is required")
 	}
 
 	config, err := pgxpool.ParseConfig(dsn)
