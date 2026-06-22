@@ -66,13 +66,14 @@ export default function Header({
           </svg>
         </div>
 
+        <div className="flex items-center gap-1 ml-auto flex-shrink-0">
         <button
-          className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors hidden sm:block flex-shrink-0"
+          className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors hidden sm:block"
           title="Refresh"
         >
           <RefreshCw size={20} className="text-gray-600 dark:text-[#e8eaed]" />
         </button>
-        <div className="relative flex-shrink-0">
+        <div className="relative">
           <button
             onClick={() => setShowSettings(!showSettings)}
             className="p-2 hover:bg-gray-100 dark:hover:bg-white/10 rounded-full transition-colors"
@@ -105,6 +106,7 @@ export default function Header({
               </div>
             </>
           )}
+        </div>
         </div>
       </div>
     </header>
