@@ -156,28 +156,7 @@ spec:
     path: k8s
 ```
 
-## 3. Access
-
-Add an entry to `/etc/hosts` (for kind clusters):
-
-```
-127.0.0.1 localhost
-```
-
-Visit **http://localhost** in your browser. You'll be redirected to Google OAuth — sign in with an email listed in `oauth2Proxy.authorizedEmails`.
-
-### Verify the deployment
-
-```bash
-# Check all pods are running
-kubectl get pods -n google-keep-clone -w
-
-# Port-forward if ingress isn't available (alternative access)
-kubectl port-forward -n google-keep-clone svc/frontend 3000:3000
-# Then visit http://localhost:3000
-```
-
-## Customisation
+## 3. Customisation
 
 ### Image tags
 
