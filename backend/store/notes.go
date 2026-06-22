@@ -139,7 +139,7 @@ func (s *NoteStore) List(ctx context.Context, pageSize *int, pageToken *string, 
 	argIdx := 0
 	if search != nil && *search != "" {
 		argIdx++
-		conditions = append(conditions, fmt.Sprintf(`(title ILIKE $%d OR body_text ILIKE $%d)`, argIdx, argIdx))
+		conditions = append(conditions, fmt.Sprintf(`(title ILIKE $%d OR body_text ILIKE $%d OR EXISTS (SELECT 1 FROM list_items li WHERE li.note_id = notes.id AND li.text ILIKE $%d))`, argIdx, argIdx, argIdx))
 		term := strings.ReplaceAll(*search, "%", `\%`)
 		term = strings.ReplaceAll(term, "_", `\_`)
 		args = append(args, "%"+term+"%")

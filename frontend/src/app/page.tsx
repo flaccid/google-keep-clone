@@ -66,7 +66,9 @@ export default function HomePage() {
         ))}
         {active.length === 0 && pinned.length === 0 && (
           <p className="text-gray-400 dark:text-[#9aa0a6] text-sm col-span-full text-center py-12">
-            No notes yet. Click &quot;Take a note...&quot; to create one.
+            {search
+              ? "No matching notes found."
+              : "No notes yet. Click \"Take a note...\" to create one."}
           </p>
         )}
       </div>
