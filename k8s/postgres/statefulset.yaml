@@ -24,11 +24,13 @@ spec:
               value: keep
             - name: POSTGRES_DB
               value: keep
+
           ports:
             - containerPort: 5432
           volumeMounts:
             - name: pgdata
               mountPath: /var/lib/postgresql/data
+              subPath: pgdata
   volumeClaimTemplates:
     - metadata:
         name: pgdata

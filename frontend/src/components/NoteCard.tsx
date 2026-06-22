@@ -2,34 +2,48 @@
 
 import type { Note } from "@/lib/types"
 import { api } from "@/lib/api"
+import { Pin, Archive, Trash2, Palette, MoreHorizontal } from "lucide-react"
+import { useState } from "react"
 
 const COLORS: Record<string, string> = {
-  DEFAULT: "bg-white",
-  RED: "bg-red-100",
-  ORANGE: "bg-orange-100",
-  YELLOW: "bg-yellow-100",
-  GREEN: "bg-green-100",
-  TEAL: "bg-teal-100",
-  BLUE: "bg-blue-100",
-  DARK_BLUE: "bg-blue-200",
-  PURPLE: "bg-purple-100",
-  PINK: "bg-pink-100",
-  BROWN: "bg-amber-100",
-  GRAY: "bg-gray-100",
+  DEFAULT: "bg-white dark:bg-[#202124] border-gray-200 dark:border-[#5f6368]",
+  RED: "bg-keep-red dark:bg-[#202124] border-red-200 dark:border-[#5f6368]",
+  ORANGE: "bg-keep-orange dark:bg-[#202124] border-orange-200 dark:border-[#5f6368]",
+  YELLOW: "bg-keep-yellow dark:bg-[#202124] border-yellow-200 dark:border-[#5f6368]",
+  GREEN: "bg-keep-green dark:bg-[#202124] border-green-200 dark:border-[#5f6368]",
+  TEAL: "bg-keep-teal dark:bg-[#202124] border-teal-200 dark:border-[#5f6368]",
+  BLUE: "bg-keep-blue dark:bg-[#202124] border-blue-200 dark:border-[#5f6368]",
+  DARK_BLUE: "bg-keep-dark-blue dark:bg-[#202124] border-indigo-200 dark:border-[#5f6368]",
+  PURPLE: "bg-keep-purple dark:bg-[#202124] border-purple-200 dark:border-[#5f6368]",
+  PINK: "bg-keep-pink dark:bg-[#202124] border-pink-200 dark:border-[#5f6368]",
+  BROWN: "bg-keep-brown dark:bg-[#202124] border-brown-200 dark:border-[#5f6368]",
+  GRAY: "bg-keep-gray dark:bg-[#202124] border-gray-200 dark:border-[#5f6368]",
 }
+
+const COLOR_DOTS: Record<string, string> = {
+  DEFAULT: "bg-white dark:bg-[#3c4043] border border-gray-300 dark:border-[#5f6368]",
+  RED: "bg-keep-red border border-keep-red-dark",
+  YELLOW: "bg-keep-yellow border border-keep-yellow-dark",
+  GREEN: "bg-keep-green border border-green-300",
+  TEAL: "bg-keep-teal border border-teal-300",
+  BLUE: "bg-keep-blue border border-keep-blue-dark",
+  DARK_BLUE: "bg-keep-dark-blue border border-blue-300",
+  PURPLE: "bg-keep-purple border border-purple-300",
+  PINK: "bg-keep-pink border border-pink-300",
+  BROWN: "bg-keep-brown border border-amber-300",
+  GRAY: "bg-keep-gray border border-gray-300",
+}
+
+const COLOR_VALUES = ["DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "DARK_BLUE", "PURPLE", "PINK", "BROWN", "GRAY"]
 
 function noteTitle(note: Note): string {
   return note.title || ""
 }
 
-function notePreview(note: Note): string {
-  if (note.body?.text?.text) return note.body.text.text
-  if (note.body?.list?.listItems?.length) {
-    const done = note.body.list.listItems.filter((i) => i.checked).length
-    const total = note.body.list.listItems.length
-    return `${done}/${total} items`
-  }
-  return ""
+function notePreview(note: Note): { kind: "text"; text: string } | { kind: "list"; items: Array<{ text: string; checked: boolean }> } | null {
+  if (note.body?.text?.text) return { kind: "text", text: note.body.text.text }
+  if (note.body?.list?.listItems?.length) return { kind: "list", items: note.body.list.listItems.map((li) => ({ text: li.text?.text || "", checked: li.checked || false })) }
+  return null
 }
 
 function noteId(name?: string): string {
@@ -40,10 +54,13 @@ function noteId(name?: string): string {
 export default function NoteCard({
   note,
   onUpdate,
+  onOpen,
 }: {
   note: Note
   onUpdate: () => void
+  onOpen?: (id: string) => void
 }) {
+  const [showPalette, setShowPalette] = useState(false)
   const colorClass = COLORS[note.color || "DEFAULT"] || COLORS.DEFAULT
   const id = noteId(note.name)
 
@@ -70,38 +87,116 @@ export default function NoteCard({
     onUpdate()
   }
 
+  async function changeColor(e: React.MouseEvent, c: string) {
+    e.stopPropagation()
+    e.preventDefault()
+    await api.notes.update(id, { color: c } as any)
+    setShowPalette(false)
+    onUpdate()
+  }
+
+  const preview = notePreview(note)
+  const hasContent = noteTitle(note) || preview
+
   return (
-    <a
-      href={`/notes/${id}`}
-      className={`${colorClass} rounded-xl border border-gray-200 p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer block relative group`}
+    <div
+      className={`${colorClass} rounded-lg border shadow-sm hover:shadow-lg dark:hover:shadow-xl dark:hover:shadow-black/30 transition-shadow cursor-pointer relative group`}
+      onClick={() => onOpen?.(id)}
     >
-      <div className="flex justify-between items-start">
-        <h3 className="font-medium text-sm mb-1">{noteTitle(note) || "Untitled"}</h3>
-        {note.pinned && <span className="text-yellow-500 text-xs">pinned</span>}
+      <button
+        onClick={togglePin}
+        className={`absolute top-1.5 right-1.5 p-1 rounded-full transition-opacity ${
+          note.pinned
+            ? "opacity-100 text-yellow-600"
+            : "opacity-0 group-hover:opacity-100 text-gray-400 dark:text-[#9aa0a6] hover:text-gray-600 dark:hover:text-[#e8eaed]"
+        }`}
+        title={note.pinned ? "Unpin note" : "Pin note"}
+      >
+        <Pin size={14} fill={note.pinned ? "currentColor" : "none"} />
+      </button>
+
+      <div className="px-4 pt-4 pb-2">
+        {noteTitle(note) && (
+          <h3 className="text-sm font-medium mb-1 pr-6 text-gray-900 dark:text-[#e8eaed]">{noteTitle(note)}</h3>
+        )}
+        {preview?.kind === "text" && (
+          <p className="text-gray-700 dark:text-[#bdc1c6] text-sm whitespace-pre-wrap leading-relaxed line-clamp-6">
+            {preview.text}
+          </p>
+        )}
+        {preview?.kind === "list" && (
+          <div className="space-y-0.5">
+            {preview.items.filter((i) => !i.checked).slice(0, 5).map((item, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <span className="flex-shrink-0 w-3.5 h-3.5 rounded-full border-2 border-gray-400" />
+                <span className="text-sm truncate text-gray-700 dark:text-[#bdc1c6]">{item.text}</span>
+              </div>
+            ))}
+            {preview.items.some((i) => i.checked) && (
+              <div className="flex items-center gap-2 pt-1">
+                <hr className="flex-1 border-gray-200 dark:border-[#5f6368]" />
+                <span className="text-[11px] text-gray-400 dark:text-[#9aa0a6] whitespace-nowrap">
+                  {preview.items.filter((i) => i.checked).length} completed
+                </span>
+                <hr className="flex-1 border-gray-200 dark:border-[#5f6368]" />
+              </div>
+            )}
+            {preview.items.filter((i) => i.checked).slice(0, 3).map((item, i) => (
+              <div key={i} className="flex items-center gap-2">
+                <span className="flex-shrink-0 w-3.5 h-3.5 rounded-full border-2 bg-gray-400 border-gray-400 flex items-center justify-center">
+                  <span className="text-white text-[8px]">✓</span>
+                </span>
+                <span className="text-sm truncate text-gray-400 dark:text-[#9aa0a6] line-through">{item.text}</span>
+              </div>
+            ))}
+            {(preview.items.filter((i) => !i.checked).length > 5 || preview.items.filter((i) => i.checked).length > 3) && (
+              <span className="text-xs text-gray-400">+ more items</span>
+            )}
+          </div>
+        )}
+        {!hasContent && (
+          <p className="text-gray-400 dark:text-[#9aa0a6] text-sm">Empty note</p>
+        )}
       </div>
-      <p className="text-gray-600 text-xs whitespace-pre-wrap line-clamp-4">
-        {notePreview(note)}
-      </p>
+
       {note.labels && note.labels.length > 0 && (
-        <div className="flex flex-wrap gap-1 mt-2">
+        <div className="flex flex-wrap gap-1 px-4 pb-1">
           {note.labels.map((l) => (
-            <span key={l} className="text-[10px] bg-gray-200/60 rounded px-1.5 py-0.5">
+            <span key={l} className="text-[11px] bg-gray-200/60 dark:bg-white/10 text-gray-600 dark:text-[#bdc1c6] rounded px-1.5 py-0.5">
               {l}
             </span>
           ))}
         </div>
       )}
-      <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-        <button onClick={togglePin} className="text-xs p-1 hover:bg-black/10 rounded" title={note.pinned ? "Unpin" : "Pin"}>
-          {note.pinned ? "unpin" : "pin"}
+
+      <div className="flex items-center gap-0.5 px-1 py-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button onClick={toggleArchive} className="p-1.5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 text-gray-500 dark:text-[#9aa0a6]" title={note.archived ? "Unarchive" : "Archive"}>
+          <Archive size={16} />
         </button>
-        <button onClick={toggleArchive} className="text-xs p-1 hover:bg-black/10 rounded" title={note.archived ? "Unarchive" : "Archive"}>
-          {note.archived ? "unarchive" : "archive"}
+        <div className="relative">
+          <button onClick={(e) => { e.stopPropagation(); e.preventDefault(); setShowPalette(!showPalette) }} className="p-1.5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 text-gray-500 dark:text-[#9aa0a6]" title="Background options">
+            <Palette size={16} />
+          </button>
+          {showPalette && (
+            <div className="absolute bottom-full left-0 mb-1 flex gap-0.5 p-1.5 bg-white dark:bg-[#2d2e30] rounded-lg shadow-lg border border-gray-200 dark:border-[#5f6368] z-10" onClick={(e) => e.stopPropagation()}>
+              {COLOR_VALUES.map((c) => (
+                <button
+                  key={c}
+                  onClick={(e) => changeColor(e, c)}
+                  className={`w-5 h-5 rounded-full ${COLOR_DOTS[c]} ${c === (note.color || "DEFAULT") ? "ring-2 ring-blue-500" : ""}`}
+                  title={c}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+        <button onClick={toggleTrash} className="p-1.5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 text-gray-500 dark:text-[#9aa0a6]" title="Delete">
+          <Trash2 size={16} />
         </button>
-        <button onClick={toggleTrash} className="text-xs p-1 hover:bg-black/10 rounded" title="Delete">
-          delete
+        <button className="p-1.5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 text-gray-500 dark:text-[#9aa0a6] ml-auto" title="More">
+          <MoreHorizontal size={16} />
         </button>
       </div>
-    </a>
+    </div>
   )
 }

@@ -1,45 +1,134 @@
 "use client"
 
-import { useState, useRef } from "react"
-import type { Note } from "@/lib/types"
+import { useState, useRef, useEffect } from "react"
+import type { Note, ListItem as ListItemType } from "@/lib/types"
 import { api } from "@/lib/api"
+import { Pin, Palette, Image, ListChecks, Type, X, Check } from "lucide-react"
 
 const COLOR_OPTIONS = [
   "DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL",
   "BLUE", "DARK_BLUE", "PURPLE", "PINK", "BROWN", "GRAY",
 ]
 
+const COLOR_VALUES: Record<string, string> = {
+  DEFAULT: "bg-white dark:bg-[#3c4043] border border-gray-300 dark:border-[#5f6368]",
+  RED: "bg-keep-red border border-keep-red-dark",
+  ORANGE: "bg-keep-orange border border-orange-300",
+  YELLOW: "bg-keep-yellow border border-keep-yellow-dark",
+  GREEN: "bg-keep-green border border-green-300",
+  TEAL: "bg-keep-teal border border-teal-300",
+  BLUE: "bg-keep-blue border border-keep-blue-dark",
+  DARK_BLUE: "bg-keep-dark-blue border border-blue-300",
+  PURPLE: "bg-keep-purple border border-purple-300",
+  PINK: "bg-keep-pink border border-pink-300",
+  BROWN: "bg-keep-brown border border-amber-300",
+  GRAY: "bg-keep-gray border border-gray-300",
+}
+
+const BG_COLORS: Record<string, string> = {
+  DEFAULT: "bg-white dark:bg-[#202124]",
+  RED: "bg-keep-red dark:bg-[#202124]",
+  ORANGE: "bg-keep-orange dark:bg-[#202124]",
+  YELLOW: "bg-keep-yellow dark:bg-[#202124]",
+  GREEN: "bg-keep-green dark:bg-[#202124]",
+  TEAL: "bg-keep-teal dark:bg-[#202124]",
+  BLUE: "bg-keep-blue dark:bg-[#202124]",
+  DARK_BLUE: "bg-keep-dark-blue dark:bg-[#202124]",
+  PURPLE: "bg-keep-purple dark:bg-[#202124]",
+  PINK: "bg-keep-pink dark:bg-[#202124]",
+  BROWN: "bg-keep-brown dark:bg-[#202124]",
+  GRAY: "bg-keep-gray dark:bg-[#202124]",
+}
+
+function initListItems(note?: Note): Array<{ text: string; checked: boolean }> {
+  if (!note?.body?.list?.listItems) return []
+  return note.body.list.listItems.map((li) => ({
+    text: li.text?.text || "",
+    checked: li.checked || false,
+  }))
+}
+
 export default function NoteEditor({
   note,
   onSave,
   onDelete,
+  onClose,
 }: {
   note?: Note
   onSave: () => void
   onDelete?: () => void
+  onClose?: () => void
 }) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [expanded, setExpanded] = useState(!!note)
+  const [mode, setMode] = useState<"text" | "list">(
+    note?.body?.list?.listItems?.length ? "list" : "text"
+  )
   const [title, setTitle] = useState(note?.title || "")
   const [text, setText] = useState(note?.body?.text?.text || "")
+  const [listItems, setListItems] = useState<Array<{ text: string; checked: boolean }>>(initListItems(note))
   const [color, setColor] = useState(note?.color || "DEFAULT")
+  const [pinned, setPinned] = useState(note?.pinned || false)
   const [saving, setSaving] = useState(false)
   const [files, setFiles] = useState<File[]>([])
-  const [uploading, setUploading] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLInputElement>(null)
+  const listEndRef = useRef<HTMLDivElement>(null)
 
   const id = note?.name?.replace("notes/", "") || ""
+  const isNew = !id
+  const bg = BG_COLORS[color] || BG_COLORS.DEFAULT
+
+  useEffect(() => {
+    if (expanded && inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [expanded])
+
+  const handleCloseRef = useRef(handleClose)
+  handleCloseRef.current = handleClose
+
+  useEffect(() => {
+    if (!expanded) return
+    function handleClick(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        handleCloseRef.current()
+      }
+    }
+    document.addEventListener("mousedown", handleClick)
+    return () => document.removeEventListener("mousedown", handleClick)
+  }, [expanded])
+
+  function buildBody() {
+    if (mode === "list") {
+      const items = listItems
+        .filter((li) => li.text.trim())
+        .map((li) => ({
+          text: { text: li.text },
+          checked: li.checked,
+        }))
+      return { list: { listItems: items } }
+    }
+    return { text: { text } }
+  }
 
   async function handleSave() {
+    if (saving) return
     setSaving(true)
     let savedId = id
     try {
+      const body = buildBody()
       if (savedId) {
-        await api.notes.update(savedId, { title, body: { text: { text } }, color })
+        const payload: any = { title, body, color }
+        if (pinned !== !!note?.pinned) payload.pinned = pinned
+        await api.notes.update(savedId, payload)
       } else {
-        const created = await api.notes.create({ title, body: { text: { text } }, color })
+        const items = mode === "list" ? listItems.filter((li) => li.text.trim()) : []
+        if (!title && !text && items.length === 0 && files.length === 0) return
+        const created = await api.notes.create({ title, body, color, pinned })
         savedId = created.name?.replace("notes/", "") || ""
       }
       if (files.length > 0 && savedId) {
-        setUploading(true)
         for (const f of files) {
           await api.notes.uploadAttachment(savedId, f)
         }
@@ -48,8 +137,25 @@ export default function NoteEditor({
       onSave()
     } finally {
       setSaving(false)
-      setUploading(false)
     }
+  }
+
+  async function handleClose() {
+    if (isNew) {
+      const hasContent = title || text || listItems.some((li) => li.text.trim()) || files.length > 0
+      if (hasContent) await handleSave()
+    } else {
+      await handleSave()
+    }
+    setExpanded(false)
+    setTitle("")
+    setText("")
+    setListItems([])
+    setMode("text")
+    setColor("DEFAULT")
+    setPinned(false)
+    setFiles([])
+    onClose?.()
   }
 
   async function handleDelete() {
@@ -58,91 +164,251 @@ export default function NoteEditor({
     onDelete()
   }
 
-  function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
-    if (e.target.files) {
-      setFiles(Array.from(e.target.files))
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Escape") handleClose()
+  }
+
+  function addListItem(afterIndex?: number) {
+    setListItems((prev) => {
+      const next = [...prev]
+      const newItem = { text: "", checked: false }
+      if (afterIndex !== undefined) {
+        next.splice(afterIndex + 1, 0, newItem)
+      } else {
+        next.push(newItem)
+      }
+      return next
+    })
+  }
+
+  function updateListItem(index: number, text: string) {
+    setListItems((prev) => {
+      const next = [...prev]
+      next[index] = { ...next[index], text }
+      return next
+    })
+  }
+
+  function toggleListItem(index: number) {
+    setListItems((prev) => {
+      const next = [...prev]
+      next[index] = { ...next[index], checked: !next[index].checked }
+      return next
+    })
+  }
+
+  function removeListItem(index: number) {
+    setListItems((prev) => prev.filter((_, i) => i !== index))
+  }
+
+  function handleListItemKeyDown(e: React.KeyboardEvent<HTMLInputElement>, index: number) {
+    if (e.key === "Enter") {
+      e.preventDefault()
+      addListItem(index)
+      setTimeout(() => {
+        const inputs = listEndRef.current?.parentElement?.querySelectorAll("input[type=text]")
+        if (inputs) {
+          const next = inputs[index + 1] as HTMLInputElement
+          next?.focus()
+        }
+      }, 0)
+    }
+    if (e.key === "Backspace" && listItems[index].text === "" && listItems.length > 1) {
+      removeListItem(index)
     }
   }
 
-  const colorBg: Record<string, string> = {
-    DEFAULT: "bg-white",
-    RED: "bg-red-50",
-    ORANGE: "bg-orange-50",
-    YELLOW: "bg-yellow-50",
-    GREEN: "bg-green-50",
-    TEAL: "bg-teal-50",
-    BLUE: "bg-blue-50",
-    DARK_BLUE: "bg-blue-100",
-    PURPLE: "bg-purple-50",
-    PINK: "bg-pink-50",
-    BROWN: "bg-amber-50",
-    GRAY: "bg-gray-50",
+  function openWithMode(m: "text" | "list") {
+    setMode(m)
+    setExpanded(true)
+  }
+
+  if (!expanded) {
+    return (
+      <div className="bg-white dark:bg-[#202124] rounded-lg border border-gray-200 dark:border-[#5f6368] shadow-sm max-w-2xl mx-auto">
+        <div
+          onClick={() => openWithMode("text")}
+          className="px-4 py-3 flex items-center justify-between cursor-text hover:shadow-md transition-shadow rounded-t-lg"
+        >
+          <span className="text-gray-400 dark:text-[#9aa0a6] text-sm">Take a note...</span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={(e) => { e.stopPropagation(); openWithMode("list") }}
+              className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 text-gray-400 dark:text-[#9aa0a6]"
+              title="New list"
+            >
+              <ListChecks size={18} />
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); setPinned(!pinned) }}
+              className="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-white/10 text-gray-400 dark:text-[#9aa0a6]"
+              title="Pin note"
+            >
+              <Pin size={16} fill={pinned ? "currentColor" : "none"} className={pinned ? "text-yellow-600" : ""} />
+            </button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className={`${colorBg[color] || "bg-white"} rounded-xl border border-gray-200 p-6 max-w-2xl mx-auto`}>
-      <input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Title"
-        className="w-full text-lg font-medium bg-transparent border-none outline-none mb-4 placeholder-gray-400"
-      />
-      <textarea
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder="Take a note..."
-        rows={10}
-        className="w-full bg-transparent border-none outline-none resize-none text-sm placeholder-gray-400"
-      />
+    <div
+      ref={containerRef}
+      className={`${bg} rounded-lg border border-gray-200 dark:border-[#5f6368] shadow-sm max-w-2xl mx-auto`}
+      onKeyDown={handleKeyDown}
+    >
+      <div className="px-4 pt-4 pb-2">
+        <input
+          ref={inputRef}
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="Title"
+          className="w-full text-base font-medium bg-transparent border-none outline-none mb-1 placeholder-gray-400 dark:placeholder-[#9aa0a6] text-gray-900 dark:text-[#e8eaed]"
+        />
 
-      <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
-        <div className="flex gap-1">
-          {COLOR_OPTIONS.map((c) => (
+        {mode === "list" ? (
+          <div className="space-y-0.5">
+            {listItems
+              .map((item, origIndex) => ({ item, origIndex }))
+              .filter(({ item }) => !item.checked)
+              .map(({ item, origIndex }) => (
+                <div key={origIndex} className="group flex items-center gap-2 -ml-1">
+                  <button
+                    onClick={() => toggleListItem(origIndex)}
+                    className="flex-shrink-0 w-4 h-4 rounded-full border-2 border-gray-400 dark:border-[#9aa0a6] hover:border-gray-600"
+                  />
+                  <input
+                    value={item.text}
+                    onChange={(e) => updateListItem(origIndex, e.target.value)}
+                    onKeyDown={(e) => handleListItemKeyDown(e, origIndex)}
+                    placeholder={origIndex === listItems.length - 1 ? "List item" : ""}
+                    className="flex-1 bg-transparent border-none outline-none text-sm py-1 placeholder-gray-400 dark:placeholder-[#9aa0a6] text-gray-900 dark:text-[#e8eaed]"
+                  />
+                  <button
+                    onClick={() => removeListItem(origIndex)}
+                    className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/10 text-gray-400 dark:text-[#9aa0a6] transition-opacity"
+                    title="Delete item"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+            {listItems.some((i) => i.checked) && (
+              <div className="flex items-center gap-2 pt-1">
+                <hr className="flex-1 border-gray-200 dark:border-[#5f6368]" />
+                <span className="text-[11px] text-gray-400 dark:text-[#9aa0a6] whitespace-nowrap">
+                  {listItems.filter((i) => i.checked).length} completed
+                </span>
+                <hr className="flex-1 border-gray-200 dark:border-[#5f6368]" />
+              </div>
+            )}
+            {listItems
+              .map((item, origIndex) => ({ item, origIndex }))
+              .filter(({ item }) => item.checked)
+              .map(({ item, origIndex }) => (
+                <div key={origIndex} className="group flex items-center gap-2 -ml-1">
+                  <button
+                    onClick={() => toggleListItem(origIndex)}
+                    className={`flex-shrink-0 w-4 h-4 rounded-full border-2 flex items-center justify-center transition-colors bg-gray-500 border-gray-500 dark:bg-[#9aa0a6] dark:border-[#9aa0a6]`}
+                  >
+                    <Check size={10} className="text-white" strokeWidth={3} />
+                  </button>
+                  <input
+                    value={item.text}
+                    onChange={(e) => updateListItem(origIndex, e.target.value)}
+                    onKeyDown={(e) => handleListItemKeyDown(e, origIndex)}
+                    placeholder={origIndex === listItems.length - 1 ? "List item" : ""}
+                    className="flex-1 bg-transparent border-none outline-none text-sm py-1 placeholder-gray-400 dark:placeholder-[#9aa0a6] text-gray-400 dark:text-[#9aa0a6] line-through"
+                  />
+                  <button
+                    onClick={() => removeListItem(origIndex)}
+                    className="opacity-0 group-hover:opacity-100 p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/10 text-gray-400 dark:text-[#9aa0a6] transition-opacity"
+                    title="Delete item"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+            <div ref={listEndRef} />
             <button
-              key={c}
-              onClick={() => setColor(c)}
-              className={`w-5 h-5 rounded-full border ${c === "DEFAULT" ? "bg-white border-gray-300" : colorBg[c]} ${color === c ? "ring-2 ring-blue-500" : ""}`}
-              title={c}
-            />
-          ))}
+              onClick={() => addListItem()}
+              className="text-sm text-gray-400 dark:text-[#9aa0a6] hover:text-gray-600 dark:hover:text-[#e8eaed] py-1"
+            >
+              + Add item
+            </button>
+          </div>
+        ) : (
+          <textarea
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Take a note..."
+            rows={isNew ? 4 : 10}
+            className="w-full bg-transparent border-none outline-none resize-none text-sm placeholder-gray-400 dark:placeholder-[#9aa0a6] text-gray-900 dark:text-[#e8eaed]"
+          />
+        )}
+      </div>
+
+      <div className="flex items-center justify-between px-2 py-1 border-t border-black/10 dark:border-white/10">
+        <div className="flex items-center gap-0.5">
+          <button
+            onClick={() => setMode(mode === "text" ? "list" : "text")}
+            className="p-1.5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 text-gray-500 dark:text-[#9aa0a6]"
+            title={mode === "text" ? "Switch to list" : "Switch to text"}
+          >
+            {mode === "text" ? <ListChecks size={16} /> : <Type size={16} />}
+          </button>
+
+          <div className="relative group/palette">
+            <button className="p-1.5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 text-gray-500 dark:text-[#9aa0a6]" title="Background options">
+              <Palette size={16} />
+            </button>
+            <div className="absolute bottom-full left-0 mb-1 hidden group-hover/palette:flex gap-0.5 p-1.5 bg-white dark:bg-[#2d2e30] rounded-lg shadow-lg border border-gray-200 dark:border-[#5f6368] z-10">
+              {COLOR_OPTIONS.map((c) => (
+                <button
+                  key={c}
+                  onClick={() => setColor(c)}
+                  className={`w-5 h-5 rounded-full ${COLOR_VALUES[c]} ${c === color ? "ring-2 ring-blue-500" : ""}`}
+                  title={c}
+                />
+              ))}
+            </div>
+          </div>
+
+          <button
+            onClick={() => fileRef.current?.click()}
+            className="p-1.5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 text-gray-500 dark:text-[#9aa0a6]"
+            title="Attach file"
+          >
+            <Image size={16} />
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            multiple
+            onChange={(e) => {
+              if (e.target.files) setFiles(Array.from(e.target.files))
+            }}
+            className="hidden"
+          />
+          {files.length > 0 && (
+            <span className="text-xs text-gray-400 dark:text-[#9aa0a6] ml-1">{files.length} file(s)</span>
+          )}
         </div>
 
-        <div className="flex gap-2">
-          {id && onDelete && (
-            <button onClick={handleDelete} className="text-xs text-red-500 hover:underline">
+        <div className="flex items-center gap-1">
+          {!isNew && onDelete && (
+            <button onClick={handleDelete} className="px-3 py-1 text-sm text-gray-500 dark:text-[#9aa0a6] hover:bg-black/10 dark:hover:bg-white/10 rounded">
               Delete
             </button>
           )}
           <button
-            onClick={handleSave}
-            disabled={saving || uploading}
-            className="px-4 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            onClick={handleClose}
+            className="px-3 py-1 text-sm text-gray-500 dark:text-[#9aa0a6] hover:bg-black/10 dark:hover:bg-white/10 rounded"
           >
-            {uploading ? "Uploading..." : saving ? "Saving..." : "Save"}
+            Close
           </button>
         </div>
-      </div>
-
-      <div className="mt-4 pt-4 border-t border-gray-100">
-        <input
-          ref={fileRef}
-          type="file"
-          multiple
-          onChange={handleFileChange}
-          className="hidden"
-        />
-        <button
-          type="button"
-          onClick={() => fileRef.current?.click()}
-          className="text-xs text-gray-500 hover:text-gray-700 mr-3"
-        >
-          Attach files
-        </button>
-        {files.length > 0 && (
-          <span className="text-xs text-gray-400">
-            {files.length} file(s) selected
-          </span>
-        )}
       </div>
     </div>
   )

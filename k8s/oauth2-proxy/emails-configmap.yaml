@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: oauth2-proxy-emails
+  namespace: google-keep-clone
+data:
+  emails.txt: |
+    chris@fordham.id.au
+    redacted@example.com

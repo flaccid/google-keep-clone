@@ -30,23 +30,16 @@ export default function LabelsPage() {
   }
 
   return (
-    <div className="max-w-md mx-auto">
-      <div className="flex items-center gap-4 mb-6">
-        <Link href="/" className="text-sm text-gray-500 hover:text-gray-700">Notes</Link>
-        <Link href="/archive" className="text-sm text-gray-500 hover:text-gray-700">Archive</Link>
-        <Link href="/trash" className="text-sm text-gray-500 hover:text-gray-700">Trash</Link>
-        <Link href="/labels" className="text-sm text-blue-600 font-medium">Labels</Link>
-      </div>
+    <div className="max-w-3xl mx-auto px-6 py-6">
+      <h2 className="text-xs font-medium text-gray-400 dark:text-[#9aa0a6] uppercase tracking-wide mb-3">Labels</h2>
 
-      <h2 className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-3">Labels</h2>
-
-      <div className="flex gap-2 mb-4">
+      <div className="flex gap-2 mb-6">
         <input
           value={newName}
           onChange={(e) => setNewName(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && create()}
           placeholder="New label name..."
-          className="flex-1 px-3 py-1.5 rounded-lg border border-gray-200 text-sm outline-none focus:border-blue-400"
+          className="flex-1 max-w-xs px-3 py-1.5 rounded-lg border border-gray-200 dark:border-[#5f6368] text-sm outline-none focus:border-blue-400 bg-white dark:bg-[#2d2e30] text-gray-900 dark:text-[#e8eaed] placeholder-gray-400 dark:placeholder-[#9aa0a6]"
         />
         <button onClick={create} className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700">
           Add
@@ -57,16 +50,18 @@ export default function LabelsPage() {
         {labels.map((l) => {
           const id = l.name?.replace("labels/", "") || ""
           return (
-            <div key={l.name} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50">
-              <span className="text-sm">{l.displayName}</span>
-              <button onClick={() => remove(id)} className="text-xs text-red-500 hover:underline">
+            <div key={l.name} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5">
+              <Link href={`/labels/${id}`} className="text-sm text-gray-900 dark:text-[#e8eaed] hover:text-blue-600 dark:hover:text-blue-400">
+                {l.displayName}
+              </Link>
+              <button onClick={() => remove(id)} className="text-xs text-red-500 dark:text-red-400 hover:underline">
                 Delete
               </button>
             </div>
           )
         })}
         {labels.length === 0 && (
-          <p className="text-gray-400 text-sm text-center py-8">No labels yet.</p>
+          <p className="text-gray-400 dark:text-[#9aa0a6] text-sm text-center py-8">No labels yet.</p>
         )}
       </div>
     </div>

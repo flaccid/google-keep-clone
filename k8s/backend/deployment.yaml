@@ -13,9 +13,17 @@ spec:
       labels:
         app: backend
     spec:
+      initContainers:
+        - name: wait-for-postgres
+          image: postgres:16-alpine
+          command: ['sh', '-c', 'until pg_isready -h postgres -U keep -d keep; do echo waiting for postgres; sleep 2; done']
+          env:
+            - name: PGPASSWORD
+              value: keep
       containers:
         - name: backend
           image: flaccid/google-keep-clone-backend:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           env:
