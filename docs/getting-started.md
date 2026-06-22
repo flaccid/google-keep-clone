@@ -10,22 +10,15 @@ This guide walks through deploying Google Keep Clone on **Kubernetes** (primary)
 |----------|----------------|-------------------|
 | Git | ✅ | ✅ |
 | Docker | ✅ | ✅ |
-| kind / minikube | ✅ | — |
+| Kubernetes cluster + ingress controller | ✅ | — |
 | Helm 3.8+ | ✅ | — |
 | kubectl | ✅ | — |
-| Ingress controller | ✅ (ingress-nginx) | — |
-| OAuth2 credentials | ✅ (Google OAuth) | — |
+| Google OAuth 2.0 credentials | ✅ | — |
 
----
-
-# ☸️ Kubernetes (recommended)
-
-## 1. Cluster
-
-Create a local cluster with kind:
+For local testing, a kind cluster with ingress-nginx can be set up in a few commands:
 
 ```bash
-cat <<EOF | kind create cluster --config=-
+kind create cluster --config=- <<EOF
 kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 nodes:
@@ -36,29 +29,15 @@ nodes:
       - containerPort: 443
         hostPort: 443
 EOF
-```
-
-Or use minikube:
-
-```bash
-minikube start
-minikube addons enable ingress
-```
-
-## 2. Install ingress-nginx
-
-```bash
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
-# Wait for it to be ready
-kubectl wait --namespace ingress-nginx \
-  --for=condition=ready pod \
-  --selector=app.kubernetes.io/component=controller \
-  --timeout=120s
+kubectl wait --namespace ingress-nginx --for=condition=ready pod --selector=app.kubernetes.io/component=controller --timeout=120s
 ```
 
-For minikube, use `minikube addons enable ingress` instead.
+---
 
-## 3. Configure OAuth2 credentials
+# ☸️ Kubernetes (recommended)
+
+## 1. Configure OAuth2 credentials
 
 Go to the [Google Cloud Console](https://console.cloud.google.com/apis/credentials), create an OAuth 2.0 Client ID (Web application), and set the authorized redirect URI to:
 
@@ -68,7 +47,7 @@ http://localhost/oauth2/callback
 
 Save the **Client ID** and **Client Secret**.
 
-## 4. Install the chart
+## 2. Install the chart
 
 ```bash
 # Generate a secure cookie secret
@@ -88,7 +67,7 @@ helm install google-keep-clone ./charts \
 
 > **Note:** `ingress.tlsSecretName` is set to empty because local clusters don't have TLS. For production, set it to your cert-manager secret name and keep `oauth2Proxy.cookieSecure: true`.
 
-## 5. ArgoCD
+## 3. ArgoCD (optional)
 
 ### Application manifest (Helm source)
 
@@ -183,7 +162,7 @@ spec:
 
 > **Note:** The raw `k8s/` directory approach doesn't support the Helm value overrides — you'd need to patch resources directly with Kustomize.
 
-## 6. Access
+## 4. Access
 
 Add an entry to `/etc/hosts` (for kind clusters):
 
