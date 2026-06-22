@@ -73,11 +73,13 @@ export default function NoteEditor({
   const [files, setFiles] = useState<File[]>([])
   const [selectedLabels, setSelectedLabels] = useState<string[]>(note?.labels || [])
   const [showLabelPicker, setShowLabelPicker] = useState(false)
+  const [showColors, setShowColors] = useState(false)
   const [availableLabels, setAvailableLabels] = useState<Label[]>([])
   const fileRef = useRef<HTMLInputElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const listEndRef = useRef<HTMLDivElement>(null)
   const labelPickerRef = useRef<HTMLDivElement>(null)
+  const colorPickerRef = useRef<HTMLDivElement>(null)
 
   const id = note?.name?.replace("notes/", "") || ""
   const isNew = !id
@@ -96,6 +98,9 @@ export default function NoteEditor({
     function handleClick(e: MouseEvent) {
       if (labelPickerRef.current && !labelPickerRef.current.contains(e.target as Node)) {
         setShowLabelPicker(false)
+      }
+      if (colorPickerRef.current && !colorPickerRef.current.contains(e.target as Node)) {
+        setShowColors(false)
       }
     }
     document.addEventListener("mousedown", handleClick)
@@ -175,6 +180,7 @@ export default function NoteEditor({
     setFiles([])
     setSelectedLabels([])
     setShowLabelPicker(false)
+    setShowColors(false)
     onClose?.()
   }
 
@@ -378,20 +384,26 @@ export default function NoteEditor({
             {mode === "text" ? <ListChecks size={16} /> : <Type size={16} />}
           </button>
 
-          <div className="relative group/palette">
-            <button className="p-1.5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 text-gray-500 dark:text-[#9aa0a6]" title="Background options">
+          <div className="relative" ref={colorPickerRef}>
+            <button
+              onClick={() => setShowColors(!showColors)}
+              className="p-1.5 rounded-full hover:bg-black/10 dark:hover:bg-white/10 text-gray-500 dark:text-[#9aa0a6]"
+              title="Background options"
+            >
               <Palette size={16} />
             </button>
-            <div className="absolute bottom-full left-0 mb-1 hidden group-hover/palette:flex gap-0.5 p-1.5 bg-white dark:bg-[#2d2e30] rounded-lg shadow-lg border border-gray-200 dark:border-[#5f6368] z-10">
-              {COLOR_OPTIONS.map((c) => (
-                <button
-                  key={c}
-                  onClick={() => setColor(c)}
-                  className={`w-5 h-5 rounded-full ${COLOR_VALUES[c]} ${c === color ? "ring-2 ring-blue-500" : ""}`}
-                  title={c}
-                />
-              ))}
-            </div>
+            {showColors && (
+              <div className="absolute bottom-full left-0 mb-2 flex gap-0.5 p-1.5 bg-white dark:bg-[#2d2e30] rounded-lg shadow-lg border border-gray-200 dark:border-[#5f6368] z-10">
+                {COLOR_OPTIONS.map((c) => (
+                  <button
+                    key={c}
+                    onClick={() => setColor(c)}
+                    className={`w-5 h-5 rounded-full ${COLOR_VALUES[c]} ${c === color ? "ring-2 ring-blue-500" : ""}`}
+                    title={c}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           <button
