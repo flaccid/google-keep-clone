@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -120,26 +121,39 @@ func (s *NoteStore) List(ctx context.Context, pageSize *int, pageToken *string, 
 		fmt.Sscanf(*pageToken, "%d", &offset)
 	}
 
-	where := "WHERE trashed = false"
+	var conditions []string
+	var args []any
 
 	if filter != nil && *filter != "" {
-		where = "WHERE " + *filter
+		conditions = append(conditions, *filter)
+	} else {
+		conditions = append(conditions, "trashed = false")
 	}
 
-	var searchCondition string
+	argIdx := 0
 	if search != nil && *search != "" {
-		like := "%" + *search + "%"
-		searchCondition = fmt.Sprintf(`AND (title ILIKE '%s' OR body_text ILIKE '%s')`, like, like)
+		argIdx++
+		conditions = append(conditions, fmt.Sprintf(`(title ILIKE $%d OR body_text ILIKE $%d)`, argIdx, argIdx))
+		args = append(args, "%"+*search+"%")
 	}
+
+	argIdx++
+	limitArg := argIdx
+	argIdx++
+	offsetArg := argIdx
+
+	whereClause := strings.Join(conditions, " AND ")
 
 	query := fmt.Sprintf(`
 		SELECT id, title, body_type, body_text, color, pinned, archived, trashed, trash_time, created_at, updated_at
-		FROM notes %s%s
+		FROM notes WHERE %s
 		ORDER BY pinned DESC, updated_at DESC
-		LIMIT $1 OFFSET $2
-	`, where, searchCondition)
+		LIMIT $%d OFFSET $%d
+	`, whereClause, limitArg, offsetArg)
 
-	rows, err := s.pool.Query(ctx, query, limit, offset)
+	args = append(args, limit, offset)
+
+	rows, err := s.pool.Query(ctx, query, args...)
 	if err != nil {
 		return nil, fmt.Errorf("query notes: %w", err)
 	}

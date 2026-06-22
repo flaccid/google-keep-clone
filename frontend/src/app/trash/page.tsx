@@ -1,20 +1,33 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { api } from "@/lib/api"
 import type { Note } from "@/lib/types"
+import { useSearch } from "@/components/Shell"
 
 export default function TrashPage() {
   const [notes, setNotes] = useState<Note[]>([])
+  const { search } = useSearch()
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (searchTerm?: string) => {
     try {
-      const res = await api.notes.list(undefined, undefined, undefined, "trashed=true")
+      const res = await api.notes.list(undefined, undefined, searchTerm, "trashed=true")
       setNotes(res.notes || [])
     } catch {}
   }, [])
 
-  useEffect(() => { load() }, [load])
+  useEffect(() => {
+    load(search || undefined)
+  }, [load])
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      load(search || undefined)
+    }, 300)
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
+  }, [search, load])
 
   async function restore(n: Note) {
     const id = n.name?.replace("notes/", "") || ""

@@ -1,23 +1,36 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { api } from "@/lib/api"
 import type { Note } from "@/lib/types"
 import NoteCard from "@/components/NoteCard"
 import NoteModal from "@/components/NoteModal"
+import { useSearch } from "@/components/Shell"
 
 export default function ArchivePage() {
   const [notes, setNotes] = useState<Note[]>([])
   const [openNoteId, setOpenNoteId] = useState<string | null>(null)
+  const { search } = useSearch()
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>(undefined)
 
-  const load = useCallback(async () => {
+  const load = useCallback(async (searchTerm?: string) => {
     try {
-      const res = await api.notes.list()
-      setNotes((res.notes || []).filter((n) => n.archived && !n.trashed))
+      const res = await api.notes.list(undefined, undefined, searchTerm, "archived=true AND trashed=false")
+      setNotes(res.notes || [])
     } catch {}
   }, [])
 
-  useEffect(() => { load() }, [load])
+  useEffect(() => {
+    load(search || undefined)
+  }, [load])
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(() => {
+      load(search || undefined)
+    }, 300)
+    return () => { if (debounceRef.current) clearTimeout(debounceRef.current) }
+  }, [search, load])
 
   return (
     <div className="max-w-5xl mx-auto px-6 py-6">
