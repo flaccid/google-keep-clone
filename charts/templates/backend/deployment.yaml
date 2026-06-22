@@ -27,6 +27,7 @@ spec:
             capabilities:
               drop: ["ALL"]
             readOnlyRootFilesystem: true
+            runAsUser: 999
           env:
             - name: POSTGRES_USER
               valueFrom:

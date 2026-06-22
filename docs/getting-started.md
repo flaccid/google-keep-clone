@@ -56,8 +56,8 @@ Choose one of the following options.
 ### Option A — Helm CLI
 
 ```bash
-# Generate a secure cookie secret
-COOKIE_SECRET=$(openssl rand -base64 32 | tr -d '\n' | base64)
+# Generate a secure cookie secret (must decode to 16, 24, or 32 bytes)
+COOKIE_SECRET=$(openssl rand -base64 32)
 
 # Install
 helm install google-keep-clone ./charts \
