@@ -8,21 +8,26 @@ const SearchContext = createContext<{ search: string }>({ search: "" })
 export const useSearch = () => useContext(SearchContext)
 
 export default function Shell({ children }: { children: React.ReactNode }) {
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarExpanded, setSidebarExpanded] = useState(true)
+  const [sidebarHover, setSidebarHover] = useState(false)
   const [search, setSearch] = useState("")
 
   return (
     <SearchContext.Provider value={{ search }}>
       <Header
-        sidebarOpen={sidebarOpen}
-        onToggleSidebar={() => setSidebarOpen((v) => !v)}
+        sidebarExpanded={sidebarExpanded}
+        onToggleSidebar={() => setSidebarExpanded((v) => !v)}
         search={search}
         onSearchChange={setSearch}
       />
-      <Sidebar open={sidebarOpen} />
+      <Sidebar
+        expanded={sidebarExpanded}
+        hover={sidebarHover}
+        onHoverChange={setSidebarHover}
+      />
       <main
         className={`pt-16 min-h-screen transition-all duration-200 ${
-          sidebarOpen ? "ml-72" : "ml-0"
+          sidebarExpanded ? "ml-72" : "ml-[68px]"
         }`}
       >
         {children}

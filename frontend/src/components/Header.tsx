@@ -5,12 +5,12 @@ import { Menu, RefreshCw, Settings, Moon, Sun } from "lucide-react"
 import { useTheme } from "@/components/ThemeProvider"
 
 export default function Header({
-  sidebarOpen,
+  sidebarExpanded,
   onToggleSidebar,
   search,
   onSearchChange,
 }: {
-  sidebarOpen: boolean
+  sidebarExpanded: boolean
   onToggleSidebar: () => void
   search: string
   onSearchChange: (v: string) => void

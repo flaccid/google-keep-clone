@@ -14,7 +14,15 @@ const navItems = [
   { href: "/trash", icon: Trash2, label: "Trash" },
 ]
 
-export default function Sidebar({ open }: { open: boolean }) {
+export default function Sidebar({
+  expanded,
+  hover,
+  onHoverChange,
+}: {
+  expanded: boolean
+  hover: boolean
+  onHoverChange: (v: boolean) => void
+}) {
   const pathname = usePathname()
   const [labels, setLabels] = useState<Label[]>([])
   const [newLabel, setNewLabel] = useState("")
@@ -30,11 +38,15 @@ export default function Sidebar({ open }: { open: boolean }) {
     setLabels(await api.labels.list())
   }
 
+  const showFull = expanded || hover
+
   return (
     <aside
-      className={`fixed left-0 top-16 h-[calc(100vh-4rem)] w-72 bg-white dark:bg-[#202124] z-40 transition-transform duration-200 overflow-y-auto scrollbar-thin ${
-        open ? "translate-x-0" : "-translate-x-72"
+      className={`fixed left-0 top-16 h-[calc(100vh-4rem)] z-40 transition-all duration-200 overflow-y-auto scrollbar-thin ${
+        showFull ? "w-72 shadow-xl" : "w-[68px]"
       }`}
+      onMouseEnter={() => onHoverChange(true)}
+      onMouseLeave={() => onHoverChange(false)}
     >
       <nav className="py-2">
         {navItems.map(({ href, icon: Icon, label }) => {
@@ -44,50 +56,54 @@ export default function Sidebar({ open }: { open: boolean }) {
               key={href}
               href={href}
               className={`flex items-center gap-4 mx-2 px-4 py-2.5 rounded-r-full text-sm transition-colors ${
+                showFull ? "" : "justify-center"
+              } ${
                 active
                   ? "bg-yellow-50 dark:bg-yellow-900/30 text-gray-800 dark:text-[#e8eaed] font-medium"
                   : "text-gray-600 dark:text-[#bdc1c6] hover:bg-gray-100 dark:hover:bg-white/10"
               }`}
             >
               <Icon size={20} strokeWidth={active ? 2 : 1.5} />
-              {label}
+              {showFull && <span>{label}</span>}
             </Link>
           )
         })}
       </nav>
 
-      <div className="border-t border-gray-100 dark:border-[#3c4043] mt-2 pt-2">
-        <p className="px-6 text-xs font-medium text-gray-400 dark:text-[#9aa0a6] uppercase tracking-wide mb-1">
-          Labels
-        </p>
-        {labels.map((l) => {
-          const id = l.name?.replace("labels/", "") || ""
-          return (
-            <Link
-              key={l.name}
-              href={`/labels/${id}`}
-              className="flex items-center gap-4 mx-2 px-4 py-2 rounded-r-full text-sm text-gray-600 dark:text-[#bdc1c6] hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
-            >
-              <span className="w-5 h-5 rounded-full border border-gray-300 dark:border-[#5f6368] flex items-center justify-center text-[10px] text-gray-400 dark:text-[#9aa0a6]">
-                {l.displayName?.charAt(0).toUpperCase()}
-              </span>
-              {l.displayName}
-            </Link>
-          )
-        })}
-        <div className="flex items-center gap-2 mx-2 px-4 py-2">
-          <input
-            value={newLabel}
-            onChange={(e) => setNewLabel(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && createLabel()}
-            placeholder="Create new label..."
-            className="flex-1 text-sm bg-transparent outline-none placeholder-gray-400 dark:placeholder-[#9aa0a6] text-gray-900 dark:text-[#e8eaed]"
-          />
-          <button onClick={createLabel} className="text-gray-400 dark:text-[#9aa0a6] hover:text-gray-600 dark:hover:text-[#e8eaed]">
-            <Plus size={16} />
-          </button>
+      {showFull && (
+        <div className="border-t border-gray-100 dark:border-[#3c4043] mt-2 pt-2">
+          <p className="px-6 text-xs font-medium text-gray-400 dark:text-[#9aa0a6] uppercase tracking-wide mb-1">
+            Labels
+          </p>
+          {labels.map((l) => {
+            const id = l.name?.replace("labels/", "") || ""
+            return (
+              <Link
+                key={l.name}
+                href={`/labels/${id}`}
+                className="flex items-center gap-4 mx-2 px-4 py-2 rounded-r-full text-sm text-gray-600 dark:text-[#bdc1c6] hover:bg-gray-100 dark:hover:bg-white/10 transition-colors"
+              >
+                <span className="w-5 h-5 rounded-full border border-gray-300 dark:border-[#5f6368] flex items-center justify-center text-[10px] text-gray-400 dark:text-[#9aa0a6]">
+                  {l.displayName?.charAt(0).toUpperCase()}
+                </span>
+                {l.displayName}
+              </Link>
+            )
+          })}
+          <div className="flex items-center gap-2 mx-2 px-4 py-2">
+            <input
+              value={newLabel}
+              onChange={(e) => setNewLabel(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && createLabel()}
+              placeholder="Create new label..."
+              className="flex-1 text-sm bg-transparent outline-none placeholder-gray-400 dark:placeholder-[#9aa0a6] text-gray-900 dark:text-[#e8eaed]"
+            />
+            <button onClick={createLabel} className="text-gray-400 dark:text-[#9aa0a6] hover:text-gray-600 dark:hover:text-[#e8eaed]">
+              <Plus size={16} />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </aside>
   )
 }
