@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="108" fill="#FFBB00"/>
+  <g transform="translate(256,232)">
+    <!-- Bulb body -->
+    <ellipse cx="0" cy="-28" rx="90" ry="96" fill="#ffffff"/>
+    <!-- Filament lines -->
+    <line x1="-20" y1="68" x2="-20" y2="90" stroke="#FFBB00" stroke-width="10" stroke-linecap="round"/>
+    <line x1="20" y1="68" x2="20" y2="90" stroke="#FFBB00" stroke-width="10" stroke-linecap="round"/>
+    <!-- Base -->
+    <rect x="-48" y="68" width="96" height="22" rx="11" fill="#ffffff"/>
+    <rect x="-38" y="94" width="76" height="16" rx="8" fill="#ffffff"/>
+    <rect x="-26" y="114" width="52" height="12" rx="6" fill="#ffffff"/>
+  </g>
+</svg>

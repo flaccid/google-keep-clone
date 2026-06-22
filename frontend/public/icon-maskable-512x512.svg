@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <!-- Maskable icon: safe zone is central 80%, so pad extra -->
+  <rect width="512" height="512" fill="#FFBB00"/>
+  <g transform="translate(256,240)">
+    <!-- Bulb body -->
+    <ellipse cx="0" cy="-24" rx="76" ry="82" fill="#ffffff"/>
+    <!-- Filament lines -->
+    <line x1="-16" y1="58" x2="-16" y2="76" stroke="#FFBB00" stroke-width="8" stroke-linecap="round"/>
+    <line x1="16" y1="58" x2="16" y2="76" stroke="#FFBB00" stroke-width="8" stroke-linecap="round"/>
+    <!-- Base -->
+    <rect x="-40" y="58" width="80" height="18" rx="9" fill="#ffffff"/>
+    <rect x="-32" y="80" width="64" height="14" rx="7" fill="#ffffff"/>
+    <rect x="-22" y="98" width="44" height="10" rx="5" fill="#ffffff"/>
+  </g>
+</svg>
