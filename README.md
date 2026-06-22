@@ -1,4 +1,4 @@
-# 📝 Google Keep Clone
+# 💡 Google Keep Clone
 
 > A research & development project mirroring the official Google Keep REST API — built with Goa (Go), Next.js 16, and PostgreSQL.
 
