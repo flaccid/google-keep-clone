@@ -101,6 +101,7 @@ func handleHTTPServer(ctx context.Context, u *url.URL, mediaEndpoints *media.End
 		handler = debug.HTTP()(handler)
 	}
 	handler = log.HTTP(ctx)(handler)
+	handler = defaultOwner(handler)
 	handler = securityHeaders(handler)
 
 	srv := &http.Server{
@@ -216,4 +217,14 @@ func sanitizingFormatter(ctx context.Context, err error) goahttp.Statuser {
 		se.Message = "internal server error"
 	}
 	return resp
+}
+
+func defaultOwner(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		owner := store.OwnerFromContext(r.Context())
+		if owner == "" {
+			r = r.WithContext(store.WithOwner(r.Context(), "00000000-0000-0000-0000-000000000000"))
+		}
+		next.ServeHTTP(w, r)
+	})
 }
