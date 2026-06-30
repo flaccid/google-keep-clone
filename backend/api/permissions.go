@@ -17,11 +17,13 @@ func NewPermissionsService(permStore *store.PermissionStore) permissions.Service
 }
 
 func (s *PermissionsService) BatchCreate(ctx context.Context, p *permissions.BatchCreatePayload) (res []*permissions.Permission, err error) {
+	owner := store.OwnerFromContext(ctx)
 	noteName := fmt.Sprintf("notes/%s", p.NoteID)
-	return s.permStore.BatchCreate(ctx, noteName, p.BatchCreatePermissionsRequest.Requests)
+	return s.permStore.BatchCreate(ctx, owner, noteName, p.BatchCreatePermissionsRequest.Requests)
 }
 
 func (s *PermissionsService) BatchDelete(ctx context.Context, p *permissions.BatchDeletePayload) (err error) {
+	owner := store.OwnerFromContext(ctx)
 	noteName := fmt.Sprintf("notes/%s", p.NoteID)
-	return s.permStore.BatchDelete(ctx, noteName, p.BatchDeletePermissionsRequest.Names)
+	return s.permStore.BatchDelete(ctx, owner, noteName, p.BatchDeletePermissionsRequest.Names)
 }

@@ -58,7 +58,7 @@ func NewNoteStore(pool *pgxpool.Pool) *NoteStore {
 	return &NoteStore{pool: pool}
 }
 
-func (s *NoteStore) Create(ctx context.Context, title string, bodyType *string, bodyText string, color string, pinned bool, archived bool, labels []string, listItems []*notes.ListItem) (*notes.Note, error) {
+func (s *NoteStore) Create(ctx context.Context, owner string, title string, bodyType *string, bodyText string, color string, pinned bool, archived bool, labels []string, listItems []*notes.ListItem) (*notes.Note, error) {
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("begin transaction: %w", err)
@@ -69,9 +69,9 @@ func (s *NoteStore) Create(ctx context.Context, title string, bodyType *string, 
 	now := time.Now().UTC()
 
 	_, err = tx.Exec(ctx, `
-		INSERT INTO notes (id, title, body_type, body_text, color, pinned, archived, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-	`, id, title, bodyType, bodyText, color, pinned, archived, now, now)
+		INSERT INTO notes (id, owner, title, body_type, body_text, color, pinned, archived, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+	`, id, owner, title, bodyType, bodyText, color, pinned, archived, now, now)
 	if err != nil {
 		return nil, fmt.Errorf("insert note: %w", err)
 	}
@@ -81,7 +81,7 @@ func (s *NoteStore) Create(ctx context.Context, title string, bodyType *string, 
 	}
 
 	for _, labelName := range labels {
-		if err := s.ensureLabelOnNote(ctx, tx, id, labelName); err != nil {
+		if err := s.ensureLabelOnNote(ctx, tx, owner, id, labelName); err != nil {
 			return nil, err
 		}
 	}
@@ -90,11 +90,11 @@ func (s *NoteStore) Create(ctx context.Context, title string, bodyType *string, 
 		return nil, fmt.Errorf("commit: %w", err)
 	}
 
-	return s.GetByID(ctx, id)
+	return s.GetByID(ctx, owner, id)
 }
 
-func (s *NoteStore) GetByID(ctx context.Context, id uuid.UUID) (*notes.Note, error) {
-	row, err := s.queryNote(ctx, id)
+func (s *NoteStore) GetByID(ctx context.Context, owner string, id uuid.UUID) (*notes.Note, error) {
+	row, err := s.queryNote(ctx, owner, id)
 	if err != nil {
 		return nil, err
 	}
@@ -102,15 +102,15 @@ func (s *NoteStore) GetByID(ctx context.Context, id uuid.UUID) (*notes.Note, err
 	return s.assembleNote(ctx, row)
 }
 
-func (s *NoteStore) GetByName(ctx context.Context, name string) (*notes.Note, error) {
+func (s *NoteStore) GetByName(ctx context.Context, owner string, name string) (*notes.Note, error) {
 	id, err := parseNoteName(name)
 	if err != nil {
 		return nil, err
 	}
-	return s.GetByID(ctx, id)
+	return s.GetByID(ctx, owner, id)
 }
 
-func (s *NoteStore) List(ctx context.Context, pageSize *int, pageToken *string, filter *string, search *string) (*notes.ListNotesResponse, error) {
+func (s *NoteStore) List(ctx context.Context, owner string, pageSize *int, pageToken *string, filter *string, search *string) (*notes.ListNotesResponse, error) {
 	limit := 20
 	if pageSize != nil && *pageSize > 0 {
 		limit = *pageSize
@@ -126,6 +126,11 @@ func (s *NoteStore) List(ctx context.Context, pageSize *int, pageToken *string, 
 	var conditions []string
 	var args []any
 
+	argIdx := 0
+	argIdx++
+	conditions = append(conditions, fmt.Sprintf("owner = $%d", argIdx))
+	args = append(args, owner)
+
 	if filter != nil && *filter != "" {
 		safe, err := safeFilter(*filter)
 		if err != nil {
@@ -136,7 +141,6 @@ func (s *NoteStore) List(ctx context.Context, pageSize *int, pageToken *string, 
 		conditions = append(conditions, "trashed = false")
 	}
 
-	argIdx := 0
 	if search != nil && *search != "" {
 		argIdx++
 		conditions = append(conditions, fmt.Sprintf(`(title ILIKE $%d OR body_text ILIKE $%d OR EXISTS (SELECT 1 FROM list_items li WHERE li.note_id = notes.id AND li.text ILIKE $%d))`, argIdx, argIdx, argIdx))
@@ -197,7 +201,7 @@ func (s *NoteStore) List(ctx context.Context, pageSize *int, pageToken *string, 
 	}, nil
 }
 
-func (s *NoteStore) Update(ctx context.Context, id uuid.UUID, title *string, bodyType *string, bodyText *string, color *string, pinned *bool, archived *bool, labels []string, listItems []*notes.ListItem) (*notes.Note, error) {
+func (s *NoteStore) Update(ctx context.Context, owner string, id uuid.UUID, title *string, bodyType *string, bodyText *string, color *string, pinned *bool, archived *bool, labels []string, listItems []*notes.ListItem) (*notes.Note, error) {
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("begin transaction: %w", err)
@@ -207,35 +211,35 @@ func (s *NoteStore) Update(ctx context.Context, id uuid.UUID, title *string, bod
 	now := time.Now().UTC()
 
 	if title != nil {
-		_, err = tx.Exec(ctx, `UPDATE notes SET title = $1, updated_at = $2 WHERE id = $3`, *title, now, id)
+		_, err = tx.Exec(ctx, `UPDATE notes SET title = $1, updated_at = $2 WHERE id = $3 AND owner = $4`, *title, now, id, owner)
 		if err != nil {
 			return nil, fmt.Errorf("update title: %w", err)
 		}
 	}
 
 	if bodyType != nil && bodyText != nil {
-		_, err = tx.Exec(ctx, `UPDATE notes SET body_type = $1, body_text = $2, updated_at = $3 WHERE id = $4`, *bodyType, *bodyText, now, id)
+		_, err = tx.Exec(ctx, `UPDATE notes SET body_type = $1, body_text = $2, updated_at = $3 WHERE id = $4 AND owner = $5`, *bodyType, *bodyText, now, id, owner)
 		if err != nil {
 			return nil, fmt.Errorf("update body: %w", err)
 		}
 	}
 
 	if color != nil {
-		_, err = tx.Exec(ctx, `UPDATE notes SET color = $1, updated_at = $2 WHERE id = $3`, *color, now, id)
+		_, err = tx.Exec(ctx, `UPDATE notes SET color = $1, updated_at = $2 WHERE id = $3 AND owner = $4`, *color, now, id, owner)
 		if err != nil {
 			return nil, fmt.Errorf("update color: %w", err)
 		}
 	}
 
 	if pinned != nil {
-		_, err = tx.Exec(ctx, `UPDATE notes SET pinned = $1, updated_at = $2 WHERE id = $3`, *pinned, now, id)
+		_, err = tx.Exec(ctx, `UPDATE notes SET pinned = $1, updated_at = $2 WHERE id = $3 AND owner = $4`, *pinned, now, id, owner)
 		if err != nil {
 			return nil, fmt.Errorf("update pinned: %w", err)
 		}
 	}
 
 	if archived != nil {
-		_, err = tx.Exec(ctx, `UPDATE notes SET archived = $1, updated_at = $2 WHERE id = $3`, *archived, now, id)
+		_, err = tx.Exec(ctx, `UPDATE notes SET archived = $1, updated_at = $2 WHERE id = $3 AND owner = $4`, *archived, now, id, owner)
 		if err != nil {
 			return nil, fmt.Errorf("update archived: %w", err)
 		}
@@ -257,7 +261,7 @@ func (s *NoteStore) Update(ctx context.Context, id uuid.UUID, title *string, bod
 			return nil, fmt.Errorf("delete note labels: %w", err)
 		}
 		for _, labelName := range labels {
-			if err := s.ensureLabelOnNote(ctx, tx, id, labelName); err != nil {
+			if err := s.ensureLabelOnNote(ctx, tx, owner, id, labelName); err != nil {
 				return nil, err
 			}
 		}
@@ -267,52 +271,52 @@ func (s *NoteStore) Update(ctx context.Context, id uuid.UUID, title *string, bod
 		return nil, fmt.Errorf("commit: %w", err)
 	}
 
-	return s.GetByID(ctx, id)
+	return s.GetByID(ctx, owner, id)
 }
 
-func (s *NoteStore) SetPinned(ctx context.Context, id uuid.UUID, pinned bool) (*notes.Note, error) {
-	_, err := s.pool.Exec(ctx, `UPDATE notes SET pinned = $1, updated_at = $2 WHERE id = $3`, pinned, time.Now().UTC(), id)
+func (s *NoteStore) SetPinned(ctx context.Context, owner string, id uuid.UUID, pinned bool) (*notes.Note, error) {
+	_, err := s.pool.Exec(ctx, `UPDATE notes SET pinned = $1, updated_at = $2 WHERE id = $3 AND owner = $4`, pinned, time.Now().UTC(), id, owner)
 	if err != nil {
 		return nil, fmt.Errorf("set pinned: %w", err)
 	}
-	return s.GetByID(ctx, id)
+	return s.GetByID(ctx, owner, id)
 }
 
-func (s *NoteStore) SetArchived(ctx context.Context, id uuid.UUID, archived bool) (*notes.Note, error) {
-	_, err := s.pool.Exec(ctx, `UPDATE notes SET archived = $1, updated_at = $2 WHERE id = $3`, archived, time.Now().UTC(), id)
+func (s *NoteStore) SetArchived(ctx context.Context, owner string, id uuid.UUID, archived bool) (*notes.Note, error) {
+	_, err := s.pool.Exec(ctx, `UPDATE notes SET archived = $1, updated_at = $2 WHERE id = $3 AND owner = $4`, archived, time.Now().UTC(), id, owner)
 	if err != nil {
 		return nil, fmt.Errorf("set archived: %w", err)
 	}
-	return s.GetByID(ctx, id)
+	return s.GetByID(ctx, owner, id)
 }
 
-func (s *NoteStore) SetTrashed(ctx context.Context, id uuid.UUID, trashed bool) (*notes.Note, error) {
+func (s *NoteStore) SetTrashed(ctx context.Context, owner string, id uuid.UUID, trashed bool) (*notes.Note, error) {
 	var trashTime *time.Time
 	if trashed {
 		t := time.Now().UTC()
 		trashTime = &t
 	}
-	_, err := s.pool.Exec(ctx, `UPDATE notes SET trashed = $1, trash_time = $2, updated_at = $3 WHERE id = $4`, trashed, trashTime, time.Now().UTC(), id)
+	_, err := s.pool.Exec(ctx, `UPDATE notes SET trashed = $1, trash_time = $2, updated_at = $3 WHERE id = $4 AND owner = $5`, trashed, trashTime, time.Now().UTC(), id, owner)
 	if err != nil {
 		return nil, fmt.Errorf("set trashed: %w", err)
 	}
-	return s.GetByID(ctx, id)
+	return s.GetByID(ctx, owner, id)
 }
 
-func (s *NoteStore) Delete(ctx context.Context, id uuid.UUID) error {
-	_, err := s.pool.Exec(ctx, `DELETE FROM notes WHERE id = $1`, id)
+func (s *NoteStore) Delete(ctx context.Context, owner string, id uuid.UUID) error {
+	_, err := s.pool.Exec(ctx, `DELETE FROM notes WHERE id = $1 AND owner = $2`, id, owner)
 	if err != nil {
 		return fmt.Errorf("delete note: %w", err)
 	}
 	return nil
 }
 
-func (s *NoteStore) queryNote(ctx context.Context, id uuid.UUID) (noteRow, error) {
+func (s *NoteStore) queryNote(ctx context.Context, owner string, id uuid.UUID) (noteRow, error) {
 	var nr noteRow
 	err := s.pool.QueryRow(ctx, `
 		SELECT id, title, body_type, body_text, color, pinned, archived, trashed, trash_time, created_at, updated_at
-		FROM notes WHERE id = $1
-	`, id).Scan(&nr.ID, &nr.Title, &nr.BodyType, &nr.BodyText, &nr.Color, &nr.Pinned, &nr.Archived, &nr.Trashed, &nr.TrashTime, &nr.CreatedAt, &nr.UpdatedAt)
+		FROM notes WHERE id = $1 AND owner = $2
+	`, id, owner).Scan(&nr.ID, &nr.Title, &nr.BodyType, &nr.BodyText, &nr.Color, &nr.Pinned, &nr.Archived, &nr.Trashed, &nr.TrashTime, &nr.CreatedAt, &nr.UpdatedAt)
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return nr, fmt.Errorf("note not found")
@@ -475,9 +479,11 @@ func (s *NoteStore) insertListItems(ctx context.Context, tx pgx.Tx, noteID uuid.
 	return nil
 }
 
-func (s *NoteStore) ensureLabelOnNote(ctx context.Context, tx pgx.Tx, noteID uuid.UUID, labelName string) error {
+func (s *NoteStore) ensureLabelOnNote(ctx context.Context, tx pgx.Tx, owner string, noteID uuid.UUID, labelName string) error {
 	var labelID uuid.UUID
-	err := tx.QueryRow(ctx, `INSERT INTO labels (id, display_name) VALUES ($1, $2) ON CONFLICT (display_name) DO UPDATE SET display_name = EXCLUDED.display_name RETURNING id`, uuid.New(), labelName).Scan(&labelID)
+	err := tx.QueryRow(ctx,
+		`INSERT INTO labels (id, owner, display_name) VALUES ($1, $2, $3) ON CONFLICT (owner, display_name) DO UPDATE SET display_name = EXCLUDED.display_name RETURNING id`,
+		uuid.New(), owner, labelName).Scan(&labelID)
 	if err != nil {
 		return fmt.Errorf("upsert label: %w", err)
 	}

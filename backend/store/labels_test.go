@@ -12,7 +12,7 @@ func TestCreateLabel(t *testing.T) {
 	pool := newTestPool(t)
 	store := NewLabelStore(pool)
 
-	l, err := store.Create(context.Background(), "Test Label")
+	l, err := store.Create(context.Background(), testOwner, "Test Label")
 	require.NoError(t, err)
 	require.NotNil(t, l.Name)
 	assert.Contains(t, *l.Name, "labels/")
@@ -23,12 +23,12 @@ func TestListLabels(t *testing.T) {
 	pool := newTestPool(t)
 	store := NewLabelStore(pool)
 
-	_, err := store.Create(context.Background(), "B")
+	_, err := store.Create(context.Background(), testOwner, "B")
 	require.NoError(t, err)
-	_, err = store.Create(context.Background(), "A")
+	_, err = store.Create(context.Background(), testOwner, "A")
 	require.NoError(t, err)
 
-	labels, err := store.List(context.Background())
+	labels, err := store.List(context.Background(), testOwner)
 	require.NoError(t, err)
 	assert.Len(t, labels, 2)
 	assert.Equal(t, "A", *labels[0].DisplayName)
@@ -39,17 +39,17 @@ func TestDeleteLabel(t *testing.T) {
 	pool := newTestPool(t)
 	store := NewLabelStore(pool)
 
-	l, err := store.Create(context.Background(), "To Delete")
+	l, err := store.Create(context.Background(), testOwner, "To Delete")
 	require.NoError(t, err)
 
-	err = store.Delete(context.Background(), "does-not-exist")
+	err = store.Delete(context.Background(), testOwner, "does-not-exist")
 	require.Error(t, err)
 
 	id := (*l.Name)[7:]
-	err = store.Delete(context.Background(), id)
+	err = store.Delete(context.Background(), testOwner, id)
 	require.NoError(t, err)
 
-	labels, err := store.List(context.Background())
+	labels, err := store.List(context.Background(), testOwner)
 	require.NoError(t, err)
 	assert.Len(t, labels, 0)
 }

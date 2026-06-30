@@ -19,8 +19,8 @@ func NewLabelStore(pool *pgxpool.Pool) *LabelStore {
 	return &LabelStore{pool: pool}
 }
 
-func (s *LabelStore) List(ctx context.Context) ([]*labels.Label, error) {
-	rows, err := s.pool.Query(ctx, `SELECT id, display_name FROM labels ORDER BY display_name`)
+func (s *LabelStore) List(ctx context.Context, owner string) ([]*labels.Label, error) {
+	rows, err := s.pool.Query(ctx, `SELECT id, display_name FROM labels WHERE owner = $1 ORDER BY display_name`, owner)
 	if err != nil {
 		return nil, fmt.Errorf("query labels: %w", err)
 	}
@@ -42,12 +42,12 @@ func (s *LabelStore) List(ctx context.Context) ([]*labels.Label, error) {
 	return result, nil
 }
 
-func (s *LabelStore) Create(ctx context.Context, displayName string) (*labels.Label, error) {
+func (s *LabelStore) Create(ctx context.Context, owner string, displayName string) (*labels.Label, error) {
 	id := uuid.New()
 	resourceName := fmt.Sprintf("labels/%s", id.String())
 
-	_, err := s.pool.Exec(ctx, `INSERT INTO labels (id, display_name, created_at) VALUES ($1, $2, $3)`,
-		id, displayName, time.Now().UTC())
+	_, err := s.pool.Exec(ctx, `INSERT INTO labels (id, owner, display_name, created_at) VALUES ($1, $2, $3, $4)`,
+		id, owner, displayName, time.Now().UTC())
 	if err != nil {
 		return nil, fmt.Errorf("insert label: %w", err)
 	}
@@ -58,13 +58,13 @@ func (s *LabelStore) Create(ctx context.Context, displayName string) (*labels.La
 	}, nil
 }
 
-func (s *LabelStore) Update(ctx context.Context, id string, displayName string) (*labels.Label, error) {
+func (s *LabelStore) Update(ctx context.Context, owner string, id string, displayName string) (*labels.Label, error) {
 	uid, err := uuid.Parse(id)
 	if err != nil {
 		return nil, fmt.Errorf("invalid label id: %w", err)
 	}
 
-	_, err = s.pool.Exec(ctx, `UPDATE labels SET display_name = $1 WHERE id = $2`, displayName, uid)
+	_, err = s.pool.Exec(ctx, `UPDATE labels SET display_name = $1 WHERE id = $2 AND owner = $3`, displayName, uid, owner)
 	if err != nil {
 		return nil, fmt.Errorf("update label: %w", err)
 	}
@@ -76,13 +76,13 @@ func (s *LabelStore) Update(ctx context.Context, id string, displayName string) 
 	}, nil
 }
 
-func (s *LabelStore) Delete(ctx context.Context, id string) error {
+func (s *LabelStore) Delete(ctx context.Context, owner string, id string) error {
 	uid, err := uuid.Parse(id)
 	if err != nil {
 		return fmt.Errorf("invalid label id: %w", err)
 	}
 
-	_, err = s.pool.Exec(ctx, `DELETE FROM labels WHERE id = $1`, uid)
+	_, err = s.pool.Exec(ctx, `DELETE FROM labels WHERE id = $1 AND owner = $2`, uid, owner)
 	if err != nil {
 		return fmt.Errorf("delete label: %w", err)
 	}

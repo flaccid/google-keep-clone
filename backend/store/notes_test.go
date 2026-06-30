@@ -11,12 +11,14 @@ import (
 	notes "github.com/flaccid/google-keep-clone/backend/gen/notes"
 )
 
+var testOwner = "00000000-0000-0000-0000-000000000001"
+
 func TestCreateTextNote(t *testing.T) {
 	pool := newTestPool(t)
 	store := NewNoteStore(pool)
 
 	title := "Test Note"
-	n, err := store.Create(context.Background(), title, strPtr("text"), "Hello World", "DEFAULT", false, false, nil, nil)
+	n, err := 	store.Create(context.Background(), testOwner, title, strPtr("text"), "Hello World", "DEFAULT", false, false, nil, nil)
 	require.NoError(t, err)
 	require.NotNil(t, n.Name)
 	assert.Contains(t, *n.Name, "notes/")
@@ -47,7 +49,7 @@ func TestCreateNoteWithListItems(t *testing.T) {
 		},
 	}
 
-	n, err := store.Create(context.Background(), "List Note", strPtr("list"), "", "DEFAULT", false, false, nil, items)
+	n, err := 	store.Create(context.Background(), testOwner, "List Note", strPtr("list"), "", "DEFAULT", false, false, nil, items)
 	require.NoError(t, err)
 	require.NotNil(t, n.Body)
 	require.NotNil(t, n.Body.List)
@@ -62,7 +64,7 @@ func TestCreateNoteWithLabels(t *testing.T) {
 	pool := newTestPool(t)
 	store := NewNoteStore(pool)
 
-	n, err := store.Create(context.Background(), "Labeled Note", strPtr("text"), "Content", "DEFAULT", false, false, []string{"tag1", "tag2"}, nil)
+	n, err := 	store.Create(context.Background(), testOwner, "Labeled Note", strPtr("text"), "Content", "DEFAULT", false, false, []string{"tag1", "tag2"}, nil)
 	require.NoError(t, err)
 	assert.ElementsMatch(t, []string{"tag1", "tag2"}, n.Labels)
 }
@@ -71,13 +73,13 @@ func TestGetNoteByID(t *testing.T) {
 	pool := newTestPool(t)
 	store := NewNoteStore(pool)
 
-	created, err := store.Create(context.Background(), "Get Me", strPtr("text"), "Content", "DEFAULT", false, false, nil, nil)
+	created, err := 	store.Create(context.Background(), testOwner, "Get Me", strPtr("text"), "Content", "DEFAULT", false, false, nil, nil)
 	require.NoError(t, err)
 
 	id, err := parseNoteName(*created.Name)
 	require.NoError(t, err)
 
-	got, err := store.GetByID(context.Background(), id)
+	got, err := store.GetByID(context.Background(), testOwner, id)
 	require.NoError(t, err)
 	assert.Equal(t, *created.Name, *got.Name)
 	assert.Equal(t, "Get Me", *got.Title)
@@ -87,10 +89,10 @@ func TestGetNoteByName(t *testing.T) {
 	pool := newTestPool(t)
 	store := NewNoteStore(pool)
 
-	created, err := store.Create(context.Background(), "By Name", strPtr("text"), "Content", "DEFAULT", false, false, nil, nil)
+	created, err := 	store.Create(context.Background(), testOwner, "By Name", strPtr("text"), "Content", "DEFAULT", false, false, nil, nil)
 	require.NoError(t, err)
 
-	got, err := store.GetByName(context.Background(), *created.Name)
+	got, err := store.GetByName(context.Background(), testOwner, *created.Name)
 	require.NoError(t, err)
 	assert.Equal(t, "By Name", *got.Title)
 }
@@ -99,12 +101,12 @@ func TestListNotes(t *testing.T) {
 	pool := newTestPool(t)
 	store := NewNoteStore(pool)
 
-	_, err := store.Create(context.Background(), "Note 1", strPtr("text"), "One", "DEFAULT", false, false, nil, nil)
+	_, err := 	store.Create(context.Background(), testOwner, "Note 1", strPtr("text"), "One", "DEFAULT", false, false, nil, nil)
 	require.NoError(t, err)
-	_, err = store.Create(context.Background(), "Note 2", strPtr("text"), "Two", "DEFAULT", false, false, nil, nil)
+	_, err = 	store.Create(context.Background(), testOwner, "Note 2", strPtr("text"), "Two", "DEFAULT", false, false, nil, nil)
 	require.NoError(t, err)
 
-	res, err := store.List(context.Background(), nil, nil, nil, nil)
+	res, err := store.List(context.Background(), testOwner, nil, nil, nil, nil)
 	require.NoError(t, err)
 	assert.Len(t, res.Notes, 2)
 }
@@ -114,17 +116,17 @@ func TestListNotesWithPagination(t *testing.T) {
 	store := NewNoteStore(pool)
 
 	for i := 0; i < 5; i++ {
-		_, err := store.Create(context.Background(), "Note", strPtr("text"), "Content", "DEFAULT", false, false, nil, nil)
+		_, err := 	store.Create(context.Background(), testOwner, "Note", strPtr("text"), "Content", "DEFAULT", false, false, nil, nil)
 		require.NoError(t, err)
 	}
 
 	pageSize := 2
-	res, err := store.List(context.Background(), &pageSize, nil, nil, nil)
+	res, err := store.List(context.Background(), testOwner, &pageSize, nil, nil, nil)
 	require.NoError(t, err)
 	assert.Len(t, res.Notes, 2)
 	require.NotNil(t, res.NextPageToken)
 
-	res2, err := store.List(context.Background(), &pageSize, res.NextPageToken, nil, nil)
+	res2, err := store.List(context.Background(), testOwner, &pageSize, res.NextPageToken, nil, nil)
 	require.NoError(t, err)
 	assert.Len(t, res2.Notes, 2)
 	require.NotNil(t, res2.NextPageToken)
@@ -134,14 +136,14 @@ func TestUpdateNoteTitle(t *testing.T) {
 	pool := newTestPool(t)
 	store := NewNoteStore(pool)
 
-	created, err := store.Create(context.Background(), "Original", strPtr("text"), "Content", "DEFAULT", false, false, nil, nil)
+	created, err := 	store.Create(context.Background(), testOwner, "Original", strPtr("text"), "Content", "DEFAULT", false, false, nil, nil)
 	require.NoError(t, err)
 
 	id, err := parseNoteName(*created.Name)
 	require.NoError(t, err)
 
 	newTitle := "Updated"
-	updated, err := store.Update(context.Background(), id, &newTitle, nil, nil, nil, nil, nil, nil, nil)
+	updated, err := store.Update(context.Background(), testOwner, id, &newTitle, nil, nil, nil, nil, nil, nil, nil)
 	require.NoError(t, err)
 	assert.Equal(t, "Updated", *updated.Title)
 }
@@ -150,17 +152,17 @@ func TestPinUnpinNote(t *testing.T) {
 	pool := newTestPool(t)
 	store := NewNoteStore(pool)
 
-	created, err := store.Create(context.Background(), "Pinnable", strPtr("text"), "Content", "DEFAULT", false, false, nil, nil)
+	created, err := 	store.Create(context.Background(), testOwner, "Pinnable", strPtr("text"), "Content", "DEFAULT", false, false, nil, nil)
 	require.NoError(t, err)
 
 	id, err := parseNoteName(*created.Name)
 	require.NoError(t, err)
 
-	pinned, err := store.SetPinned(context.Background(), id, true)
+	pinned, err := store.SetPinned(context.Background(), testOwner, id, true)
 	require.NoError(t, err)
 	assert.True(t, *pinned.Pinned)
 
-	unpinned, err := store.SetPinned(context.Background(), id, false)
+	unpinned, err := store.SetPinned(context.Background(), testOwner, id, false)
 	require.NoError(t, err)
 	assert.False(t, *unpinned.Pinned)
 }
@@ -169,17 +171,17 @@ func TestArchiveUnarchive(t *testing.T) {
 	pool := newTestPool(t)
 	store := NewNoteStore(pool)
 
-	created, err := store.Create(context.Background(), "Archivable", strPtr("text"), "Content", "DEFAULT", false, false, nil, nil)
+	created, err := 	store.Create(context.Background(), testOwner, "Archivable", strPtr("text"), "Content", "DEFAULT", false, false, nil, nil)
 	require.NoError(t, err)
 
 	id, err := parseNoteName(*created.Name)
 	require.NoError(t, err)
 
-	archived, err := store.SetArchived(context.Background(), id, true)
+	archived, err := store.SetArchived(context.Background(), testOwner, id, true)
 	require.NoError(t, err)
 	assert.True(t, *archived.Archived)
 
-	unarchived, err := store.SetArchived(context.Background(), id, false)
+	unarchived, err := store.SetArchived(context.Background(), testOwner, id, false)
 	require.NoError(t, err)
 	assert.False(t, *unarchived.Archived)
 }
@@ -188,18 +190,18 @@ func TestTrashRestore(t *testing.T) {
 	pool := newTestPool(t)
 	store := NewNoteStore(pool)
 
-	created, err := store.Create(context.Background(), "Trashable", strPtr("text"), "Content", "DEFAULT", false, false, nil, nil)
+	created, err := 	store.Create(context.Background(), testOwner, "Trashable", strPtr("text"), "Content", "DEFAULT", false, false, nil, nil)
 	require.NoError(t, err)
 
 	id, err := parseNoteName(*created.Name)
 	require.NoError(t, err)
 
-	trashed, err := store.SetTrashed(context.Background(), id, true)
+	trashed, err := store.SetTrashed(context.Background(), testOwner, id, true)
 	require.NoError(t, err)
 	assert.True(t, *trashed.Trashed)
 	assert.NotNil(t, trashed.TrashTime)
 
-	restored, err := store.SetTrashed(context.Background(), id, false)
+	restored, err := store.SetTrashed(context.Background(), testOwner, id, false)
 	require.NoError(t, err)
 	assert.False(t, *restored.Trashed)
 	assert.Nil(t, restored.TrashTime)
@@ -209,16 +211,16 @@ func TestDeleteNote(t *testing.T) {
 	pool := newTestPool(t)
 	store := NewNoteStore(pool)
 
-	created, err := store.Create(context.Background(), "Deletable", strPtr("text"), "Content", "DEFAULT", false, false, nil, nil)
+	created, err := 	store.Create(context.Background(), testOwner, "Deletable", strPtr("text"), "Content", "DEFAULT", false, false, nil, nil)
 	require.NoError(t, err)
 
 	id, err := parseNoteName(*created.Name)
 	require.NoError(t, err)
 
-	err = store.Delete(context.Background(), id)
+	err = store.Delete(context.Background(), testOwner, id)
 	require.NoError(t, err)
 
-	_, err = store.GetByID(context.Background(), id)
+	_, err = store.GetByID(context.Background(), testOwner, id)
 	assert.Error(t, err)
 }
 
@@ -226,18 +228,18 @@ func TestListTrashedExcluded(t *testing.T) {
 	pool := newTestPool(t)
 	store := NewNoteStore(pool)
 
-	_, err := store.Create(context.Background(), "Active", strPtr("text"), "Active", "DEFAULT", false, false, nil, nil)
+	_, err := 	store.Create(context.Background(), testOwner, "Active", strPtr("text"), "Active", "DEFAULT", false, false, nil, nil)
 	require.NoError(t, err)
 
-	trashed, err := store.Create(context.Background(), "Trashed", strPtr("text"), "Trashed", "DEFAULT", false, false, nil, nil)
+	trashed, err := 	store.Create(context.Background(), testOwner, "Trashed", strPtr("text"), "Trashed", "DEFAULT", false, false, nil, nil)
 	require.NoError(t, err)
 
 	tid, err := parseNoteName(*trashed.Name)
 	require.NoError(t, err)
-	_, err = store.SetTrashed(context.Background(), tid, true)
+	_, err = store.SetTrashed(context.Background(), testOwner, tid, true)
 	require.NoError(t, err)
 
-	res, err := store.List(context.Background(), nil, nil, nil, nil)
+	res, err := store.List(context.Background(), testOwner, nil, nil, nil, nil)
 	require.NoError(t, err)
 	assert.Len(t, res.Notes, 1)
 	assert.Equal(t, "Active", *res.Notes[0].Title)
@@ -247,7 +249,7 @@ func TestUpdateNoteBodyFromTextToList(t *testing.T) {
 	pool := newTestPool(t)
 	store := NewNoteStore(pool)
 
-	created, err := store.Create(context.Background(), "Text Note", strPtr("text"), "Some text", "DEFAULT", false, false, nil, nil)
+	created, err := 	store.Create(context.Background(), testOwner, "Text Note", strPtr("text"), "Some text", "DEFAULT", false, false, nil, nil)
 	require.NoError(t, err)
 	require.NotNil(t, created.Body.Text)
 
@@ -259,7 +261,7 @@ func TestUpdateNoteBodyFromTextToList(t *testing.T) {
 		{Text: &notes.TextContent{Text: strPtr("Checklist 2")}, Checked: boolPtr(true)},
 	}
 
-	updated, err := store.Update(context.Background(), id, nil, strPtr("list"), strPtr(""), nil, nil, nil, nil, items)
+	updated, err := store.Update(context.Background(), testOwner, id, nil, strPtr("list"), strPtr(""), nil, nil, nil, nil, items)
 	require.NoError(t, err)
 	require.NotNil(t, updated.Body.List)
 	assert.Len(t, updated.Body.List.ListItems, 2)
@@ -277,7 +279,7 @@ func TestUpdateNoteListItems(t *testing.T) {
 		{Text: &notes.TextContent{Text: strPtr("Item 2")}, Checked: boolPtr(false)},
 	}
 
-	created, err := store.Create(context.Background(), "Checklist", strPtr("list"), "", "DEFAULT", false, false, nil, items)
+	created, err := 	store.Create(context.Background(), testOwner, "Checklist", strPtr("list"), "", "DEFAULT", false, false, nil, items)
 	require.NoError(t, err)
 	require.Len(t, created.Body.List.ListItems, 2)
 
@@ -290,7 +292,7 @@ func TestUpdateNoteListItems(t *testing.T) {
 		{Text: &notes.TextContent{Text: strPtr("Replaced 3")}, Checked: boolPtr(true)},
 	}
 
-	updated, err := store.Update(context.Background(), id, nil, strPtr("list"), strPtr(""), nil, nil, nil, nil, newItems)
+	updated, err := store.Update(context.Background(), testOwner, id, nil, strPtr("list"), strPtr(""), nil, nil, nil, nil, newItems)
 	require.NoError(t, err)
 	require.Len(t, updated.Body.List.ListItems, 3)
 	assert.Equal(t, "Replaced 1", *updated.Body.List.ListItems[0].Text.Text)
@@ -306,7 +308,7 @@ func TestUpdateNoteCheckedState(t *testing.T) {
 		{Text: &notes.TextContent{Text: strPtr("Todo")}, Checked: boolPtr(false)},
 	}
 
-	created, err := store.Create(context.Background(), "Check", strPtr("list"), "", "DEFAULT", false, false, nil, items)
+	created, err := 	store.Create(context.Background(), testOwner, "Check", strPtr("list"), "", "DEFAULT", false, false, nil, items)
 	require.NoError(t, err)
 
 	id, err := parseNoteName(*created.Name)
@@ -316,7 +318,7 @@ func TestUpdateNoteCheckedState(t *testing.T) {
 		{Text: &notes.TextContent{Text: strPtr("Todo")}, Checked: boolPtr(true)},
 	}
 
-	updated, err := store.Update(context.Background(), id, nil, strPtr("list"), strPtr(""), nil, nil, nil, nil, checkedItems)
+	updated, err := store.Update(context.Background(), testOwner, id, nil, strPtr("list"), strPtr(""), nil, nil, nil, nil, checkedItems)
 	require.NoError(t, err)
 	require.Len(t, updated.Body.List.ListItems, 1)
 	assert.True(t, *updated.Body.List.ListItems[0].Checked)
@@ -326,7 +328,7 @@ func TestUpdateNotePreservesTitleWhenOnlyBodyChanges(t *testing.T) {
 	pool := newTestPool(t)
 	store := NewNoteStore(pool)
 
-	created, err := store.Create(context.Background(), "My Note", strPtr("text"), "Hello", "DEFAULT", false, false, nil, nil)
+	created, err := 	store.Create(context.Background(), testOwner, "My Note", strPtr("text"), "Hello", "DEFAULT", false, false, nil, nil)
 	require.NoError(t, err)
 
 	id, err := parseNoteName(*created.Name)
@@ -336,7 +338,7 @@ func TestUpdateNotePreservesTitleWhenOnlyBodyChanges(t *testing.T) {
 		{Text: &notes.TextContent{Text: strPtr("New list")}, Checked: boolPtr(false)},
 	}
 
-	updated, err := store.Update(context.Background(), id, nil, strPtr("list"), strPtr(""), nil, nil, nil, nil, items)
+	updated, err := store.Update(context.Background(), testOwner, id, nil, strPtr("list"), strPtr(""), nil, nil, nil, nil, items)
 	require.NoError(t, err)
 	assert.Equal(t, "My Note", *updated.Title)
 	require.NotNil(t, updated.Body.List)
@@ -347,7 +349,7 @@ func TestNoteNotFound(t *testing.T) {
 	pool := newTestPool(t)
 	store := NewNoteStore(pool)
 
-	_, err := store.GetByID(context.Background(), uuid.New())
+	_, err := store.GetByID(context.Background(), testOwner, uuid.New())
 	assert.Error(t, err)
 }
 

@@ -19,7 +19,7 @@ func NewPermissionStore(pool *pgxpool.Pool) *PermissionStore {
 	return &PermissionStore{pool: pool}
 }
 
-func (s *PermissionStore) BatchCreate(ctx context.Context, noteName string, requests []*permissions.CreatePermissionRequest) ([]*permissions.Permission, error) {
+func (s *PermissionStore) BatchCreate(ctx context.Context, owner string, noteName string, requests []*permissions.CreatePermissionRequest) ([]*permissions.Permission, error) {
 	noteID, err := parseNoteName(noteName)
 	if err != nil {
 		return nil, fmt.Errorf("invalid note name: %w", err)
@@ -32,10 +32,10 @@ func (s *PermissionStore) BatchCreate(ctx context.Context, noteName string, requ
 		role := string(*req.Role)
 
 		_, err := s.pool.Exec(ctx, `
-			INSERT INTO permissions (id, note_id, email, role, created_at)
-			VALUES ($1, $2, $3, $4, $5)
-			ON CONFLICT (note_id, email) DO UPDATE SET role = $4
-		`, id, noteID, *req.Email, role, time.Now().UTC())
+			INSERT INTO permissions (id, note_id, owner, email, role, created_at)
+			VALUES ($1, $2, $3, $4, $5, $6)
+			ON CONFLICT (note_id, email) DO UPDATE SET role = $5
+		`, id, noteID, owner, *req.Email, role, time.Now().UTC())
 		if err != nil {
 			return nil, fmt.Errorf("insert permission: %w", err)
 		}
@@ -52,7 +52,7 @@ func (s *PermissionStore) BatchCreate(ctx context.Context, noteName string, requ
 	return result, nil
 }
 
-func (s *PermissionStore) BatchDelete(ctx context.Context, noteName string, names []string) error {
+func (s *PermissionStore) BatchDelete(ctx context.Context, owner string, noteName string, names []string) error {
 	noteID, err := parseNoteName(noteName)
 	if err != nil {
 		return fmt.Errorf("invalid note name: %w", err)
@@ -63,7 +63,7 @@ func (s *PermissionStore) BatchDelete(ctx context.Context, noteName string, name
 		if err != nil {
 			return fmt.Errorf("invalid permission name: %w", err)
 		}
-		_, err = s.pool.Exec(ctx, `DELETE FROM permissions WHERE id = $1 AND note_id = $2`, permID, noteID)
+		_, err = s.pool.Exec(ctx, `DELETE FROM permissions WHERE id = $1 AND note_id = $2 AND owner = $3`, permID, noteID, owner)
 		if err != nil {
 			return fmt.Errorf("delete permission: %w", err)
 		}
