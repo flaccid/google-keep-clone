@@ -23,13 +23,18 @@ func BuildCreatePayload(notesCreateBody string) (*notes.CreatePayload, error) {
 	{
 		err = json.Unmarshal([]byte(notesCreateBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"archived\": false,\n      \"body\": {\n         \"list\": {\n            \"listItems\": [\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n                  }\n               }\n            ]\n         },\n         \"text\": {\n            \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n         }\n      },\n      \"color\": \"BLUE\",\n      \"labels\": [\n         \"Sunt sint eum.\",\n         \"Nam doloribus.\",\n         \"Eum sunt quia sunt sint.\"\n      ],\n      \"pinned\": false,\n      \"title\": \"9f0\"\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"archived\": true,\n      \"attachments\": [\n         {\n            \"mimeType\": [\n               \"Provident ut qui quia aut delectus dolorum.\",\n               \"Consequatur voluptates laboriosam explicabo occaecati.\",\n               \"Qui beatae quas.\",\n               \"Et est ut.\"\n            ],\n            \"name\": \"Perferendis nemo omnis.\"\n         },\n         {\n            \"mimeType\": [\n               \"Provident ut qui quia aut delectus dolorum.\",\n               \"Consequatur voluptates laboriosam explicabo occaecati.\",\n               \"Qui beatae quas.\",\n               \"Et est ut.\"\n            ],\n            \"name\": \"Perferendis nemo omnis.\"\n         }\n      ],\n      \"body\": {\n         \"list\": {\n            \"listItems\": [\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Ut voluptatem voluptatem.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Ut voluptatem voluptatem.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Ut voluptatem voluptatem.\"\n                  }\n               }\n            ]\n         },\n         \"text\": {\n            \"text\": \"Ut voluptatem voluptatem.\"\n         }\n      },\n      \"color\": \"THEME_PLUM\",\n      \"createTime\": \"Eum sunt quia sunt sint.\",\n      \"labels\": [\n         \"Optio soluta dolorum id eum dolorem.\",\n         \"Voluptatibus inventore ipsam.\",\n         \"Ut delectus.\"\n      ],\n      \"name\": \"Nam doloribus.\",\n      \"permissions\": [\n         {\n            \"deleted\": false,\n            \"email\": \"In earum at esse deleniti officiis.\",\n            \"family\": {},\n            \"group\": {\n               \"email\": \"Quidem qui facere maiores voluptatum provident.\"\n            },\n            \"name\": \"Quod eum saepe deleniti neque explicabo beatae.\",\n            \"role\": \"ROLE_UNSPECIFIED\",\n            \"user\": {\n               \"email\": \"Tempora nostrum illum fuga provident.\"\n            }\n         },\n         {\n            \"deleted\": false,\n            \"email\": \"In earum at esse deleniti officiis.\",\n            \"family\": {},\n            \"group\": {\n               \"email\": \"Quidem qui facere maiores voluptatum provident.\"\n            },\n            \"name\": \"Quod eum saepe deleniti neque explicabo beatae.\",\n            \"role\": \"ROLE_UNSPECIFIED\",\n            \"user\": {\n               \"email\": \"Tempora nostrum illum fuga provident.\"\n            }\n         },\n         {\n            \"deleted\": false,\n            \"email\": \"In earum at esse deleniti officiis.\",\n            \"family\": {},\n            \"group\": {\n               \"email\": \"Quidem qui facere maiores voluptatum provident.\"\n            },\n            \"name\": \"Quod eum saepe deleniti neque explicabo beatae.\",\n            \"role\": \"ROLE_UNSPECIFIED\",\n            \"user\": {\n               \"email\": \"Tempora nostrum illum fuga provident.\"\n            }\n         }\n      ],\n      \"pinned\": false,\n      \"title\": \"Nemo ex error autem.\",\n      \"trashTime\": \"Quis aperiam.\",\n      \"trashed\": false,\n      \"updateTime\": \"Aut dolores quia.\"\n   }'")
 		}
 	}
-	v := &notes.NoteRequest{
-		Title:    body.Title,
-		Pinned:   body.Pinned,
-		Archived: body.Archived,
+	v := &notes.Note{
+		Name:       body.Name,
+		CreateTime: body.CreateTime,
+		UpdateTime: body.UpdateTime,
+		TrashTime:  body.TrashTime,
+		Trashed:    body.Trashed,
+		Title:      body.Title,
+		Pinned:     body.Pinned,
+		Archived:   body.Archived,
 	}
 	if body.Color != nil {
 		color := notes.ColorValue(*body.Color)
@@ -37,6 +42,26 @@ func BuildCreatePayload(notesCreateBody string) (*notes.CreatePayload, error) {
 	}
 	if body.Body != nil {
 		v.Body = marshalSectionRequestBodyRequestBodyToNotesSection(body.Body)
+	}
+	if body.Attachments != nil {
+		v.Attachments = make([]*notes.Attachment, len(body.Attachments))
+		for i, val := range body.Attachments {
+			if val == nil {
+				v.Attachments[i] = nil
+				continue
+			}
+			v.Attachments[i] = marshalAttachmentRequestBodyRequestBodyToNotesAttachment(val)
+		}
+	}
+	if body.Permissions != nil {
+		v.Permissions = make([]*notes.Permission, len(body.Permissions))
+		for i, val := range body.Permissions {
+			if val == nil {
+				v.Permissions[i] = nil
+				continue
+			}
+			v.Permissions[i] = marshalPermissionRequestBodyRequestBodyToNotesPermission(val)
+		}
 	}
 	if body.Labels != nil {
 		v.Labels = make([]string, len(body.Labels))
@@ -114,7 +139,7 @@ func BuildUpdatePayload(notesUpdateBody string, notesUpdateID string) (*notes.Up
 	{
 		err = json.Unmarshal([]byte(notesUpdateBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"archived\": true,\n      \"body\": {\n         \"list\": {\n            \"listItems\": [\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n                  }\n               }\n            ]\n         },\n         \"text\": {\n            \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n         }\n      },\n      \"color\": \"THEME_OCEAN\",\n      \"labels\": [\n         \"Corrupti laudantium.\",\n         \"Id quidem vero eos aliquid tenetur.\",\n         \"Voluptatem vero labore.\",\n         \"Fugiat veniam ipsam iure.\"\n      ],\n      \"pinned\": false,\n      \"title\": \"bg3\"\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"archived\": false,\n      \"body\": {\n         \"list\": {\n            \"listItems\": [\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Ut voluptatem voluptatem.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Ut voluptatem voluptatem.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Ut voluptatem voluptatem.\"\n                  }\n               }\n            ]\n         },\n         \"text\": {\n            \"text\": \"Ut voluptatem voluptatem.\"\n         }\n      },\n      \"color\": \"THEME_BAMBOO\",\n      \"labels\": [\n         \"Velit dolorum ex et.\",\n         \"Rerum consequuntur ab.\",\n         \"Officiis blanditiis accusamus placeat facilis qui beatae.\",\n         \"Corporis laboriosam dicta vero.\"\n      ],\n      \"pinned\": true,\n      \"title\": \"cjp\"\n   }'")
 		}
 	}
 	var id string

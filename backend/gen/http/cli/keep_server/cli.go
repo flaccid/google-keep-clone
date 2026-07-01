@@ -35,10 +35,10 @@ func UsageCommands() []string {
 
 // UsageExamples produces an example of a valid invocation of the CLI tool.
 func UsageExamples() string {
-	return os.Args[0] + " " + "media upload --body \"Vm9sdXB0YXMgc3VudCBxdWFlcmF0IGFyY2hpdGVjdG8gYXNwZXJuYXR1ci4=\" --note-id \"Quos voluptatibus est voluptatibus aut quia.\" --content-type \"image/png\"" + "\n" +
+	return os.Args[0] + " " + "media upload --body \"U2ludCB2b2x1cHRhdGUgaW5jaWR1bnQgdGVtcG9yZSBzYXBpZW50ZSBhdC4=\" --note-id \"Optio numquam officia ab voluptas sunt.\" --content-type \"image/png\"" + "\n" +
 		os.Args[0] + " " + "labels list" + "\n" +
-		os.Args[0] + " " + "notes create --body '{\n      \"archived\": false,\n      \"body\": {\n         \"list\": {\n            \"listItems\": [\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n                  }\n               }\n            ]\n         },\n         \"text\": {\n            \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n         }\n      },\n      \"color\": \"BLUE\",\n      \"labels\": [\n         \"Sunt sint eum.\",\n         \"Nam doloribus.\",\n         \"Eum sunt quia sunt sint.\"\n      ],\n      \"pinned\": false,\n      \"title\": \"9f0\"\n   }'" + "\n" +
-		os.Args[0] + " " + "permissions batch-create --body '{\n      \"requests\": [\n         {\n            \"email\": \"Ut dolorum blanditiis eum eligendi velit quaerat.\",\n            \"role\": \"ROLE_UNSPECIFIED\"\n         },\n         {\n            \"email\": \"Ut dolorum blanditiis eum eligendi velit quaerat.\",\n            \"role\": \"ROLE_UNSPECIFIED\"\n         }\n      ]\n   }' --note-id \"Accusamus et in.\"" + "\n" +
+		os.Args[0] + " " + "notes create --body '{\n      \"archived\": true,\n      \"attachments\": [\n         {\n            \"mimeType\": [\n               \"Provident ut qui quia aut delectus dolorum.\",\n               \"Consequatur voluptates laboriosam explicabo occaecati.\",\n               \"Qui beatae quas.\",\n               \"Et est ut.\"\n            ],\n            \"name\": \"Perferendis nemo omnis.\"\n         },\n         {\n            \"mimeType\": [\n               \"Provident ut qui quia aut delectus dolorum.\",\n               \"Consequatur voluptates laboriosam explicabo occaecati.\",\n               \"Qui beatae quas.\",\n               \"Et est ut.\"\n            ],\n            \"name\": \"Perferendis nemo omnis.\"\n         }\n      ],\n      \"body\": {\n         \"list\": {\n            \"listItems\": [\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Ut voluptatem voluptatem.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Ut voluptatem voluptatem.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Ut voluptatem voluptatem.\"\n                  }\n               }\n            ]\n         },\n         \"text\": {\n            \"text\": \"Ut voluptatem voluptatem.\"\n         }\n      },\n      \"color\": \"THEME_PLUM\",\n      \"createTime\": \"Eum sunt quia sunt sint.\",\n      \"labels\": [\n         \"Optio soluta dolorum id eum dolorem.\",\n         \"Voluptatibus inventore ipsam.\",\n         \"Ut delectus.\"\n      ],\n      \"name\": \"Nam doloribus.\",\n      \"permissions\": [\n         {\n            \"deleted\": false,\n            \"email\": \"In earum at esse deleniti officiis.\",\n            \"family\": {},\n            \"group\": {\n               \"email\": \"Quidem qui facere maiores voluptatum provident.\"\n            },\n            \"name\": \"Quod eum saepe deleniti neque explicabo beatae.\",\n            \"role\": \"ROLE_UNSPECIFIED\",\n            \"user\": {\n               \"email\": \"Tempora nostrum illum fuga provident.\"\n            }\n         },\n         {\n            \"deleted\": false,\n            \"email\": \"In earum at esse deleniti officiis.\",\n            \"family\": {},\n            \"group\": {\n               \"email\": \"Quidem qui facere maiores voluptatum provident.\"\n            },\n            \"name\": \"Quod eum saepe deleniti neque explicabo beatae.\",\n            \"role\": \"ROLE_UNSPECIFIED\",\n            \"user\": {\n               \"email\": \"Tempora nostrum illum fuga provident.\"\n            }\n         },\n         {\n            \"deleted\": false,\n            \"email\": \"In earum at esse deleniti officiis.\",\n            \"family\": {},\n            \"group\": {\n               \"email\": \"Quidem qui facere maiores voluptatum provident.\"\n            },\n            \"name\": \"Quod eum saepe deleniti neque explicabo beatae.\",\n            \"role\": \"ROLE_UNSPECIFIED\",\n            \"user\": {\n               \"email\": \"Tempora nostrum illum fuga provident.\"\n            }\n         }\n      ],\n      \"pinned\": false,\n      \"title\": \"Nemo ex error autem.\",\n      \"trashTime\": \"Quis aperiam.\",\n      \"trashed\": false,\n      \"updateTime\": \"Aut dolores quia.\"\n   }'" + "\n" +
+		os.Args[0] + " " + "permissions batch-create --body '{\n      \"requests\": [\n         {\n            \"email\": \"Ipsum consequuntur totam et sit iusto.\",\n            \"role\": \"ROLE_UNSPECIFIED\"\n         },\n         {\n            \"email\": \"Ipsum consequuntur totam et sit iusto.\",\n            \"role\": \"ROLE_UNSPECIFIED\"\n         }\n      ]\n   }' --note-id \"Consectetur et aperiam vitae fugiat qui explicabo.\"" + "\n" +
 		""
 }
 
@@ -396,7 +396,7 @@ func mediaUploadUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "media upload --body \"Vm9sdXB0YXMgc3VudCBxdWFlcmF0IGFyY2hpdGVjdG8gYXNwZXJuYXR1ci4=\" --note-id \"Quos voluptatibus est voluptatibus aut quia.\" --content-type \"image/png\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "media upload --body \"U2ludCB2b2x1cHRhdGUgaW5jaWR1bnQgdGVtcG9yZSBzYXBpZW50ZSBhdC4=\" --note-id \"Optio numquam officia ab voluptas sunt.\" --content-type \"image/png\"")
 }
 
 func mediaDownloadUsage() {
@@ -418,7 +418,7 @@ func mediaDownloadUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "media download --note-id \"Qui voluptas.\" --attachment-id \"Consequatur explicabo.\" --mime-type \"Corrupti temporibus dolorem.\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "media download --note-id \"Ut at.\" --attachment-id \"Deleniti ad quia deserunt consequatur saepe non.\" --mime-type \"Accusamus quod itaque.\"")
 }
 
 // labelsUsage displays the usage of the labels command and its subcommands.
@@ -465,7 +465,7 @@ func labelsCreateUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "labels create --body '{\n      \"displayName\": \"Autem quia aut modi.\"\n   }'")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "labels create --body '{\n      \"displayName\": \"Dolorem deserunt et.\"\n   }'")
 }
 
 func labelsUpdateUsage() {
@@ -485,7 +485,7 @@ func labelsUpdateUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "labels update --body '{\n      \"displayName\": \"Tempora est est.\"\n   }' --id \"Saepe velit nemo consequatur quae dolorem ut.\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "labels update --body '{\n      \"displayName\": \"Aliquid est quas blanditiis.\"\n   }' --id \"Assumenda quisquam natus quasi.\"")
 }
 
 func labelsDeleteUsage() {
@@ -503,7 +503,7 @@ func labelsDeleteUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "labels delete --id \"Assumenda quisquam natus quasi.\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "labels delete --id \"Quasi voluptates sunt sint eum.\"")
 }
 
 // notesUsage displays the usage of the notes command and its subcommands.
@@ -541,7 +541,7 @@ func notesCreateUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes create --body '{\n      \"archived\": false,\n      \"body\": {\n         \"list\": {\n            \"listItems\": [\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n                  }\n               }\n            ]\n         },\n         \"text\": {\n            \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n         }\n      },\n      \"color\": \"BLUE\",\n      \"labels\": [\n         \"Sunt sint eum.\",\n         \"Nam doloribus.\",\n         \"Eum sunt quia sunt sint.\"\n      ],\n      \"pinned\": false,\n      \"title\": \"9f0\"\n   }'")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes create --body '{\n      \"archived\": true,\n      \"attachments\": [\n         {\n            \"mimeType\": [\n               \"Provident ut qui quia aut delectus dolorum.\",\n               \"Consequatur voluptates laboriosam explicabo occaecati.\",\n               \"Qui beatae quas.\",\n               \"Et est ut.\"\n            ],\n            \"name\": \"Perferendis nemo omnis.\"\n         },\n         {\n            \"mimeType\": [\n               \"Provident ut qui quia aut delectus dolorum.\",\n               \"Consequatur voluptates laboriosam explicabo occaecati.\",\n               \"Qui beatae quas.\",\n               \"Et est ut.\"\n            ],\n            \"name\": \"Perferendis nemo omnis.\"\n         }\n      ],\n      \"body\": {\n         \"list\": {\n            \"listItems\": [\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Ut voluptatem voluptatem.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Ut voluptatem voluptatem.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Ut voluptatem voluptatem.\"\n                  }\n               }\n            ]\n         },\n         \"text\": {\n            \"text\": \"Ut voluptatem voluptatem.\"\n         }\n      },\n      \"color\": \"THEME_PLUM\",\n      \"createTime\": \"Eum sunt quia sunt sint.\",\n      \"labels\": [\n         \"Optio soluta dolorum id eum dolorem.\",\n         \"Voluptatibus inventore ipsam.\",\n         \"Ut delectus.\"\n      ],\n      \"name\": \"Nam doloribus.\",\n      \"permissions\": [\n         {\n            \"deleted\": false,\n            \"email\": \"In earum at esse deleniti officiis.\",\n            \"family\": {},\n            \"group\": {\n               \"email\": \"Quidem qui facere maiores voluptatum provident.\"\n            },\n            \"name\": \"Quod eum saepe deleniti neque explicabo beatae.\",\n            \"role\": \"ROLE_UNSPECIFIED\",\n            \"user\": {\n               \"email\": \"Tempora nostrum illum fuga provident.\"\n            }\n         },\n         {\n            \"deleted\": false,\n            \"email\": \"In earum at esse deleniti officiis.\",\n            \"family\": {},\n            \"group\": {\n               \"email\": \"Quidem qui facere maiores voluptatum provident.\"\n            },\n            \"name\": \"Quod eum saepe deleniti neque explicabo beatae.\",\n            \"role\": \"ROLE_UNSPECIFIED\",\n            \"user\": {\n               \"email\": \"Tempora nostrum illum fuga provident.\"\n            }\n         },\n         {\n            \"deleted\": false,\n            \"email\": \"In earum at esse deleniti officiis.\",\n            \"family\": {},\n            \"group\": {\n               \"email\": \"Quidem qui facere maiores voluptatum provident.\"\n            },\n            \"name\": \"Quod eum saepe deleniti neque explicabo beatae.\",\n            \"role\": \"ROLE_UNSPECIFIED\",\n            \"user\": {\n               \"email\": \"Tempora nostrum illum fuga provident.\"\n            }\n         }\n      ],\n      \"pinned\": false,\n      \"title\": \"Nemo ex error autem.\",\n      \"trashTime\": \"Quis aperiam.\",\n      \"trashed\": false,\n      \"updateTime\": \"Aut dolores quia.\"\n   }'")
 }
 
 func notesGetUsage() {
@@ -559,7 +559,7 @@ func notesGetUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes get --id \"Velit possimus exercitationem tenetur.\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes get --id \"Reprehenderit esse.\"")
 }
 
 func notesListUsage() {
@@ -583,7 +583,7 @@ func notesListUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes list --page-size 9013197628194874479 --page-token \"Consequatur aliquid consectetur.\" --filter \"Ipsa officia modi excepturi laboriosam ut.\" --search \"Consectetur laudantium aliquid provident ratione.\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes list --page-size 8261456950903108400 --page-token \"Iure laborum et hic sint.\" --filter \"Sint necessitatibus assumenda optio blanditiis inventore.\" --search \"Numquam ipsa dolor asperiores.\"")
 }
 
 func notesUpdateUsage() {
@@ -603,7 +603,7 @@ func notesUpdateUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes update --body '{\n      \"archived\": true,\n      \"body\": {\n         \"list\": {\n            \"listItems\": [\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n                  }\n               }\n            ]\n         },\n         \"text\": {\n            \"text\": \"Nam tenetur nam blanditiis asperiores aliquid.\"\n         }\n      },\n      \"color\": \"THEME_OCEAN\",\n      \"labels\": [\n         \"Corrupti laudantium.\",\n         \"Id quidem vero eos aliquid tenetur.\",\n         \"Voluptatem vero labore.\",\n         \"Fugiat veniam ipsam iure.\"\n      ],\n      \"pinned\": false,\n      \"title\": \"bg3\"\n   }' --id \"Et hic sint veniam sint necessitatibus assumenda.\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes update --body '{\n      \"archived\": false,\n      \"body\": {\n         \"list\": {\n            \"listItems\": [\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Ut voluptatem voluptatem.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Ut voluptatem voluptatem.\"\n                  }\n               },\n               {\n                  \"checked\": true,\n                  \"childListItems\": [\n                     {},\n                     {},\n                     {}\n                  ],\n                  \"text\": {\n                     \"text\": \"Ut voluptatem voluptatem.\"\n                  }\n               }\n            ]\n         },\n         \"text\": {\n            \"text\": \"Ut voluptatem voluptatem.\"\n         }\n      },\n      \"color\": \"THEME_BAMBOO\",\n      \"labels\": [\n         \"Velit dolorum ex et.\",\n         \"Rerum consequuntur ab.\",\n         \"Officiis blanditiis accusamus placeat facilis qui beatae.\",\n         \"Corporis laboriosam dicta vero.\"\n      ],\n      \"pinned\": true,\n      \"title\": \"cjp\"\n   }' --id \"Quod qui est sequi repudiandae.\"")
 }
 
 func notesDeleteUsage() {
@@ -621,7 +621,7 @@ func notesDeleteUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes delete --id \"Exercitationem temporibus mollitia maiores.\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes delete --id \"Nobis cumque architecto ipsa.\"")
 }
 
 func notesPinUsage() {
@@ -639,7 +639,7 @@ func notesPinUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes pin --id \"Rerum ullam.\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes pin --id \"Ut reiciendis veniam dignissimos sapiente fugiat culpa.\"")
 }
 
 func notesUnpinUsage() {
@@ -657,7 +657,7 @@ func notesUnpinUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes unpin --id \"Dolor sit ullam aut omnis rerum mollitia.\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes unpin --id \"Aliquid et distinctio qui.\"")
 }
 
 func notesArchiveUsage() {
@@ -675,7 +675,7 @@ func notesArchiveUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes archive --id \"Fugiat dolor labore.\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes archive --id \"Itaque quasi eos.\"")
 }
 
 func notesUnarchiveUsage() {
@@ -693,7 +693,7 @@ func notesUnarchiveUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes unarchive --id \"Quis voluptatem veritatis quo.\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes unarchive --id \"Harum totam atque illo facere odio.\"")
 }
 
 func notesTrashUsage() {
@@ -711,7 +711,7 @@ func notesTrashUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes trash --id \"Minima asperiores veniam repellat ipsum.\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes trash --id \"Neque aliquid voluptas non voluptatem.\"")
 }
 
 func notesRestoreUsage() {
@@ -729,7 +729,7 @@ func notesRestoreUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes restore --id \"Sunt voluptate illo ut hic.\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "notes restore --id \"Quae temporibus voluptatem rerum qui.\"")
 }
 
 // permissionsUsage displays the usage of the permissions command and its
@@ -761,7 +761,7 @@ func permissionsBatchCreateUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "permissions batch-create --body '{\n      \"requests\": [\n         {\n            \"email\": \"Ut dolorum blanditiis eum eligendi velit quaerat.\",\n            \"role\": \"ROLE_UNSPECIFIED\"\n         },\n         {\n            \"email\": \"Ut dolorum blanditiis eum eligendi velit quaerat.\",\n            \"role\": \"ROLE_UNSPECIFIED\"\n         }\n      ]\n   }' --note-id \"Accusamus et in.\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "permissions batch-create --body '{\n      \"requests\": [\n         {\n            \"email\": \"Ipsum consequuntur totam et sit iusto.\",\n            \"role\": \"ROLE_UNSPECIFIED\"\n         },\n         {\n            \"email\": \"Ipsum consequuntur totam et sit iusto.\",\n            \"role\": \"ROLE_UNSPECIFIED\"\n         }\n      ]\n   }' --note-id \"Consectetur et aperiam vitae fugiat qui explicabo.\"")
 }
 
 func permissionsBatchDeleteUsage() {
@@ -781,5 +781,5 @@ func permissionsBatchDeleteUsage() {
 
 	fmt.Fprintln(os.Stderr)
 	fmt.Fprintln(os.Stderr, "Example:")
-	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "permissions batch-delete --body '{\n      \"names\": [\n         \"Nihil a temporibus natus quo earum exercitationem.\",\n         \"Sed at suscipit ab.\",\n         \"Molestiae sit aut esse laboriosam autem.\",\n         \"Nam aut.\"\n      ]\n   }' --note-id \"Tempore quod est ipsum consequuntur totam.\"")
+	fmt.Fprintf(os.Stderr, "    %s %s\n", os.Args[0], "permissions batch-delete --body '{\n      \"names\": [\n         \"Quisquam qui.\",\n         \"Praesentium quae dolor saepe.\"\n      ]\n   }' --note-id \"Est reprehenderit necessitatibus et neque sit qui.\"")
 }

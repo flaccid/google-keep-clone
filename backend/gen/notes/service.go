@@ -74,7 +74,7 @@ type ColorValue string
 // CreatePayload is the payload type of the notes service create method.
 type CreatePayload struct {
 	// The note to create.
-	Note *NoteRequest
+	Note *Note
 }
 
 // DeletePayload is the payload type of the notes service delete method.

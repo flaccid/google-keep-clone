@@ -175,11 +175,13 @@ func (s *NoteStore) List(ctx context.Context, owner string, pageSize *int, pageT
 	}
 
 	if filter != nil && *filter != "" {
-		safe, err := safeFilter(*filter)
+		fr, err := safeFilter(*filter, argIdx+1)
 		if err != nil {
 			return nil, fmt.Errorf("invalid filter: %w", err)
 		}
-		conditions = append(conditions, safe)
+		conditions = append(conditions, fr.Clause)
+		args = append(args, fr.Args...)
+		argIdx += len(fr.Args)
 	} else {
 		conditions = append(conditions, "trashed = false")
 	}
@@ -556,32 +558,89 @@ func (s *NoteStore) ensureLabelOnNote(ctx context.Context, tx pgx.Tx, owner stri
 	return nil
 }
 
-var allowedFilterColumns = map[string]bool{
-	"trashed":  true,
-	"archived": true,
-	"pinned":   true,
+var allowedFilterColumns = map[string]string{
+	"trashed":    "trashed",
+	"archived":   "archived",
+	"pinned":     "pinned",
+	"createTime": "created_at",
+	"updateTime": "updated_at",
+	"trashTime":  "trash_time",
 }
 
-func safeFilter(raw string) (string, error) {
+type filterResult struct {
+	Clause string
+	Args   []any
+}
+
+func safeFilter(raw string, startIdx int) (*filterResult, error) {
 	parts := strings.Split(raw, " AND ")
-	var safeParts []string
+	result := &filterResult{}
+	var clauses []string
+	idx := startIdx
+
 	for _, part := range parts {
 		part = strings.TrimSpace(part)
-		pairs := strings.SplitN(part, " = ", 2)
-		if len(pairs) != 2 {
-			return "", fmt.Errorf("malformed condition: %q", part)
+		if part == "" {
+			continue
 		}
-		col := strings.TrimSpace(pairs[0])
-		val := strings.TrimSpace(pairs[1])
-		if !allowedFilterColumns[col] {
-			return "", fmt.Errorf("disallowed column: %q", col)
+
+		// Handle negation shorthand: -field  →  field = false
+		if strings.HasPrefix(part, "-") {
+			col := strings.TrimPrefix(part, "-")
+			col = strings.TrimSpace(col)
+			dbCol, ok := allowedFilterColumns[col]
+			if !ok {
+				return nil, fmt.Errorf("disallowed column: %q", col)
+			}
+			result.Args = append(result.Args, false)
+			clauses = append(clauses, fmt.Sprintf("%s = $%d", dbCol, idx))
+			idx++
+			continue
 		}
-		if val != "true" && val != "false" {
-			return "", fmt.Errorf("disallowed value: %q", val)
+
+		// Parse operator
+		var col, op, val string
+		for _, possibleOp := range []string{" != ", " >= ", " <= ", " = ", " > ", " < "} {
+			pairs := strings.SplitN(part, possibleOp, 2)
+			if len(pairs) == 2 {
+				col = strings.TrimSpace(pairs[0])
+				op = strings.TrimSpace(possibleOp)
+				val = strings.TrimSpace(pairs[1])
+				break
+			}
 		}
-		safeParts = append(safeParts, fmt.Sprintf("%s = %s", col, val))
+		if col == "" {
+			return nil, fmt.Errorf("malformed filter condition: %q", part)
+		}
+
+		dbCol, ok := allowedFilterColumns[col]
+		if !ok {
+			return nil, fmt.Errorf("disallowed column: %q", col)
+		}
+
+		// Strip surrounding quotes from timestamp values
+		val = strings.Trim(val, `"`)
+
+		switch col {
+		case "trashed", "archived", "pinned":
+			if val != "true" && val != "false" {
+				return nil, fmt.Errorf("invalid boolean value for %s: %q", col, val)
+			}
+			result.Args = append(result.Args, val == "true")
+		default:
+			// timestamp columns: validate RFC3339 format
+			if _, err := time.Parse(time.RFC3339, val); err != nil {
+				return nil, fmt.Errorf("invalid timestamp value for %s: %q", col, val)
+			}
+			result.Args = append(result.Args, val)
+		}
+
+		clauses = append(clauses, fmt.Sprintf("%s %s $%d", dbCol, op, idx))
+		idx++
 	}
-	return strings.Join(safeParts, " AND "), nil
+
+	result.Clause = strings.Join(clauses, " AND ")
+	return result, nil
 }
 
 // validateConstraints checks that note data conforms to Google Keep API limits.

@@ -476,6 +476,92 @@ func unmarshalListItemRequestBodyRequestBodyToNotesListItem(v *ListItemRequestBo
 	return res
 }
 
+// unmarshalAttachmentRequestBodyRequestBodyToNotesAttachment builds a value of
+// type *notes.Attachment from a value of type
+// *AttachmentRequestBodyRequestBody.
+func unmarshalAttachmentRequestBodyRequestBodyToNotesAttachment(v *AttachmentRequestBodyRequestBody) *notes.Attachment {
+	if v == nil {
+		return nil
+	}
+	res := &notes.Attachment{
+		Name: v.Name,
+	}
+	if v.MimeType != nil {
+		res.MimeType = make([]string, len(v.MimeType))
+		for i, val := range v.MimeType {
+			res.MimeType[i] = val
+		}
+	}
+
+	return res
+}
+
+// unmarshalPermissionRequestBodyRequestBodyToNotesPermission builds a value of
+// type *notes.Permission from a value of type
+// *PermissionRequestBodyRequestBody.
+func unmarshalPermissionRequestBodyRequestBodyToNotesPermission(v *PermissionRequestBodyRequestBody) *notes.Permission {
+	if v == nil {
+		return nil
+	}
+	res := &notes.Permission{
+		Name:    v.Name,
+		Email:   v.Email,
+		Deleted: v.Deleted,
+	}
+	if v.Role != nil {
+		role := notes.Role(*v.Role)
+		res.Role = &role
+	}
+	if v.User != nil {
+		res.User = unmarshalUserRequestBodyRequestBodyToNotesUser(v.User)
+	}
+	if v.Group != nil {
+		res.Group = unmarshalGroupRequestBodyRequestBodyToNotesGroup(v.Group)
+	}
+	if v.Family != nil {
+		res.Family = unmarshalFamilyRequestBodyRequestBodyToNotesFamily(v.Family)
+	}
+
+	return res
+}
+
+// unmarshalUserRequestBodyRequestBodyToNotesUser builds a value of type
+// *notes.User from a value of type *UserRequestBodyRequestBody.
+func unmarshalUserRequestBodyRequestBodyToNotesUser(v *UserRequestBodyRequestBody) *notes.User {
+	if v == nil {
+		return nil
+	}
+	res := &notes.User{
+		Email: v.Email,
+	}
+
+	return res
+}
+
+// unmarshalGroupRequestBodyRequestBodyToNotesGroup builds a value of type
+// *notes.Group from a value of type *GroupRequestBodyRequestBody.
+func unmarshalGroupRequestBodyRequestBodyToNotesGroup(v *GroupRequestBodyRequestBody) *notes.Group {
+	if v == nil {
+		return nil
+	}
+	res := &notes.Group{
+		Email: v.Email,
+	}
+
+	return res
+}
+
+// unmarshalFamilyRequestBodyRequestBodyToNotesFamily builds a value of type
+// *notes.Family from a value of type *FamilyRequestBodyRequestBody.
+func unmarshalFamilyRequestBodyRequestBodyToNotesFamily(v *FamilyRequestBodyRequestBody) *notes.Family {
+	if v == nil {
+		return nil
+	}
+	res := &notes.Family{}
+
+	return res
+}
+
 // marshalNotesSectionToSectionResponseBody builds a value of type
 // *SectionResponseBody from a value of type *notes.Section.
 func marshalNotesSectionToSectionResponseBody(v *notes.Section) *SectionResponseBody {
