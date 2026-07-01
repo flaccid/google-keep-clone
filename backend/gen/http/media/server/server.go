@@ -19,6 +19,7 @@ import (
 // Server lists the media service endpoint HTTP handlers.
 type Server struct {
 	Mounts   []*MountPoint
+	Upload   http.Handler
 	Download http.Handler
 }
 
@@ -49,8 +50,10 @@ func New(
 ) *Server {
 	return &Server{
 		Mounts: []*MountPoint{
+			{"Upload", "POST", "/v1/notes/{noteId}/attachments"},
 			{"Download", "GET", "/v1/notes/{noteId}/attachments/{attachmentId}"},
 		},
+		Upload:   NewUploadHandler(e.Upload, mux, decoder, encoder, errhandler, formatter),
 		Download: NewDownloadHandler(e.Download, mux, decoder, encoder, errhandler, formatter),
 	}
 }
@@ -60,6 +63,7 @@ func (s *Server) Service() string { return "media" }
 
 // Use wraps the server handlers with the given middleware.
 func (s *Server) Use(m func(http.Handler) http.Handler) {
+	s.Upload = m(s.Upload)
 	s.Download = m(s.Download)
 }
 
@@ -68,12 +72,66 @@ func (s *Server) MethodNames() []string { return media.MethodNames[:] }
 
 // Mount configures the mux to serve the media endpoints.
 func Mount(mux goahttp.Muxer, h *Server) {
+	MountUploadHandler(mux, h.Upload)
 	MountDownloadHandler(mux, h.Download)
 }
 
 // Mount configures the mux to serve the media endpoints.
 func (s *Server) Mount(mux goahttp.Muxer) {
 	Mount(mux, s)
+}
+
+// MountUploadHandler configures the mux to serve the "media" service "upload"
+// endpoint.
+func MountUploadHandler(mux goahttp.Muxer, h http.Handler) {
+	f, ok := h.(http.HandlerFunc)
+	if !ok {
+		f = func(w http.ResponseWriter, r *http.Request) {
+			h.ServeHTTP(w, r)
+		}
+	}
+	mux.Handle("POST", "/v1/notes/{noteId}/attachments", f)
+}
+
+// NewUploadHandler creates a HTTP handler which loads the HTTP request and
+// calls the "media" service "upload" endpoint.
+func NewUploadHandler(
+	endpoint goa.Endpoint,
+	mux goahttp.Muxer,
+	decoder func(*http.Request) goahttp.Decoder,
+	encoder func(context.Context, http.ResponseWriter) goahttp.Encoder,
+	errhandler func(context.Context, http.ResponseWriter, error),
+	formatter func(ctx context.Context, err error) goahttp.Statuser,
+) http.Handler {
+	var (
+		decodeRequest  = DecodeUploadRequest(mux, decoder)
+		encodeResponse = EncodeUploadResponse(encoder)
+		encodeError    = goahttp.ErrorEncoder(encoder, formatter)
+	)
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
+		ctx = context.WithValue(ctx, goa.MethodKey, "upload")
+		ctx = context.WithValue(ctx, goa.ServiceKey, "media")
+		payload, err := decodeRequest(r)
+		if err != nil {
+			if err := encodeError(ctx, w, err); err != nil && errhandler != nil {
+				errhandler(ctx, w, err)
+			}
+			return
+		}
+		res, err := endpoint(ctx, payload)
+		if err != nil {
+			if err := encodeError(ctx, w, err); err != nil && errhandler != nil {
+				errhandler(ctx, w, err)
+			}
+			return
+		}
+		if err := encodeResponse(ctx, w, res); err != nil {
+			if errhandler != nil {
+				errhandler(ctx, w, err)
+			}
+		}
+	})
 }
 
 // MountDownloadHandler configures the mux to serve the "media" service

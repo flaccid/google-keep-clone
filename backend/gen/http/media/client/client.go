@@ -17,6 +17,9 @@ import (
 
 // Client lists the media service endpoint HTTP clients.
 type Client struct {
+	// Upload Doer is the HTTP client used to make requests to the upload endpoint.
+	UploadDoer goahttp.Doer
+
 	// Download Doer is the HTTP client used to make requests to the download
 	// endpoint.
 	DownloadDoer goahttp.Doer
@@ -41,6 +44,7 @@ func NewClient(
 	restoreBody bool,
 ) *Client {
 	return &Client{
+		UploadDoer:          doer,
 		DownloadDoer:        doer,
 		RestoreResponseBody: restoreBody,
 		scheme:              scheme,
@@ -50,14 +54,43 @@ func NewClient(
 	}
 }
 
+// Upload returns an endpoint that makes HTTP requests to the media service
+// upload server.
+func (c *Client) Upload() goa.Endpoint {
+	var (
+		encodeRequest  = EncodeUploadRequest(c.encoder)
+		decodeResponse = DecodeUploadResponse(c.decoder, c.RestoreResponseBody)
+	)
+	return func(ctx context.Context, v any) (any, error) {
+		req, err := c.BuildUploadRequest(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+		err = encodeRequest(req, v)
+		if err != nil {
+			return nil, err
+		}
+		resp, err := c.UploadDoer.Do(req)
+		if err != nil {
+			return nil, goahttp.ErrRequestError("media", "upload", err)
+		}
+		return decodeResponse(resp)
+	}
+}
+
 // Download returns an endpoint that makes HTTP requests to the media service
 // download server.
 func (c *Client) Download() goa.Endpoint {
 	var (
+		encodeRequest  = EncodeDownloadRequest(c.encoder)
 		decodeResponse = DecodeDownloadResponse(c.decoder, c.RestoreResponseBody)
 	)
 	return func(ctx context.Context, v any) (any, error) {
 		req, err := c.BuildDownloadRequest(ctx, v)
+		if err != nil {
+			return nil, err
+		}
+		err = encodeRequest(req, v)
 		if err != nil {
 			return nil, err
 		}

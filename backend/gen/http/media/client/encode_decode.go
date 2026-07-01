@@ -18,6 +18,87 @@ import (
 	goahttp "goa.design/goa/v3/http"
 )
 
+// BuildUploadRequest instantiates a HTTP request object with method and path
+// set to call the "media" service "upload" endpoint
+func (c *Client) BuildUploadRequest(ctx context.Context, v any) (*http.Request, error) {
+	var (
+		noteID string
+	)
+	{
+		p, ok := v.(*media.UploadPayload)
+		if !ok {
+			return nil, goahttp.ErrInvalidType("media", "upload", "*media.UploadPayload", v)
+		}
+		noteID = p.NoteID
+	}
+	u := &url.URL{Scheme: c.scheme, Host: c.host, Path: UploadMediaPath(noteID)}
+	req, err := http.NewRequest("POST", u.String(), nil)
+	if err != nil {
+		return nil, goahttp.ErrInvalidURL("media", "upload", u.String(), err)
+	}
+	if ctx != nil {
+		req = req.WithContext(ctx)
+	}
+
+	return req, nil
+}
+
+// EncodeUploadRequest returns an encoder for requests sent to the media upload
+// server.
+func EncodeUploadRequest(encoder func(*http.Request) goahttp.Encoder) func(*http.Request, any) error {
+	return func(req *http.Request, v any) error {
+		p, ok := v.(*media.UploadPayload)
+		if !ok {
+			return goahttp.ErrInvalidType("media", "upload", "*media.UploadPayload", v)
+		}
+		{
+			head := p.ContentType
+			req.Header.Set("Content-Type", head)
+		}
+		body := p.Data
+		if err := encoder(req).Encode(&body); err != nil {
+			return goahttp.ErrEncodingError("media", "upload", err)
+		}
+		return nil
+	}
+}
+
+// DecodeUploadResponse returns a decoder for responses returned by the media
+// upload endpoint. restoreBody controls whether the response body should be
+// restored after having been read.
+func DecodeUploadResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (any, error) {
+	return func(resp *http.Response) (any, error) {
+		if restoreBody {
+			b, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return nil, err
+			}
+			resp.Body = io.NopCloser(bytes.NewBuffer(b))
+			defer func() {
+				resp.Body = io.NopCloser(bytes.NewBuffer(b))
+			}()
+		} else {
+			defer resp.Body.Close()
+		}
+		switch resp.StatusCode {
+		case http.StatusCreated:
+			var (
+				body UploadResponseBody
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("media", "upload", err)
+			}
+			res := NewUploadAttachmentCreated(&body)
+			return res, nil
+		default:
+			body, _ := io.ReadAll(resp.Body)
+			return nil, goahttp.ErrInvalidResponse("media", "upload", resp.StatusCode, string(body))
+		}
+	}
+}
+
 // BuildDownloadRequest instantiates a HTTP request object with method and path
 // set to call the "media" service "download" endpoint
 func (c *Client) BuildDownloadRequest(ctx context.Context, v any) (*http.Request, error) {
@@ -43,6 +124,23 @@ func (c *Client) BuildDownloadRequest(ctx context.Context, v any) (*http.Request
 	}
 
 	return req, nil
+}
+
+// EncodeDownloadRequest returns an encoder for requests sent to the media
+// download server.
+func EncodeDownloadRequest(encoder func(*http.Request) goahttp.Encoder) func(*http.Request, any) error {
+	return func(req *http.Request, v any) error {
+		p, ok := v.(*media.DownloadPayload)
+		if !ok {
+			return goahttp.ErrInvalidType("media", "download", "*media.DownloadPayload", v)
+		}
+		values := req.URL.Query()
+		if p.MimeType != nil {
+			values.Add("mimeType", *p.MimeType)
+		}
+		req.URL.RawQuery = values.Encode()
+		return nil
+	}
 }
 
 // DecodeDownloadResponse returns a decoder for responses returned by the media

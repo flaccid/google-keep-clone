@@ -2,6 +2,8 @@ package store
 
 import (
 	"context"
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -14,7 +16,8 @@ import (
 )
 
 type NoteStore struct {
-	pool *pgxpool.Pool
+	pool            *pgxpool.Pool
+	attachmentStore *AttachmentStore
 }
 
 type noteRow struct {
@@ -54,11 +57,15 @@ type permissionRow struct {
 	Role   string
 }
 
-func NewNoteStore(pool *pgxpool.Pool) *NoteStore {
-	return &NoteStore{pool: pool}
+func NewNoteStore(pool *pgxpool.Pool, attachmentStore *AttachmentStore) *NoteStore {
+	return &NoteStore{pool: pool, attachmentStore: attachmentStore}
 }
 
 func (s *NoteStore) Create(ctx context.Context, owner string, title string, bodyType *string, bodyText string, color string, pinned bool, archived bool, labels []string, listItems []*notes.ListItem) (*notes.Note, error) {
+	if err := validateConstraints(bodyType, bodyText, listItems); err != nil {
+		return nil, err
+	}
+
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("begin transaction: %w", err)
@@ -110,17 +117,33 @@ func (s *NoteStore) GetByName(ctx context.Context, owner string, name string) (*
 	return s.GetByID(ctx, owner, id)
 }
 
+type pageCursor struct {
+	Pinned    bool   `json:"p"`
+	UpdatedAt string `json:"u"`
+}
+
+func encodeCursor(pinned bool, updatedAt time.Time) string {
+	c := pageCursor{Pinned: pinned, UpdatedAt: updatedAt.Format(time.RFC3339Nano)}
+	data, _ := json.Marshal(c)
+	return base64.URLEncoding.EncodeToString(data)
+}
+
+func decodeCursor(token string) (*pageCursor, error) {
+	data, err := base64.URLEncoding.DecodeString(token)
+	if err != nil {
+		return nil, fmt.Errorf("decode cursor: %w", err)
+	}
+	var c pageCursor
+	if err := json.Unmarshal(data, &c); err != nil {
+		return nil, fmt.Errorf("parse cursor: %w", err)
+	}
+	return &c, nil
+}
+
 func (s *NoteStore) List(ctx context.Context, owner string, pageSize *int, pageToken *string, filter *string, search *string) (*notes.ListNotesResponse, error) {
 	limit := 20
 	if pageSize != nil && *pageSize > 0 {
 		limit = *pageSize
-	}
-
-	var offset int
-	if pageToken != nil && *pageToken != "" {
-		if _, err := fmt.Sscanf(*pageToken, "%d", &offset); err != nil {
-			return nil, fmt.Errorf("invalid page token: %w", err)
-		}
 	}
 
 	var conditions []string
@@ -130,6 +153,26 @@ func (s *NoteStore) List(ctx context.Context, owner string, pageSize *int, pageT
 	argIdx++
 	conditions = append(conditions, fmt.Sprintf("owner = $%d", argIdx))
 	args = append(args, owner)
+
+	if pageToken != nil && *pageToken != "" {
+		cursor, err := decodeCursor(*pageToken)
+		if err != nil {
+			return nil, fmt.Errorf("invalid page token: %w", err)
+		}
+		argIdx++
+		pinnedIdx := argIdx
+		argIdx++
+		updatedAtIdx := argIdx
+		conditions = append(conditions, fmt.Sprintf(
+			"(pinned < $%d OR (pinned = $%d AND updated_at < $%d))",
+			pinnedIdx, pinnedIdx, updatedAtIdx,
+		))
+		pinnedVal := false
+		if cursor.Pinned {
+			pinnedVal = true
+		}
+		args = append(args, pinnedVal, cursor.UpdatedAt)
+	}
 
 	if filter != nil && *filter != "" {
 		safe, err := safeFilter(*filter)
@@ -151,8 +194,6 @@ func (s *NoteStore) List(ctx context.Context, owner string, pageSize *int, pageT
 
 	argIdx++
 	limitArg := argIdx
-	argIdx++
-	offsetArg := argIdx
 
 	whereClause := strings.Join(conditions, " AND ")
 
@@ -160,10 +201,10 @@ func (s *NoteStore) List(ctx context.Context, owner string, pageSize *int, pageT
 		SELECT id, title, body_type, body_text, color, pinned, archived, trashed, trash_time, created_at, updated_at
 		FROM notes WHERE %s
 		ORDER BY pinned DESC, updated_at DESC
-		LIMIT $%d OFFSET $%d
-	`, whereClause, limitArg, offsetArg)
+		LIMIT $%d
+	`, whereClause, limitArg)
 
-	args = append(args, limit, offset)
+	args = append(args, limit)
 
 	rows, err := s.pool.Query(ctx, query, args...)
 	if err != nil {
@@ -191,7 +232,8 @@ func (s *NoteStore) List(ctx context.Context, owner string, pageSize *int, pageT
 
 	var nextToken *string
 	if len(notes_) == limit {
-		t := fmt.Sprintf("%d", offset+limit)
+		last := noteRows[len(noteRows)-1]
+		t := encodeCursor(last.Pinned, last.UpdatedAt)
 		nextToken = &t
 	}
 
@@ -202,6 +244,16 @@ func (s *NoteStore) List(ctx context.Context, owner string, pageSize *int, pageT
 }
 
 func (s *NoteStore) Update(ctx context.Context, owner string, id uuid.UUID, title *string, bodyType *string, bodyText *string, color *string, pinned *bool, archived *bool, labels []string, listItems []*notes.ListItem) (*notes.Note, error) {
+	if bodyType != nil || bodyText != nil || listItems != nil {
+		bodyTextVal := ""
+		if bodyText != nil {
+			bodyTextVal = *bodyText
+		}
+		if err := validateConstraints(bodyType, bodyTextVal, listItems); err != nil {
+			return nil, err
+		}
+	}
+
 	tx, err := s.pool.Begin(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("begin transaction: %w", err)
@@ -377,6 +429,14 @@ func (s *NoteStore) assembleNote(ctx context.Context, row noteRow) (*notes.Note,
 	}
 	n.Labels = labels
 
+	if s.attachmentStore != nil {
+		atts, err := s.attachmentStore.ListByNote(ctx, row.ID)
+		if err != nil {
+			return nil, err
+		}
+		n.Attachments = atts
+	}
+
 	return n, nil
 }
 
@@ -522,6 +582,34 @@ func safeFilter(raw string) (string, error) {
 		safeParts = append(safeParts, fmt.Sprintf("%s = %s", col, val))
 	}
 	return strings.Join(safeParts, " AND "), nil
+}
+
+// validateConstraints checks that note data conforms to Google Keep API limits.
+func validateConstraints(bodyType *string, bodyText string, listItems []*notes.ListItem) error {
+	if bodyType != nil && *bodyType == "text" && len(bodyText) > 20000 {
+		return fmt.Errorf("body text must be less than 20,000 characters")
+	}
+	if len(listItems) > 1000 {
+		return fmt.Errorf("list items must be fewer than 1,000")
+	}
+	for _, item := range listItems {
+		if err := validateListItemText(item); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func validateListItemText(item *notes.ListItem) error {
+	if item.Text != nil && item.Text.Text != nil && len(*item.Text.Text) > 1000 {
+		return fmt.Errorf("list item text must be less than 1,000 characters")
+	}
+	for _, child := range item.ChildListItems {
+		if err := validateListItemText(child); err != nil {
+			return err
+		}
+	}
+	return nil
 }
 
 func parseNoteName(name string) (uuid.UUID, error) {

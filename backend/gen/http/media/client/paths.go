@@ -11,6 +11,11 @@ import (
 	"fmt"
 )
 
+// UploadMediaPath returns the URL path to the media service upload HTTP endpoint.
+func UploadMediaPath(noteID string) string {
+	return fmt.Sprintf("/v1/notes/%v/attachments", noteID)
+}
+
 // DownloadMediaPath returns the URL path to the media service download HTTP endpoint.
 func DownloadMediaPath(noteID string, attachmentID string) string {
 	return fmt.Sprintf("/v1/notes/%v/attachments/%v", noteID, attachmentID)

@@ -22,7 +22,7 @@ func BuildCreatePayload(labelsCreateBody string) (*labels.CreatePayload, error) 
 	{
 		err = json.Unmarshal([]byte(labelsCreateBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"displayName\": \"Non dolore voluptatem ipsa.\"\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"displayName\": \"Autem quia aut modi.\"\n   }'")
 		}
 	}
 	v := &labels.CreatePayload{
@@ -40,7 +40,7 @@ func BuildUpdatePayload(labelsUpdateBody string, labelsUpdateID string) (*labels
 	{
 		err = json.Unmarshal([]byte(labelsUpdateBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"displayName\": \"Eum deleniti ad quia.\"\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"displayName\": \"Tempora est est.\"\n   }'")
 		}
 	}
 	var id string

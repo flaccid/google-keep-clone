@@ -11,8 +11,10 @@ import (
 	"context"
 )
 
-// The media service handles attachment downloads.
+// The media service handles attachment uploads and downloads.
 type Service interface {
+	// Uploads an attachment to a note.
+	Upload(context.Context, *UploadPayload) (res *Attachment, err error)
 	// Downloads an attachment.
 	Download(context.Context, *DownloadPayload) (res []byte, err error)
 }
@@ -31,7 +33,15 @@ const ServiceName = "media"
 // MethodNames lists the service method names as defined in the design. These
 // are the same values that are set in the endpoint request contexts under the
 // MethodKey key.
-var MethodNames = [1]string{"download"}
+var MethodNames = [2]string{"upload", "download"}
+
+// The created attachment.
+type Attachment struct {
+	// The resource name of the attachment.
+	Name *string
+	// The MIME types in which the attachment is available.
+	MimeType []string
+}
 
 // DownloadPayload is the payload type of the media service download method.
 type DownloadPayload struct {
@@ -39,4 +49,16 @@ type DownloadPayload struct {
 	NoteID string
 	// The ID of the attachment.
 	AttachmentID string
+	// The requested MIME type. Must be one of the attachment's mimeType values.
+	MimeType *string
+}
+
+// UploadPayload is the payload type of the media service upload method.
+type UploadPayload struct {
+	// The ID of the note.
+	NoteID string
+	// The MIME type of the attachment.
+	ContentType string
+	// The attachment data.
+	Data []byte
 }

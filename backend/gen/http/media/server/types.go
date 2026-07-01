@@ -11,11 +11,48 @@ import (
 	media "github.com/flaccid/google-keep-clone/backend/gen/media"
 )
 
+// UploadResponseBody is the type of the "media" service "upload" endpoint HTTP
+// response body.
+type UploadResponseBody struct {
+	// The resource name of the attachment.
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
+	// The MIME types in which the attachment is available.
+	MimeType []string `form:"mimeType,omitempty" json:"mimeType,omitempty" xml:"mimeType,omitempty"`
+}
+
+// NewUploadResponseBody builds the HTTP response body from the result of the
+// "upload" endpoint of the "media" service.
+func NewUploadResponseBody(res *media.Attachment) *UploadResponseBody {
+	body := &UploadResponseBody{
+		Name: res.Name,
+	}
+	if res.MimeType != nil {
+		body.MimeType = make([]string, len(res.MimeType))
+		for i, val := range res.MimeType {
+			body.MimeType[i] = val
+		}
+	}
+	return body
+}
+
+// NewUploadPayload builds a media service upload endpoint payload.
+func NewUploadPayload(body []byte, noteID string, contentType string) *media.UploadPayload {
+	v := body
+	res := &media.UploadPayload{
+		Data: v,
+	}
+	res.NoteID = noteID
+	res.ContentType = contentType
+
+	return res
+}
+
 // NewDownloadPayload builds a media service download endpoint payload.
-func NewDownloadPayload(noteID string, attachmentID string) *media.DownloadPayload {
+func NewDownloadPayload(noteID string, attachmentID string, mimeType *string) *media.DownloadPayload {
 	v := &media.DownloadPayload{}
 	v.NoteID = noteID
 	v.AttachmentID = attachmentID
+	v.MimeType = mimeType
 
 	return v
 }

@@ -3,16 +3,12 @@ package main
 import (
 	"context"
 	_ "embed"
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
 	"time"
-
-	"github.com/google/uuid"
 
 	labelssvr "github.com/flaccid/google-keep-clone/backend/gen/http/labels/server"
 	mediasvr "github.com/flaccid/google-keep-clone/backend/gen/http/media/server"
@@ -65,10 +61,6 @@ func handleHTTPServer(ctx context.Context, u *url.URL, mediaEndpoints *media.End
 	labelssvr.Mount(mux, labelsServer)
 	notessvr.Mount(mux, notesServer)
 	permissionssvr.Mount(mux, permissionsServer)
-
-	if attachmentStore != nil {
-		mux.Handle("POST", "/v1/notes/{noteId}/attachments", uploadHandler(attachmentStore, mux))
-	}
 
 	mux.Handle("GET", "/openapi.yaml", func(w http.ResponseWriter, r *http.Request) {
 		spec := string(openapiSpec)
@@ -124,7 +116,6 @@ func handleHTTPServer(ctx context.Context, u *url.URL, mediaEndpoints *media.End
 	for _, m := range permissionsServer.Mounts {
 		log.Printf(ctx, "HTTP %q mounted on %s %s", m.Method, m.Verb, m.Pattern)
 	}
-	log.Printf(ctx, "HTTP %q mounted on %s %s", "POST", "POST", "/v1/notes/{noteId}/attachments")
 	log.Printf(ctx, "HTTP %q mounted on %s %s", "GET", "GET", "/openapi")
 	log.Printf(ctx, "HTTP %q mounted on %s %s", "GET", "GET", "/openapi.yaml")
 
@@ -161,48 +152,6 @@ func securityHeaders(next http.Handler) http.Handler {
 		w.Header().Set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), interest-cohort=()")
 		next.ServeHTTP(w, r)
 	})
-}
-
-func uploadHandler(attachStore *store.AttachmentStore, mux goahttp.Muxer) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		noteID := mux.Vars(r)["noteId"]
-
-		nid, err := uuid.Parse(noteID)
-		if err != nil {
-			http.Error(w, `{"error":"invalid note ID"}`, http.StatusBadRequest)
-			return
-		}
-
-		contentType := r.Header.Get("Content-Type")
-		if contentType == "" || len(contentType) > 256 {
-			contentType = "application/octet-stream"
-		}
-		allowed := map[string]bool{
-			"image/jpeg": true, "image/png": true, "image/gif": true,
-			"image/webp": true, "image/svg+xml": true, "application/pdf": true,
-			"text/plain": true, "application/octet-stream": true,
-		}
-		if !allowed[contentType] {
-			http.Error(w, `{"error":"unsupported content type"}`, http.StatusUnsupportedMediaType)
-			return
-		}
-		data, err := io.ReadAll(io.LimitReader(r.Body, 32<<20))
-		if err != nil {
-			http.Error(w, `{"error":"failed to read body"}`, http.StatusInternalServerError)
-			return
-		}
-		defer r.Body.Close()
-
-		att, err := attachStore.Upload(r.Context(), nid, contentType, data)
-		if err != nil {
-			http.Error(w, `{"error":"upload failed"}`, http.StatusInternalServerError)
-			return
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusCreated)
-		json.NewEncoder(w).Encode(att)
-	}
 }
 
 func errorHandler(logCtx context.Context) func(context.Context, http.ResponseWriter, error) {

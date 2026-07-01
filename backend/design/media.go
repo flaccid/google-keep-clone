@@ -5,7 +5,29 @@ import (
 )
 
 var _ = Service("media", func() {
-	Description("The media service handles attachment downloads.")
+	Description("The media service handles attachment uploads and downloads.")
+
+	Method("upload", func() {
+		Description("Uploads an attachment to a note.")
+
+		Payload(func() {
+			Attribute("noteId", String, "The ID of the note.")
+			Attribute("contentType", String, "The MIME type of the attachment.", func() {
+				Example("image/png")
+			})
+			Attribute("data", Bytes, "The attachment data.")
+			Required("noteId", "contentType", "data")
+		})
+
+		Result(Attachment, "The created attachment.")
+
+		HTTP(func() {
+			POST("/v1/notes/{noteId}/attachments")
+			Header("contentType:Content-Type")
+			Body("data")
+			Response(StatusCreated)
+		})
+	})
 
 	Method("download", func() {
 		Description("Downloads an attachment.")
@@ -13,6 +35,7 @@ var _ = Service("media", func() {
 		Payload(func() {
 			Attribute("noteId", String, "The ID of the note.")
 			Attribute("attachmentId", String, "The ID of the attachment.")
+			Attribute("mimeType", String, "The requested MIME type. Must be one of the attachment's mimeType values.")
 			Required("noteId", "attachmentId")
 		})
 
@@ -20,6 +43,7 @@ var _ = Service("media", func() {
 
 		HTTP(func() {
 			GET("/v1/notes/{noteId}/attachments/{attachmentId}")
+			Param("mimeType")
 			Response(StatusOK, func() {
 				ContentType("application/octet-stream")
 			})

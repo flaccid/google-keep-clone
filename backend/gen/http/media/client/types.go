@@ -6,3 +6,32 @@
 // $ goa gen github.com/flaccid/google-keep-clone/backend/design
 
 package client
+
+import (
+	media "github.com/flaccid/google-keep-clone/backend/gen/media"
+)
+
+// UploadResponseBody is the type of the "media" service "upload" endpoint HTTP
+// response body.
+type UploadResponseBody struct {
+	// The resource name of the attachment.
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
+	// The MIME types in which the attachment is available.
+	MimeType []string `form:"mimeType,omitempty" json:"mimeType,omitempty" xml:"mimeType,omitempty"`
+}
+
+// NewUploadAttachmentCreated builds a "media" service "upload" endpoint result
+// from a HTTP "Created" response.
+func NewUploadAttachmentCreated(body *UploadResponseBody) *media.Attachment {
+	v := &media.Attachment{
+		Name: body.Name,
+	}
+	if body.MimeType != nil {
+		v.MimeType = make([]string, len(body.MimeType))
+		for i, val := range body.MimeType {
+			v.MimeType[i] = val
+		}
+	}
+
+	return v
+}

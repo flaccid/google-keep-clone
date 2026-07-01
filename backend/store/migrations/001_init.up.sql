@@ -45,7 +45,7 @@ CREATE TABLE permissions (
     note_id UUID NOT NULL REFERENCES notes(id) ON DELETE CASCADE,
     owner UUID NOT NULL,
     email TEXT NOT NULL,
-    role TEXT NOT NULL CHECK (role IN ('OWNER', 'WRITER')),
+    role TEXT NOT NULL CHECK (role IN ('ROLE_UNSPECIFIED', 'OWNER', 'WRITER')),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE(note_id, email)
 );

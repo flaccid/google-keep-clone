@@ -13,7 +13,7 @@ import (
 
 func TestBatchCreatePermissions(t *testing.T) {
 	pool := newTestPool(t)
-	noteStore := NewNoteStore(pool)
+	noteStore := NewNoteStore(pool, nil)
 	permStore := NewPermissionStore(pool)
 
 	n, err := noteStore.Create(context.Background(), testOwner, "Shared Note", strPtr("text"), "Content", "DEFAULT", false, false, nil, nil)
@@ -37,7 +37,7 @@ func TestBatchCreatePermissions(t *testing.T) {
 
 func TestBatchCreateDuplicateEmail(t *testing.T) {
 	pool := newTestPool(t)
-	noteStore := NewNoteStore(pool)
+	noteStore := NewNoteStore(pool, nil)
 	permStore := NewPermissionStore(pool)
 
 	n, err := noteStore.Create(context.Background(), testOwner, "Shared Note", strPtr("text"), "Content", "DEFAULT", false, false, nil, nil)
@@ -63,7 +63,7 @@ func TestBatchCreateDuplicateEmail(t *testing.T) {
 
 func TestBatchDeletePermissions(t *testing.T) {
 	pool := newTestPool(t)
-	noteStore := NewNoteStore(pool)
+	noteStore := NewNoteStore(pool, nil)
 	permStore := NewPermissionStore(pool)
 
 	n, err := noteStore.Create(context.Background(), testOwner, "Shared Note", strPtr("text"), "Content", "DEFAULT", false, false, nil, nil)

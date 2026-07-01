@@ -15,14 +15,26 @@ import (
 
 // Client is the "media" service client.
 type Client struct {
+	UploadEndpoint   goa.Endpoint
 	DownloadEndpoint goa.Endpoint
 }
 
 // NewClient initializes a "media" service client given the endpoints.
-func NewClient(download goa.Endpoint) *Client {
+func NewClient(upload, download goa.Endpoint) *Client {
 	return &Client{
+		UploadEndpoint:   upload,
 		DownloadEndpoint: download,
 	}
+}
+
+// Upload calls the "upload" endpoint of the "media" service.
+func (c *Client) Upload(ctx context.Context, p *UploadPayload) (res *Attachment, err error) {
+	var ires any
+	ires, err = c.UploadEndpoint(ctx, p)
+	if err != nil {
+		return
+	}
+	return ires.(*Attachment), nil
 }
 
 // Download calls the "download" endpoint of the "media" service.

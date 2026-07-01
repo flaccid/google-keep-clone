@@ -11,9 +11,34 @@ import (
 	media "github.com/flaccid/google-keep-clone/backend/gen/media"
 )
 
+// BuildUploadPayload builds the payload for the media upload endpoint from CLI
+// flags.
+func BuildUploadPayload(mediaUploadBody string, mediaUploadNoteID string, mediaUploadContentType string) (*media.UploadPayload, error) {
+	var body []byte
+	{
+		body = []byte(mediaUploadBody)
+	}
+	var noteID string
+	{
+		noteID = mediaUploadNoteID
+	}
+	var contentType string
+	{
+		contentType = mediaUploadContentType
+	}
+	v := body
+	res := &media.UploadPayload{
+		Data: v,
+	}
+	res.NoteID = noteID
+	res.ContentType = contentType
+
+	return res, nil
+}
+
 // BuildDownloadPayload builds the payload for the media download endpoint from
 // CLI flags.
-func BuildDownloadPayload(mediaDownloadNoteID string, mediaDownloadAttachmentID string) (*media.DownloadPayload, error) {
+func BuildDownloadPayload(mediaDownloadNoteID string, mediaDownloadAttachmentID string, mediaDownloadMimeType string) (*media.DownloadPayload, error) {
 	var noteID string
 	{
 		noteID = mediaDownloadNoteID
@@ -22,9 +47,16 @@ func BuildDownloadPayload(mediaDownloadNoteID string, mediaDownloadAttachmentID 
 	{
 		attachmentID = mediaDownloadAttachmentID
 	}
+	var mimeType *string
+	{
+		if mediaDownloadMimeType != "" {
+			mimeType = &mediaDownloadMimeType
+		}
+	}
 	v := &media.DownloadPayload{}
 	v.NoteID = noteID
 	v.AttachmentID = attachmentID
+	v.MimeType = mimeType
 
 	return v, nil
 }

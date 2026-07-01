@@ -9,11 +9,67 @@ package server
 
 import (
 	"context"
+	"errors"
+	"io"
 	"net/http"
 
 	media "github.com/flaccid/google-keep-clone/backend/gen/media"
 	goahttp "goa.design/goa/v3/http"
+	goa "goa.design/goa/v3/pkg"
 )
+
+// EncodeUploadResponse returns an encoder for responses returned by the media
+// upload endpoint.
+func EncodeUploadResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, any) error {
+	return func(ctx context.Context, w http.ResponseWriter, v any) error {
+		res, _ := v.(*media.Attachment)
+		enc := encoder(ctx, w)
+		body := NewUploadResponseBody(res)
+		w.WriteHeader(http.StatusCreated)
+		return enc.Encode(body)
+	}
+}
+
+// DecodeUploadRequest returns a decoder for requests sent to the media upload
+// endpoint.
+func DecodeUploadRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.Decoder) func(*http.Request) (*media.UploadPayload, error) {
+	return func(r *http.Request) (*media.UploadPayload, error) {
+		var payload *media.UploadPayload
+		var (
+			body []byte
+			err  error
+		)
+		err = decoder(r).Decode(&body)
+		if err != nil {
+			if errors.Is(err, io.EOF) {
+				return payload, goa.MissingPayloadError()
+			}
+			var gerr *goa.ServiceError
+			if errors.As(err, &gerr) {
+				return payload, gerr
+			}
+			return payload, goa.DecodePayloadError(err.Error())
+		}
+
+		var (
+			noteID      string
+			contentType string
+
+			params = mux.Vars(r)
+		)
+		noteID = params["noteId"]
+		contentType = r.Header.Get("Content-Type")
+		if contentType == "" {
+			err = goa.MergeErrors(err, goa.MissingFieldError("contentType", "header"))
+		}
+		if err != nil {
+			return payload, err
+		}
+		payload = NewUploadPayload(body, noteID, contentType)
+
+		return payload, nil
+	}
+}
 
 // EncodeDownloadResponse returns an encoder for responses returned by the
 // media download endpoint.
@@ -36,12 +92,17 @@ func DecodeDownloadRequest(mux goahttp.Muxer, decoder func(*http.Request) goahtt
 		var (
 			noteID       string
 			attachmentID string
+			mimeType     *string
 
 			params = mux.Vars(r)
 		)
 		noteID = params["noteId"]
 		attachmentID = params["attachmentId"]
-		payload = NewDownloadPayload(noteID, attachmentID)
+		mimeTypeRaw := r.URL.Query().Get("mimeType")
+		if mimeTypeRaw != "" {
+			mimeType = &mimeTypeRaw
+		}
+		payload = NewDownloadPayload(noteID, attachmentID, mimeType)
 
 		return payload, nil
 	}

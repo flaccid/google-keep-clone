@@ -15,19 +15,31 @@ import (
 
 // Endpoints wraps the "media" service endpoints.
 type Endpoints struct {
+	Upload   goa.Endpoint
 	Download goa.Endpoint
 }
 
 // NewEndpoints wraps the methods of the "media" service with endpoints.
 func NewEndpoints(s Service) *Endpoints {
 	return &Endpoints{
+		Upload:   NewUploadEndpoint(s),
 		Download: NewDownloadEndpoint(s),
 	}
 }
 
 // Use applies the given middleware to all the "media" service endpoints.
 func (e *Endpoints) Use(m func(goa.Endpoint) goa.Endpoint) {
+	e.Upload = m(e.Upload)
 	e.Download = m(e.Download)
+}
+
+// NewUploadEndpoint returns an endpoint function that calls the method
+// "upload" of service "media".
+func NewUploadEndpoint(s Service) goa.Endpoint {
+	return func(ctx context.Context, req any) (any, error) {
+		p := req.(*UploadPayload)
+		return s.Upload(ctx, p)
+	}
 }
 
 // NewDownloadEndpoint returns an endpoint function that calls the method

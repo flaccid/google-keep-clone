@@ -41,7 +41,7 @@ func newTestServer(t *testing.T) (*httptest.Server, *store.NoteStore) {
 
 	truncateTables(t, pool)
 
-	noteStore := store.NewNoteStore(pool)
+	noteStore := store.NewNoteStore(pool, nil)
 	svc := api.NewNotesService(noteStore)
 	endpoints := notes.NewEndpoints(svc)
 

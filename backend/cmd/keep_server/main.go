@@ -67,7 +67,7 @@ func main() {
 		attachmentStore = store.NewAttachmentStore(pool)
 		mediaSvc = api.NewMediaService(attachmentStore)
 		labelsSvc = api.NewLabelsService(store.NewLabelStore(pool))
-		notesSvc = api.NewNotesService(store.NewNoteStore(pool))
+		notesSvc = api.NewNotesService(store.NewNoteStore(pool, attachmentStore))
 		permissionsSvc = api.NewPermissionsService(store.NewPermissionStore(pool))
 	}
 
