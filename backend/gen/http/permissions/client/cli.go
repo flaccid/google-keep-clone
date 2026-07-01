@@ -22,7 +22,7 @@ func BuildBatchCreatePayload(permissionsBatchCreateBody string, permissionsBatch
 	{
 		err = json.Unmarshal([]byte(permissionsBatchCreateBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"requests\": [\n         {\n            \"email\": \"Ut dolorum blanditiis eum eligendi velit quaerat.\",\n            \"role\": \"ROLE_UNSPECIFIED\"\n         },\n         {\n            \"email\": \"Ut dolorum blanditiis eum eligendi velit quaerat.\",\n            \"role\": \"ROLE_UNSPECIFIED\"\n         }\n      ]\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"requests\": [\n         {\n            \"email\": \"Ipsum consequuntur totam et sit iusto.\",\n            \"role\": \"ROLE_UNSPECIFIED\"\n         },\n         {\n            \"email\": \"Ipsum consequuntur totam et sit iusto.\",\n            \"role\": \"ROLE_UNSPECIFIED\"\n         }\n      ]\n   }'")
 		}
 	}
 	var noteID string
@@ -56,7 +56,7 @@ func BuildBatchDeletePayload(permissionsBatchDeleteBody string, permissionsBatch
 	{
 		err = json.Unmarshal([]byte(permissionsBatchDeleteBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"names\": [\n         \"Nihil a temporibus natus quo earum exercitationem.\",\n         \"Sed at suscipit ab.\",\n         \"Molestiae sit aut esse laboriosam autem.\",\n         \"Nam aut.\"\n      ]\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"names\": [\n         \"Quisquam qui.\",\n         \"Praesentium quae dolor saepe.\"\n      ]\n   }'")
 		}
 	}
 	var noteID string

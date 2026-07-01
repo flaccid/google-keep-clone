@@ -17,10 +17,24 @@ import (
 // CreateRequestBody is the type of the "notes" service "create" endpoint HTTP
 // request body.
 type CreateRequestBody struct {
-	// The title of the note.
+	// Output only. The resource name of this note (e.g. 'notes/{uuid}').
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
+	// Output only. When this note was created (RFC3339 format).
+	CreateTime *string `form:"createTime,omitempty" json:"createTime,omitempty" xml:"createTime,omitempty"`
+	// Output only. When this note was last modified (RFC3339 format).
+	UpdateTime *string `form:"updateTime,omitempty" json:"updateTime,omitempty" xml:"updateTime,omitempty"`
+	// Output only. When this note was trashed. Only set if trashed.
+	TrashTime *string `form:"trashTime,omitempty" json:"trashTime,omitempty" xml:"trashTime,omitempty"`
+	// Output only. True if this note has been trashed.
+	Trashed *bool `form:"trashed,omitempty" json:"trashed,omitempty" xml:"trashed,omitempty"`
+	// The title of the note. Length must be less than 1,000 characters.
 	Title *string `form:"title,omitempty" json:"title,omitempty" xml:"title,omitempty"`
 	// The body of the note.
 	Body *SectionRequestBodyRequestBody `form:"body,omitempty" json:"body,omitempty" xml:"body,omitempty"`
+	// Output only. The attachments attached to this note.
+	Attachments []*AttachmentRequestBodyRequestBody `form:"attachments,omitempty" json:"attachments,omitempty" xml:"attachments,omitempty"`
+	// Output only. The list of permissions set on the note.
+	Permissions []*PermissionRequestBodyRequestBody `form:"permissions,omitempty" json:"permissions,omitempty" xml:"permissions,omitempty"`
 	// Whether the note is pinned.
 	Pinned *bool `form:"pinned,omitempty" json:"pinned,omitempty" xml:"pinned,omitempty"`
 	// Whether the note is archived.
@@ -469,6 +483,50 @@ type ListItemRequestBodyRequestBody struct {
 	Checked *bool `form:"checked,omitempty" json:"checked,omitempty" xml:"checked,omitempty"`
 	// Nested list items. Only one level of nesting is allowed.
 	ChildListItems []*ListItemRequestBodyRequestBody `form:"childListItems,omitempty" json:"childListItems,omitempty" xml:"childListItems,omitempty"`
+}
+
+// AttachmentRequestBodyRequestBody is used to define fields on request body
+// types.
+type AttachmentRequestBodyRequestBody struct {
+	// The resource name of the attachment.
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
+	// The MIME types in which the attachment is available.
+	MimeType []string `form:"mimeType,omitempty" json:"mimeType,omitempty" xml:"mimeType,omitempty"`
+}
+
+// PermissionRequestBodyRequestBody is used to define fields on request body
+// types.
+type PermissionRequestBodyRequestBody struct {
+	// Output only. The resource name.
+	Name *string `form:"name,omitempty" json:"name,omitempty" xml:"name,omitempty"`
+	// The role granted by this permission.
+	Role *string `form:"role,omitempty" json:"role,omitempty" xml:"role,omitempty"`
+	// The email associated with the member.
+	Email *string `form:"email,omitempty" json:"email,omitempty" xml:"email,omitempty"`
+	// Output only. Whether this member has been deleted.
+	Deleted *bool `form:"deleted,omitempty" json:"deleted,omitempty" xml:"deleted,omitempty"`
+	// Output only. The user to whom this role applies.
+	User *UserRequestBodyRequestBody `form:"user,omitempty" json:"user,omitempty" xml:"user,omitempty"`
+	// Output only. The group to which this role applies.
+	Group *GroupRequestBodyRequestBody `form:"group,omitempty" json:"group,omitempty" xml:"group,omitempty"`
+	// Output only. The Google Family to which this role applies.
+	Family *FamilyRequestBodyRequestBody `form:"family,omitempty" json:"family,omitempty" xml:"family,omitempty"`
+}
+
+// UserRequestBodyRequestBody is used to define fields on request body types.
+type UserRequestBodyRequestBody struct {
+	// The user's email.
+	Email *string `form:"email,omitempty" json:"email,omitempty" xml:"email,omitempty"`
+}
+
+// GroupRequestBodyRequestBody is used to define fields on request body types.
+type GroupRequestBodyRequestBody struct {
+	// The group email.
+	Email *string `form:"email,omitempty" json:"email,omitempty" xml:"email,omitempty"`
+}
+
+// FamilyRequestBodyRequestBody is used to define fields on request body types.
+type FamilyRequestBodyRequestBody struct {
 }
 
 // NewCreateResponseBody builds the HTTP response body from the result of the
@@ -933,10 +991,15 @@ func NewRestoreResponseBody(res *notes.Note) *RestoreResponseBody {
 
 // NewCreatePayload builds a notes service create endpoint payload.
 func NewCreatePayload(body *CreateRequestBody) *notes.CreatePayload {
-	v := &notes.NoteRequest{
-		Title:    body.Title,
-		Pinned:   body.Pinned,
-		Archived: body.Archived,
+	v := &notes.Note{
+		Name:       body.Name,
+		CreateTime: body.CreateTime,
+		UpdateTime: body.UpdateTime,
+		TrashTime:  body.TrashTime,
+		Trashed:    body.Trashed,
+		Title:      body.Title,
+		Pinned:     body.Pinned,
+		Archived:   body.Archived,
 	}
 	if body.Color != nil {
 		color := notes.ColorValue(*body.Color)
@@ -944,6 +1007,26 @@ func NewCreatePayload(body *CreateRequestBody) *notes.CreatePayload {
 	}
 	if body.Body != nil {
 		v.Body = unmarshalSectionRequestBodyRequestBodyToNotesSection(body.Body)
+	}
+	if body.Attachments != nil {
+		v.Attachments = make([]*notes.Attachment, len(body.Attachments))
+		for i, val := range body.Attachments {
+			if val == nil {
+				v.Attachments[i] = nil
+				continue
+			}
+			v.Attachments[i] = unmarshalAttachmentRequestBodyRequestBodyToNotesAttachment(val)
+		}
+	}
+	if body.Permissions != nil {
+		v.Permissions = make([]*notes.Permission, len(body.Permissions))
+		for i, val := range body.Permissions {
+			if val == nil {
+				v.Permissions[i] = nil
+				continue
+			}
+			v.Permissions[i] = unmarshalPermissionRequestBodyRequestBodyToNotesPermission(val)
+		}
 	}
 	if body.Labels != nil {
 		v.Labels = make([]string, len(body.Labels))
@@ -1063,9 +1146,11 @@ func NewRestorePayload(id string) *notes.RestorePayload {
 
 // ValidateCreateRequestBody runs the validations defined on CreateRequestBody
 func ValidateCreateRequestBody(body *CreateRequestBody) (err error) {
-	if body.Title != nil {
-		if utf8.RuneCountInString(*body.Title) > 1000 {
-			err = goa.MergeErrors(err, goa.InvalidLengthError("body.title", *body.Title, utf8.RuneCountInString(*body.Title), 1000, false))
+	for _, e := range body.Permissions {
+		if e != nil {
+			if err2 := ValidatePermissionRequestBodyRequestBody(e); err2 != nil {
+				err = goa.MergeErrors(err, err2)
+			}
 		}
 	}
 	if body.Color != nil {
@@ -1086,6 +1171,17 @@ func ValidateUpdateRequestBody(body *UpdateRequestBody) (err error) {
 	if body.Color != nil {
 		if !(*body.Color == "DEFAULT" || *body.Color == "RED" || *body.Color == "ORANGE" || *body.Color == "YELLOW" || *body.Color == "GREEN" || *body.Color == "TEAL" || *body.Color == "BLUE" || *body.Color == "CERULEAN" || *body.Color == "PURPLE" || *body.Color == "PINK" || *body.Color == "BROWN" || *body.Color == "GRAY" || *body.Color == "THEME_SHORE" || *body.Color == "THEME_BLOOM" || *body.Color == "THEME_PLUM" || *body.Color == "THEME_NIGHT" || *body.Color == "THEME_BAMBOO" || *body.Color == "THEME_CANDY" || *body.Color == "THEME_SUNSET" || *body.Color == "THEME_OCEAN") {
 			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.color", *body.Color, []any{"DEFAULT", "RED", "ORANGE", "YELLOW", "GREEN", "TEAL", "BLUE", "CERULEAN", "PURPLE", "PINK", "BROWN", "GRAY", "THEME_SHORE", "THEME_BLOOM", "THEME_PLUM", "THEME_NIGHT", "THEME_BAMBOO", "THEME_CANDY", "THEME_SUNSET", "THEME_OCEAN"}))
+		}
+	}
+	return
+}
+
+// ValidatePermissionRequestBodyRequestBody runs the validations defined on
+// PermissionRequestBodyRequestBody
+func ValidatePermissionRequestBodyRequestBody(body *PermissionRequestBodyRequestBody) (err error) {
+	if body.Role != nil {
+		if !(*body.Role == "ROLE_UNSPECIFIED" || *body.Role == "OWNER" || *body.Role == "WRITER") {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.role", *body.Role, []any{"ROLE_UNSPECIFIED", "OWNER", "WRITER"}))
 		}
 	}
 	return

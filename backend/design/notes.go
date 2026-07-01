@@ -11,7 +11,7 @@ var _ = Service("notes", func() {
 		Description("Creates a new note.")
 
 		Payload(func() {
-			Attribute("note", NoteRequest, "The note to create.")
+			Attribute("note", Note, "The note to create.")
 		})
 
 		Result(Note, "The newly created note.")

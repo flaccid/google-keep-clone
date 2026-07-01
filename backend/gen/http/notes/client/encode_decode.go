@@ -838,6 +838,92 @@ func marshalNotesListItemToListItemRequestBodyRequestBody(v *notes.ListItem) *Li
 	return res
 }
 
+// marshalNotesAttachmentToAttachmentRequestBodyRequestBody builds a value of
+// type *AttachmentRequestBodyRequestBody from a value of type
+// *notes.Attachment.
+func marshalNotesAttachmentToAttachmentRequestBodyRequestBody(v *notes.Attachment) *AttachmentRequestBodyRequestBody {
+	if v == nil {
+		return nil
+	}
+	res := &AttachmentRequestBodyRequestBody{
+		Name: v.Name,
+	}
+	if v.MimeType != nil {
+		res.MimeType = make([]string, len(v.MimeType))
+		for i, val := range v.MimeType {
+			res.MimeType[i] = val
+		}
+	}
+
+	return res
+}
+
+// marshalNotesPermissionToPermissionRequestBodyRequestBody builds a value of
+// type *PermissionRequestBodyRequestBody from a value of type
+// *notes.Permission.
+func marshalNotesPermissionToPermissionRequestBodyRequestBody(v *notes.Permission) *PermissionRequestBodyRequestBody {
+	if v == nil {
+		return nil
+	}
+	res := &PermissionRequestBodyRequestBody{
+		Name:    v.Name,
+		Email:   v.Email,
+		Deleted: v.Deleted,
+	}
+	if v.Role != nil {
+		role := string(*v.Role)
+		res.Role = &role
+	}
+	if v.User != nil {
+		res.User = marshalNotesUserToUserRequestBodyRequestBody(v.User)
+	}
+	if v.Group != nil {
+		res.Group = marshalNotesGroupToGroupRequestBodyRequestBody(v.Group)
+	}
+	if v.Family != nil {
+		res.Family = marshalNotesFamilyToFamilyRequestBodyRequestBody(v.Family)
+	}
+
+	return res
+}
+
+// marshalNotesUserToUserRequestBodyRequestBody builds a value of type
+// *UserRequestBodyRequestBody from a value of type *notes.User.
+func marshalNotesUserToUserRequestBodyRequestBody(v *notes.User) *UserRequestBodyRequestBody {
+	if v == nil {
+		return nil
+	}
+	res := &UserRequestBodyRequestBody{
+		Email: v.Email,
+	}
+
+	return res
+}
+
+// marshalNotesGroupToGroupRequestBodyRequestBody builds a value of type
+// *GroupRequestBodyRequestBody from a value of type *notes.Group.
+func marshalNotesGroupToGroupRequestBodyRequestBody(v *notes.Group) *GroupRequestBodyRequestBody {
+	if v == nil {
+		return nil
+	}
+	res := &GroupRequestBodyRequestBody{
+		Email: v.Email,
+	}
+
+	return res
+}
+
+// marshalNotesFamilyToFamilyRequestBodyRequestBody builds a value of type
+// *FamilyRequestBodyRequestBody from a value of type *notes.Family.
+func marshalNotesFamilyToFamilyRequestBodyRequestBody(v *notes.Family) *FamilyRequestBodyRequestBody {
+	if v == nil {
+		return nil
+	}
+	res := &FamilyRequestBodyRequestBody{}
+
+	return res
+}
+
 // marshalSectionRequestBodyRequestBodyToNotesSection builds a value of type
 // *notes.Section from a value of type *SectionRequestBodyRequestBody.
 func marshalSectionRequestBodyRequestBodyToNotesSection(v *SectionRequestBodyRequestBody) *notes.Section {
@@ -913,6 +999,92 @@ func marshalListItemRequestBodyRequestBodyToNotesListItem(v *ListItemRequestBody
 			res.ChildListItems[i] = marshalListItemRequestBodyRequestBodyToNotesListItem(val)
 		}
 	}
+
+	return res
+}
+
+// marshalAttachmentRequestBodyRequestBodyToNotesAttachment builds a value of
+// type *notes.Attachment from a value of type
+// *AttachmentRequestBodyRequestBody.
+func marshalAttachmentRequestBodyRequestBodyToNotesAttachment(v *AttachmentRequestBodyRequestBody) *notes.Attachment {
+	if v == nil {
+		return nil
+	}
+	res := &notes.Attachment{
+		Name: v.Name,
+	}
+	if v.MimeType != nil {
+		res.MimeType = make([]string, len(v.MimeType))
+		for i, val := range v.MimeType {
+			res.MimeType[i] = val
+		}
+	}
+
+	return res
+}
+
+// marshalPermissionRequestBodyRequestBodyToNotesPermission builds a value of
+// type *notes.Permission from a value of type
+// *PermissionRequestBodyRequestBody.
+func marshalPermissionRequestBodyRequestBodyToNotesPermission(v *PermissionRequestBodyRequestBody) *notes.Permission {
+	if v == nil {
+		return nil
+	}
+	res := &notes.Permission{
+		Name:    v.Name,
+		Email:   v.Email,
+		Deleted: v.Deleted,
+	}
+	if v.Role != nil {
+		role := notes.Role(*v.Role)
+		res.Role = &role
+	}
+	if v.User != nil {
+		res.User = marshalUserRequestBodyRequestBodyToNotesUser(v.User)
+	}
+	if v.Group != nil {
+		res.Group = marshalGroupRequestBodyRequestBodyToNotesGroup(v.Group)
+	}
+	if v.Family != nil {
+		res.Family = marshalFamilyRequestBodyRequestBodyToNotesFamily(v.Family)
+	}
+
+	return res
+}
+
+// marshalUserRequestBodyRequestBodyToNotesUser builds a value of type
+// *notes.User from a value of type *UserRequestBodyRequestBody.
+func marshalUserRequestBodyRequestBodyToNotesUser(v *UserRequestBodyRequestBody) *notes.User {
+	if v == nil {
+		return nil
+	}
+	res := &notes.User{
+		Email: v.Email,
+	}
+
+	return res
+}
+
+// marshalGroupRequestBodyRequestBodyToNotesGroup builds a value of type
+// *notes.Group from a value of type *GroupRequestBodyRequestBody.
+func marshalGroupRequestBodyRequestBodyToNotesGroup(v *GroupRequestBodyRequestBody) *notes.Group {
+	if v == nil {
+		return nil
+	}
+	res := &notes.Group{
+		Email: v.Email,
+	}
+
+	return res
+}
+
+// marshalFamilyRequestBodyRequestBodyToNotesFamily builds a value of type
+// *notes.Family from a value of type *FamilyRequestBodyRequestBody.
+func marshalFamilyRequestBodyRequestBodyToNotesFamily(v *FamilyRequestBodyRequestBody) *notes.Family {
+	if v == nil {
+		return nil
+	}
+	res := &notes.Family{}
 
 	return res
 }
