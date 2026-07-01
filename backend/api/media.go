@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/google/uuid"
@@ -56,6 +57,27 @@ func (s *MediaService) Download(ctx context.Context, p *media.DownloadPayload) (
 	if err != nil {
 		return nil, err
 	}
+
+	// Fetch attachment metadata first (needed for both paths).
+	meta, err := s.attachmentStore.GetMetaByID(ctx, noteID, attachmentID)
+	if err != nil {
+		return nil, err
+	}
+
+	// Without ?alt=media, return the Attachment metadata as JSON.
+	if p.Alt == nil || *p.Alt != "media" {
+		att := &media.Attachment{
+			Name:     &meta.Name,
+			MimeType: meta.MimeType,
+		}
+		jsonBytes, err := json.Marshal(att)
+		if err != nil {
+			return nil, fmt.Errorf("failed to marshal attachment metadata: %w", err)
+		}
+		return jsonBytes, nil
+	}
+
+	// With ?alt=media, return raw bytes.
 	data, mime, err := s.attachmentStore.GetByID(ctx, noteID, attachmentID)
 	if err != nil {
 		return nil, err
@@ -63,5 +85,5 @@ func (s *MediaService) Download(ctx context.Context, p *media.DownloadPayload) (
 	if p.MimeType != nil && *p.MimeType != "" && *p.MimeType != mime {
 		return nil, fmt.Errorf("attachment not available in requested MIME type: %s", *p.MimeType)
 	}
-	return data, err
+	return data, nil
 }

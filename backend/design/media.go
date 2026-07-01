@@ -36,6 +36,7 @@ var _ = Service("media", func() {
 			Attribute("noteId", String, "The ID of the note.")
 			Attribute("attachmentId", String, "The ID of the attachment.")
 			Attribute("mimeType", String, "The requested MIME type. Must be one of the attachment's mimeType values.")
+			Attribute("alt", String, "The alt query parameter. Use 'media' to return raw bytes; omit to return Attachment metadata.")
 			Required("noteId", "attachmentId")
 		})
 
@@ -44,6 +45,7 @@ var _ = Service("media", func() {
 		HTTP(func() {
 			GET("/v1/notes/{noteId}/attachments/{attachmentId}")
 			Param("mimeType")
+			Param("alt")
 			Response(StatusOK, func() {
 				ContentType("application/octet-stream")
 			})

@@ -38,7 +38,7 @@ func BuildUploadPayload(mediaUploadBody string, mediaUploadNoteID string, mediaU
 
 // BuildDownloadPayload builds the payload for the media download endpoint from
 // CLI flags.
-func BuildDownloadPayload(mediaDownloadNoteID string, mediaDownloadAttachmentID string, mediaDownloadMimeType string) (*media.DownloadPayload, error) {
+func BuildDownloadPayload(mediaDownloadNoteID string, mediaDownloadAttachmentID string, mediaDownloadMimeType string, mediaDownloadAlt string) (*media.DownloadPayload, error) {
 	var noteID string
 	{
 		noteID = mediaDownloadNoteID
@@ -53,10 +53,17 @@ func BuildDownloadPayload(mediaDownloadNoteID string, mediaDownloadAttachmentID 
 			mimeType = &mediaDownloadMimeType
 		}
 	}
+	var alt *string
+	{
+		if mediaDownloadAlt != "" {
+			alt = &mediaDownloadAlt
+		}
+	}
 	v := &media.DownloadPayload{}
 	v.NoteID = noteID
 	v.AttachmentID = attachmentID
 	v.MimeType = mimeType
+	v.Alt = alt
 
 	return v, nil
 }

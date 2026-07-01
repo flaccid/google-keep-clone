@@ -25,17 +25,21 @@ paths:
                                     $ref: '#/components/schemas/Label'
                                 description: The list of labels.
                                 example:
-                                    - displayName: Vitae officia iusto eum.
-                                      name: Modi ut voluptas dolor.
-                                    - displayName: Vitae officia iusto eum.
-                                      name: Modi ut voluptas dolor.
-                                    - displayName: Vitae officia iusto eum.
-                                      name: Modi ut voluptas dolor.
+                                    - displayName: Est quis saepe velit nemo consequatur.
+                                      name: Assumenda sit eos dolorem deserunt et tempora.
+                                    - displayName: Est quis saepe velit nemo consequatur.
+                                      name: Assumenda sit eos dolorem deserunt et tempora.
+                                    - displayName: Est quis saepe velit nemo consequatur.
+                                      name: Assumenda sit eos dolorem deserunt et tempora.
                             example:
-                                - displayName: Vitae officia iusto eum.
-                                  name: Modi ut voluptas dolor.
-                                - displayName: Vitae officia iusto eum.
-                                  name: Modi ut voluptas dolor.
+                                - displayName: Est quis saepe velit nemo consequatur.
+                                  name: Assumenda sit eos dolorem deserunt et tempora.
+                                - displayName: Est quis saepe velit nemo consequatur.
+                                  name: Assumenda sit eos dolorem deserunt et tempora.
+                                - displayName: Est quis saepe velit nemo consequatur.
+                                  name: Assumenda sit eos dolorem deserunt et tempora.
+                                - displayName: Est quis saepe velit nemo consequatur.
+                                  name: Assumenda sit eos dolorem deserunt et tempora.
         post:
             tags:
                 - labels
@@ -49,7 +53,7 @@ paths:
                         schema:
                             $ref: '#/components/schemas/CreateRequestBody'
                         example:
-                            displayName: Dolorem deserunt et.
+                            displayName: Velit numquam non totam.
             responses:
                 "200":
                     description: OK response.
@@ -58,8 +62,8 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/Label'
                             example:
-                                displayName: Dolorem ut debitis velit numquam non totam.
-                                name: Est est quis saepe velit nemo consequatur.
+                                displayName: Aliquid est quas blanditiis.
+                                name: Quam repellendus.
     /v1/labels/{id}:
         delete:
             tags:
@@ -75,8 +79,8 @@ paths:
                   schema:
                     type: string
                     description: The ID of the label to delete.
-                    example: Consectetur provident nesciunt odio.
-                  example: Impedit quo.
+                    example: Rem earum est aut.
+                  example: Eaque molestiae.
             responses:
                 "204":
                     description: No Content response.
@@ -94,8 +98,8 @@ paths:
                   schema:
                     type: string
                     description: The ID of the label to update.
-                    example: Assumenda molestiae velit voluptate ut temporibus.
-                  example: Libero facilis totam doloribus.
+                    example: Provident nesciunt odio et impedit quo ut.
+                  example: Facere amet.
             requestBody:
                 required: true
                 content:
@@ -103,7 +107,7 @@ paths:
                         schema:
                             $ref: '#/components/schemas/CreateRequestBody'
                         example:
-                            displayName: Aliquid est quas blanditiis.
+                            displayName: Aut exercitationem quia ea nam tenetur.
             responses:
                 "200":
                     description: OK response.
@@ -112,8 +116,8 @@ paths:
                             schema:
                                 $ref: '#/components/schemas/Label'
                             example:
-                                displayName: Blanditiis asperiores.
-                                name: Aut exercitationem quia ea nam tenetur.
+                                displayName: Quasi voluptates sunt sint eum.
+                                name: Voluptatibus asperiores officia consequatur delectus.
     /v1/notes:
         get:
             tags:
@@ -129,9 +133,9 @@ paths:
                   schema:
                     type: integer
                     description: The maximum number of results to return.
-                    example: 8704684663189022660
+                    example: 651723611491161946
                     format: int64
-                  example: 1346881609480023404
+                  example: 6025920267190787496
                 - name: pageToken
                   in: query
                   description: The previous page's nextPageToken field.
@@ -139,8 +143,8 @@ paths:
                   schema:
                     type: string
                     description: The previous page's nextPageToken field.
-                    example: Id voluptate fugit voluptas expedita dolores quis.
-                  example: Unde rerum nostrum.
+                    example: Voluptatem sit ad recusandae dignissimos et omnis.
+                  example: Voluptatibus quod ut amet non blanditiis.
                 - name: filter
                   in: query
                   description: 'Filter for list results. Valid fields: createTime, updateTime, trashTime, trashed.'
@@ -148,8 +152,8 @@ paths:
                   schema:
                     type: string
                     description: 'Filter for list results. Valid fields: createTime, updateTime, trashTime, trashed.'
-                    example: Aperiam qui voluptatem sit ad.
-                  example: Dignissimos et omnis quod voluptatibus quod.
+                    example: Qui atque sunt unde expedita cupiditate nemo.
+                  example: Perspiciatis velit quod illum minus corrupti iure.
                 - name: search
                   in: query
                   description: Search term to filter notes by title and body text.
@@ -157,8 +161,8 @@ paths:
                   schema:
                     type: string
                     description: Search term to filter notes by title and body text.
-                    example: Amet non blanditiis dolor.
-                  example: Atque sunt unde expedita cupiditate nemo.
+                    example: Esse rerum.
+                  example: Ratione hic fuga.
             responses:
                 "200":
                     description: OK response.
@@ -538,83 +542,81 @@ paths:
                             archived: true
                             attachments:
                                 - mimeType:
-                                    - Provident ut qui quia aut delectus dolorum.
-                                    - Consequatur voluptates laboriosam explicabo occaecati.
-                                    - Qui beatae quas.
-                                    - Et est ut.
-                                  name: Perferendis nemo omnis.
+                                    - Beatae quas esse et est ut.
+                                    - Et quod eum saepe deleniti neque.
+                                  name: Laboriosam explicabo occaecati.
                                 - mimeType:
-                                    - Provident ut qui quia aut delectus dolorum.
-                                    - Consequatur voluptates laboriosam explicabo occaecati.
-                                    - Qui beatae quas.
-                                    - Et est ut.
-                                  name: Perferendis nemo omnis.
+                                    - Beatae quas esse et est ut.
+                                    - Et quod eum saepe deleniti neque.
+                                  name: Laboriosam explicabo occaecati.
+                                - mimeType:
+                                    - Beatae quas esse et est ut.
+                                    - Et quod eum saepe deleniti neque.
+                                  name: Laboriosam explicabo occaecati.
+                                - mimeType:
+                                    - Beatae quas esse et est ut.
+                                    - Et quod eum saepe deleniti neque.
+                                  name: Laboriosam explicabo occaecati.
                             body:
                                 list:
                                     listItems:
-                                        - checked: true
+                                        - checked: false
                                           childListItems:
                                             - {}
                                             - {}
                                             - {}
+                                            - {}
                                           text:
-                                            text: Ut voluptatem voluptatem.
-                                        - checked: true
+                                            text: Maiores provident ut qui quia aut.
+                                        - checked: false
                                           childListItems:
                                             - {}
                                             - {}
                                             - {}
+                                            - {}
                                           text:
-                                            text: Ut voluptatem voluptatem.
-                                        - checked: true
+                                            text: Maiores provident ut qui quia aut.
+                                        - checked: false
                                           childListItems:
                                             - {}
                                             - {}
                                             - {}
+                                            - {}
                                           text:
-                                            text: Ut voluptatem voluptatem.
+                                            text: Maiores provident ut qui quia aut.
                                 text:
-                                    text: Ut voluptatem voluptatem.
+                                    text: Maiores provident ut qui quia aut.
                             color: THEME_PLUM
-                            createTime: Eum sunt quia sunt sint.
+                            createTime: Quis aperiam.
                             labels:
                                 - Optio soluta dolorum id eum dolorem.
                                 - Voluptatibus inventore ipsam.
                                 - Ut delectus.
-                            name: Nam doloribus.
+                            name: Aut dolores quia.
                             permissions:
-                                - deleted: false
-                                  email: In earum at esse deleniti officiis.
+                                - deleted: true
+                                  email: Ipsum et tempora.
                                   family: {}
                                   group:
-                                    email: Quidem qui facere maiores voluptatum provident.
-                                  name: Quod eum saepe deleniti neque explicabo beatae.
-                                  role: ROLE_UNSPECIFIED
+                                    email: Facere maiores voluptatum provident.
+                                  name: Nam consequatur in earum at esse.
+                                  role: WRITER
                                   user:
-                                    email: Tempora nostrum illum fuga provident.
-                                - deleted: false
-                                  email: In earum at esse deleniti officiis.
+                                    email: Fuga provident reprehenderit quidem.
+                                - deleted: true
+                                  email: Ipsum et tempora.
                                   family: {}
                                   group:
-                                    email: Quidem qui facere maiores voluptatum provident.
-                                  name: Quod eum saepe deleniti neque explicabo beatae.
-                                  role: ROLE_UNSPECIFIED
+                                    email: Facere maiores voluptatum provident.
+                                  name: Nam consequatur in earum at esse.
+                                  role: WRITER
                                   user:
-                                    email: Tempora nostrum illum fuga provident.
-                                - deleted: false
-                                  email: In earum at esse deleniti officiis.
-                                  family: {}
-                                  group:
-                                    email: Quidem qui facere maiores voluptatum provident.
-                                  name: Quod eum saepe deleniti neque explicabo beatae.
-                                  role: ROLE_UNSPECIFIED
-                                  user:
-                                    email: Tempora nostrum illum fuga provident.
+                                    email: Fuga provident reprehenderit quidem.
                             pinned: false
-                            title: Nemo ex error autem.
-                            trashTime: Quis aperiam.
-                            trashed: false
-                            updateTime: Aut dolores quia.
+                            title: Fugit non reprehenderit perferendis nemo omnis.
+                            trashTime: Ut voluptatem voluptatem.
+                            trashed: true
+                            updateTime: Possimus nemo ex error autem.
             responses:
                 "201":
                     description: Created response.
@@ -725,8 +727,8 @@ paths:
                   schema:
                     type: string
                     description: The ID of the note to delete.
-                    example: Ratione hic fuga.
-                  example: Veritatis voluptatem ipsam et molestias.
+                    example: Perferendis expedita qui molestiae.
+                  example: Aut sed.
             responses:
                 "204":
                     description: No Content response.
@@ -744,8 +746,8 @@ paths:
                   schema:
                     type: string
                     description: The ID of the note.
-                    example: Nostrum facere amet quis rem earum.
-                  example: Aut eaque.
+                    example: Id voluptate fugit voluptas expedita dolores quis.
+                  example: Unde rerum nostrum.
             responses:
                 "200":
                     description: OK response.
@@ -853,8 +855,8 @@ paths:
                   schema:
                     type: string
                     description: The ID of the note.
-                    example: Perspiciatis velit quod illum minus corrupti iure.
-                  example: Esse rerum.
+                    example: Veritatis voluptatem ipsam et molestias.
+                  example: Autem vel quis occaecati quaerat ipsa.
             requestBody:
                 description: The note fields to update.
                 required: true
@@ -867,29 +869,32 @@ paths:
                             body:
                                 list:
                                     listItems:
-                                        - checked: true
+                                        - checked: false
                                           childListItems:
                                             - {}
                                             - {}
                                             - {}
+                                            - {}
                                           text:
-                                            text: Ut voluptatem voluptatem.
-                                        - checked: true
+                                            text: Maiores provident ut qui quia aut.
+                                        - checked: false
                                           childListItems:
                                             - {}
                                             - {}
                                             - {}
+                                            - {}
                                           text:
-                                            text: Ut voluptatem voluptatem.
-                                        - checked: true
+                                            text: Maiores provident ut qui quia aut.
+                                        - checked: false
                                           childListItems:
                                             - {}
                                             - {}
                                             - {}
+                                            - {}
                                           text:
-                                            text: Ut voluptatem voluptatem.
+                                            text: Maiores provident ut qui quia aut.
                                 text:
-                                    text: Ut voluptatem voluptatem.
+                                    text: Maiores provident ut qui quia aut.
                             color: THEME_BAMBOO
                             labels:
                                 - Velit dolorum ex et.
@@ -1007,8 +1012,8 @@ paths:
                   schema:
                     type: string
                     description: The ID of the note.
-                    example: Esse vitae excepturi facere aut omnis.
-                  example: Suscipit velit vitae aperiam in.
+                    example: Dolor ipsa explicabo esse dolor.
+                  example: At id aliquid eius placeat.
             responses:
                 "200":
                     description: OK response.
@@ -1115,8 +1120,8 @@ paths:
                   schema:
                     type: string
                     description: The ID of the note.
-                    example: Autem vel quis occaecati quaerat ipsa.
-                  example: Perferendis expedita qui molestiae.
+                    example: Facilis aut numquam.
+                  example: Esse vitae excepturi facere aut omnis.
             responses:
                 "200":
                     description: OK response.
@@ -1238,8 +1243,8 @@ paths:
                   schema:
                     type: string
                     description: The ID of the note.
-                    example: Doloremque illum tempore aspernatur.
-                  example: Nostrum velit voluptas odit et ducimus ducimus.
+                    example: Sed qui et nemo ut quia numquam.
+                  example: Autem non dolor eum.
             responses:
                 "200":
                     description: OK response.
@@ -1351,8 +1356,8 @@ paths:
                   schema:
                     type: string
                     description: The ID of the note.
-                    example: At id aliquid eius placeat.
-                  example: Ipsa laboriosam consequuntur distinctio optio.
+                    example: Nostrum velit voluptas odit et ducimus ducimus.
+                  example: Voluptas et corporis et.
             responses:
                 "200":
                     description: OK response.
@@ -1461,8 +1466,8 @@ paths:
                   schema:
                     type: string
                     description: The ID of the note.
-                    example: Et ipsa aliquid earum nihil.
-                  example: Dolor ipsa explicabo esse dolor.
+                    example: Ipsa laboriosam consequuntur distinctio optio.
+                  example: Doloremque illum tempore aspernatur.
             responses:
                 "200":
                     description: OK response.
@@ -1574,8 +1579,8 @@ paths:
                   schema:
                     type: string
                     description: The ID of the note.
-                    example: Aut sed.
-                  example: Facilis aut numquam.
+                    example: Suscipit velit vitae aperiam in.
+                  example: Et ipsa aliquid earum nihil.
             responses:
                 "200":
                     description: OK response.
@@ -1736,10 +1741,9 @@ paths:
                                 $ref: '#/components/schemas/Attachment'
                             example:
                                 mimeType:
-                                    - Magni et voluptas.
-                                    - Aut modi.
-                                    - Qui voluptas.
-                                name: Libero omnis magnam non dolore.
+                                    - Voluptas commodi consequatur explicabo a corrupti.
+                                    - Dolorem perspiciatis ut.
+                                name: Aut modi.
     /v1/notes/{noteId}/attachments/{attachmentId}:
         get:
             tags:
@@ -1757,6 +1761,15 @@ paths:
                     description: The requested MIME type. Must be one of the attachment's mimeType values.
                     example: Illo accusantium sunt qui.
                   example: Vel modi molestiae.
+                - name: alt
+                  in: query
+                  description: The alt query parameter. Use 'media' to return raw bytes; omit to return Attachment metadata.
+                  allowEmptyValue: true
+                  schema:
+                    type: string
+                    description: The alt query parameter. Use 'media' to return raw bytes; omit to return Attachment metadata.
+                    example: Nisi aut recusandae earum.
+                  example: Dolor nesciunt nulla similique praesentium.
                 - name: noteId
                   in: path
                   description: The ID of the note.
@@ -1764,8 +1777,8 @@ paths:
                   schema:
                     type: string
                     description: The ID of the note.
-                    example: Nisi aut recusandae earum.
-                  example: Dolor nesciunt nulla similique praesentium.
+                    example: Itaque esse eaque qui nihil est quos.
+                  example: Reprehenderit ducimus harum earum.
                 - name: attachmentId
                   in: path
                   description: The ID of the attachment.
@@ -1773,8 +1786,8 @@ paths:
                   schema:
                     type: string
                     description: The ID of the attachment.
-                    example: Itaque esse eaque qui nihil est quos.
-                  example: Reprehenderit ducimus harum earum.
+                    example: Deleniti aut.
+                  example: Dolore assumenda molestiae velit voluptate ut temporibus.
             responses:
                 "200":
                     description: OK response.
@@ -1805,18 +1818,36 @@ paths:
                                     - 46
                                 format: binary
                             example:
-                                - 68
-                                - 101
-                                - 108
-                                - 101
-                                - 110
+                                - 76
                                 - 105
-                                - 116
-                                - 105
+                                - 98
+                                - 101
+                                - 114
+                                - 111
                                 - 32
+                                - 102
                                 - 97
-                                - 117
+                                - 99
+                                - 105
+                                - 108
+                                - 105
+                                - 115
+                                - 32
                                 - 116
+                                - 111
+                                - 116
+                                - 97
+                                - 109
+                                - 32
+                                - 100
+                                - 111
+                                - 108
+                                - 111
+                                - 114
+                                - 105
+                                - 98
+                                - 117
+                                - 115
                                 - 46
     /v1/notes/{noteId}/permissions:batchCreate:
         post:
@@ -1833,8 +1864,8 @@ paths:
                   schema:
                     type: string
                     description: The ID of the note.
-                    example: Voluptas et corporis et.
-                  example: Sed qui et nemo ut quia numquam.
+                    example: Nemo deserunt alias tenetur totam possimus blanditiis.
+                  example: Quasi fugiat blanditiis ut.
             requestBody:
                 description: The permissions to create.
                 required: true
@@ -1923,15 +1954,6 @@ paths:
                                   role: WRITER
                                   user:
                                     email: Aperiam omnis beatae sunt quis quia.
-                                - deleted: true
-                                  email: Officia est suscipit.
-                                  family: {}
-                                  group:
-                                    email: Et sed est iusto est.
-                                  name: Autem voluptas itaque ut.
-                                  role: WRITER
-                                  user:
-                                    email: Aperiam omnis beatae sunt quis quia.
     /v1/notes/{noteId}/permissions:batchDelete:
         post:
             tags:
@@ -1947,8 +1969,8 @@ paths:
                   schema:
                     type: string
                     description: The ID of the note.
-                    example: Non dolor eum sed nemo.
-                  example: Alias tenetur totam possimus blanditiis.
+                    example: Inventore dolorem nihil nisi.
+                  example: Soluta exercitationem nam distinctio deserunt.
             requestBody:
                 description: The permissions to delete.
                 required: true
@@ -1997,21 +2019,21 @@ components:
                         $ref: '#/components/schemas/CreatePermissionRequest'
                     description: The permission requests to create.
                     example:
-                        - email: Vero et doloremque totam quasi quisquam suscipit.
-                          role: OWNER
-                        - email: Vero et doloremque totam quasi quisquam suscipit.
-                          role: OWNER
+                        - email: Omnis ut.
+                          role: WRITER
+                        - email: Omnis ut.
+                          role: WRITER
             description: Request to create one or more permissions on a note.
             example:
                 requests:
-                    - email: Vero et doloremque totam quasi quisquam suscipit.
-                      role: OWNER
-                    - email: Vero et doloremque totam quasi quisquam suscipit.
-                      role: OWNER
-                    - email: Vero et doloremque totam quasi quisquam suscipit.
-                      role: OWNER
-                    - email: Vero et doloremque totam quasi quisquam suscipit.
-                      role: OWNER
+                    - email: Omnis ut.
+                      role: WRITER
+                    - email: Omnis ut.
+                      role: WRITER
+                    - email: Omnis ut.
+                      role: WRITER
+                    - email: Omnis ut.
+                      role: WRITER
         BatchDeletePermissionsRequest:
             type: object
             properties:
@@ -2049,7 +2071,7 @@ components:
             description: A request to create a single permission.
             example:
                 email: Voluptatibus qui.
-                role: OWNER
+                role: WRITER
         CreateRequestBody:
             type: object
             properties:
@@ -2103,26 +2125,30 @@ components:
                           childListItems:
                             - {}
                             - {}
+                            - {}
                           text:
-                            text: Illum quis sed quae sunt earum.
+                            text: Quo impedit quia nihil aut.
                         - checked: false
                           childListItems:
                             - {}
                             - {}
+                            - {}
                           text:
-                            text: Illum quis sed quae sunt earum.
+                            text: Quo impedit quia nihil aut.
                         - checked: false
                           childListItems:
                             - {}
                             - {}
+                            - {}
                           text:
-                            text: Illum quis sed quae sunt earum.
+                            text: Quo impedit quia nihil aut.
                         - checked: false
                           childListItems:
                             - {}
                             - {}
+                            - {}
                           text:
-                            text: Illum quis sed quae sunt earum.
+                            text: Quo impedit quia nihil aut.
             description: The list of items for a single list note.
             example:
                 listItems:
@@ -2130,20 +2156,23 @@ components:
                       childListItems:
                         - {}
                         - {}
+                        - {}
                       text:
-                        text: Illum quis sed quae sunt earum.
+                        text: Quo impedit quia nihil aut.
                     - checked: false
                       childListItems:
                         - {}
                         - {}
+                        - {}
                       text:
-                        text: Illum quis sed quae sunt earum.
+                        text: Quo impedit quia nihil aut.
                     - checked: false
                       childListItems:
                         - {}
                         - {}
+                        - {}
                       text:
-                        text: Illum quis sed quae sunt earum.
+                        text: Quo impedit quia nihil aut.
         ListItem:
             type: object
             properties:
@@ -2161,14 +2190,16 @@ components:
                           childListItems:
                             - {}
                             - {}
+                            - {}
                           text:
-                            text: Illum quis sed quae sunt earum.
+                            text: Quo impedit quia nihil aut.
                         - checked: false
                           childListItems:
                             - {}
                             - {}
+                            - {}
                           text:
-                            text: Illum quis sed quae sunt earum.
+                            text: Quo impedit quia nihil aut.
                 text:
                     $ref: '#/components/schemas/TextContent'
             description: A single list item in a note's list.
@@ -2179,22 +2210,25 @@ components:
                       childListItems:
                         - {}
                         - {}
+                        - {}
                       text:
-                        text: Illum quis sed quae sunt earum.
+                        text: Quo impedit quia nihil aut.
                     - checked: false
                       childListItems:
                         - {}
                         - {}
+                        - {}
                       text:
-                        text: Illum quis sed quae sunt earum.
+                        text: Quo impedit quia nihil aut.
                     - checked: false
                       childListItems:
                         - {}
                         - {}
+                        - {}
                       text:
-                        text: Illum quis sed quae sunt earum.
+                        text: Quo impedit quia nihil aut.
                 text:
-                    text: Illum quis sed quae sunt earum.
+                    text: Quo impedit quia nihil aut.
         ListNotesResponse:
             type: object
             properties:
@@ -2227,71 +2261,65 @@ components:
                                       childListItems:
                                         - {}
                                         - {}
+                                        - {}
                                       text:
-                                        text: Illum quis sed quae sunt earum.
+                                        text: Quo impedit quia nihil aut.
                                     - checked: false
                                       childListItems:
                                         - {}
                                         - {}
+                                        - {}
                                       text:
-                                        text: Illum quis sed quae sunt earum.
+                                        text: Quo impedit quia nihil aut.
                                     - checked: false
                                       childListItems:
                                         - {}
                                         - {}
+                                        - {}
                                       text:
-                                        text: Illum quis sed quae sunt earum.
+                                        text: Quo impedit quia nihil aut.
                             text:
-                                text: Illum quis sed quae sunt earum.
-                          color: YELLOW
-                          createTime: Alias sed.
+                                text: Quo impedit quia nihil aut.
+                          color: TEAL
+                          createTime: Numquam aut est et quia.
                           labels:
-                            - Aliquid repellat quia dolorem.
-                            - Mollitia corporis porro cum beatae.
-                            - Non ipsum eos id et earum quo.
-                          name: Non vel dolores non qui natus asperiores.
+                            - Eos id.
+                            - Earum quo dolor quo aut.
+                            - Dolorem eos tenetur ipsam.
+                          name: Nam molestias rerum sunt molestias.
                           permissions:
-                            - deleted: false
-                              email: Modi voluptatem deleniti.
+                            - deleted: true
+                              email: Est magni deleniti aut facere iste minus.
                               family: {}
                               group:
-                                email: Facere iste minus sequi.
-                              name: Non quo impedit quia nihil aut.
-                              role: OWNER
+                                email: Molestias mollitia corporis porro.
+                              name: Suscipit impedit nihil.
+                              role: WRITER
                               user:
-                                email: Impedit nihil vel distinctio est magni deleniti.
-                            - deleted: false
-                              email: Modi voluptatem deleniti.
+                                email: Laboriosam aspernatur aliquam nobis aliquid repellat quia.
+                            - deleted: true
+                              email: Est magni deleniti aut facere iste minus.
                               family: {}
                               group:
-                                email: Facere iste minus sequi.
-                              name: Non quo impedit quia nihil aut.
-                              role: OWNER
+                                email: Molestias mollitia corporis porro.
+                              name: Suscipit impedit nihil.
+                              role: WRITER
                               user:
-                                email: Impedit nihil vel distinctio est magni deleniti.
-                            - deleted: false
-                              email: Modi voluptatem deleniti.
+                                email: Laboriosam aspernatur aliquam nobis aliquid repellat quia.
+                            - deleted: true
+                              email: Est magni deleniti aut facere iste minus.
                               family: {}
                               group:
-                                email: Facere iste minus sequi.
-                              name: Non quo impedit quia nihil aut.
-                              role: OWNER
+                                email: Molestias mollitia corporis porro.
+                              name: Suscipit impedit nihil.
+                              role: WRITER
                               user:
-                                email: Impedit nihil vel distinctio est magni deleniti.
-                            - deleted: false
-                              email: Modi voluptatem deleniti.
-                              family: {}
-                              group:
-                                email: Facere iste minus sequi.
-                              name: Non quo impedit quia nihil aut.
-                              role: OWNER
-                              user:
-                                email: Impedit nihil vel distinctio est magni deleniti.
-                          pinned: false
-                          title: Rerum fuga quis saepe quod est ut.
-                          trashTime: Molestias ut numquam aut est et.
+                                email: Laboriosam aspernatur aliquam nobis aliquid repellat quia.
+                          pinned: true
+                          title: Temporibus aliquid fuga qui.
+                          trashTime: Illum quis sed quae sunt earum.
                           trashed: false
-                          updateTime: Ad dolores nam molestias rerum.
+                          updateTime: Rerum fuga quis saepe quod est ut.
                         - archived: true
                           attachments:
                             - mimeType:
@@ -2311,71 +2339,65 @@ components:
                                       childListItems:
                                         - {}
                                         - {}
+                                        - {}
                                       text:
-                                        text: Illum quis sed quae sunt earum.
+                                        text: Quo impedit quia nihil aut.
                                     - checked: false
                                       childListItems:
                                         - {}
                                         - {}
+                                        - {}
                                       text:
-                                        text: Illum quis sed quae sunt earum.
+                                        text: Quo impedit quia nihil aut.
                                     - checked: false
                                       childListItems:
                                         - {}
                                         - {}
+                                        - {}
                                       text:
-                                        text: Illum quis sed quae sunt earum.
+                                        text: Quo impedit quia nihil aut.
                             text:
-                                text: Illum quis sed quae sunt earum.
-                          color: YELLOW
-                          createTime: Alias sed.
+                                text: Quo impedit quia nihil aut.
+                          color: TEAL
+                          createTime: Numquam aut est et quia.
                           labels:
-                            - Aliquid repellat quia dolorem.
-                            - Mollitia corporis porro cum beatae.
-                            - Non ipsum eos id et earum quo.
-                          name: Non vel dolores non qui natus asperiores.
+                            - Eos id.
+                            - Earum quo dolor quo aut.
+                            - Dolorem eos tenetur ipsam.
+                          name: Nam molestias rerum sunt molestias.
                           permissions:
-                            - deleted: false
-                              email: Modi voluptatem deleniti.
+                            - deleted: true
+                              email: Est magni deleniti aut facere iste minus.
                               family: {}
                               group:
-                                email: Facere iste minus sequi.
-                              name: Non quo impedit quia nihil aut.
-                              role: OWNER
+                                email: Molestias mollitia corporis porro.
+                              name: Suscipit impedit nihil.
+                              role: WRITER
                               user:
-                                email: Impedit nihil vel distinctio est magni deleniti.
-                            - deleted: false
-                              email: Modi voluptatem deleniti.
+                                email: Laboriosam aspernatur aliquam nobis aliquid repellat quia.
+                            - deleted: true
+                              email: Est magni deleniti aut facere iste minus.
                               family: {}
                               group:
-                                email: Facere iste minus sequi.
-                              name: Non quo impedit quia nihil aut.
-                              role: OWNER
+                                email: Molestias mollitia corporis porro.
+                              name: Suscipit impedit nihil.
+                              role: WRITER
                               user:
-                                email: Impedit nihil vel distinctio est magni deleniti.
-                            - deleted: false
-                              email: Modi voluptatem deleniti.
+                                email: Laboriosam aspernatur aliquam nobis aliquid repellat quia.
+                            - deleted: true
+                              email: Est magni deleniti aut facere iste minus.
                               family: {}
                               group:
-                                email: Facere iste minus sequi.
-                              name: Non quo impedit quia nihil aut.
-                              role: OWNER
+                                email: Molestias mollitia corporis porro.
+                              name: Suscipit impedit nihil.
+                              role: WRITER
                               user:
-                                email: Impedit nihil vel distinctio est magni deleniti.
-                            - deleted: false
-                              email: Modi voluptatem deleniti.
-                              family: {}
-                              group:
-                                email: Facere iste minus sequi.
-                              name: Non quo impedit quia nihil aut.
-                              role: OWNER
-                              user:
-                                email: Impedit nihil vel distinctio est magni deleniti.
-                          pinned: false
-                          title: Rerum fuga quis saepe quod est ut.
-                          trashTime: Molestias ut numquam aut est et.
+                                email: Laboriosam aspernatur aliquam nobis aliquid repellat quia.
+                          pinned: true
+                          title: Temporibus aliquid fuga qui.
+                          trashTime: Illum quis sed quae sunt earum.
                           trashed: false
-                          updateTime: Ad dolores nam molestias rerum.
+                          updateTime: Rerum fuga quis saepe quod est ut.
             description: The response when listing a page of notes.
             example:
                 nextPageToken: Delectus sunt.
@@ -2399,71 +2421,65 @@ components:
                                   childListItems:
                                     - {}
                                     - {}
+                                    - {}
                                   text:
-                                    text: Illum quis sed quae sunt earum.
+                                    text: Quo impedit quia nihil aut.
                                 - checked: false
                                   childListItems:
                                     - {}
                                     - {}
+                                    - {}
                                   text:
-                                    text: Illum quis sed quae sunt earum.
+                                    text: Quo impedit quia nihil aut.
                                 - checked: false
                                   childListItems:
                                     - {}
                                     - {}
+                                    - {}
                                   text:
-                                    text: Illum quis sed quae sunt earum.
+                                    text: Quo impedit quia nihil aut.
                         text:
-                            text: Illum quis sed quae sunt earum.
-                      color: YELLOW
-                      createTime: Alias sed.
+                            text: Quo impedit quia nihil aut.
+                      color: TEAL
+                      createTime: Numquam aut est et quia.
                       labels:
-                        - Aliquid repellat quia dolorem.
-                        - Mollitia corporis porro cum beatae.
-                        - Non ipsum eos id et earum quo.
-                      name: Non vel dolores non qui natus asperiores.
+                        - Eos id.
+                        - Earum quo dolor quo aut.
+                        - Dolorem eos tenetur ipsam.
+                      name: Nam molestias rerum sunt molestias.
                       permissions:
-                        - deleted: false
-                          email: Modi voluptatem deleniti.
+                        - deleted: true
+                          email: Est magni deleniti aut facere iste minus.
                           family: {}
                           group:
-                            email: Facere iste minus sequi.
-                          name: Non quo impedit quia nihil aut.
-                          role: OWNER
+                            email: Molestias mollitia corporis porro.
+                          name: Suscipit impedit nihil.
+                          role: WRITER
                           user:
-                            email: Impedit nihil vel distinctio est magni deleniti.
-                        - deleted: false
-                          email: Modi voluptatem deleniti.
+                            email: Laboriosam aspernatur aliquam nobis aliquid repellat quia.
+                        - deleted: true
+                          email: Est magni deleniti aut facere iste minus.
                           family: {}
                           group:
-                            email: Facere iste minus sequi.
-                          name: Non quo impedit quia nihil aut.
-                          role: OWNER
+                            email: Molestias mollitia corporis porro.
+                          name: Suscipit impedit nihil.
+                          role: WRITER
                           user:
-                            email: Impedit nihil vel distinctio est magni deleniti.
-                        - deleted: false
-                          email: Modi voluptatem deleniti.
+                            email: Laboriosam aspernatur aliquam nobis aliquid repellat quia.
+                        - deleted: true
+                          email: Est magni deleniti aut facere iste minus.
                           family: {}
                           group:
-                            email: Facere iste minus sequi.
-                          name: Non quo impedit quia nihil aut.
-                          role: OWNER
+                            email: Molestias mollitia corporis porro.
+                          name: Suscipit impedit nihil.
+                          role: WRITER
                           user:
-                            email: Impedit nihil vel distinctio est magni deleniti.
-                        - deleted: false
-                          email: Modi voluptatem deleniti.
-                          family: {}
-                          group:
-                            email: Facere iste minus sequi.
-                          name: Non quo impedit quia nihil aut.
-                          role: OWNER
-                          user:
-                            email: Impedit nihil vel distinctio est magni deleniti.
-                      pinned: false
-                      title: Rerum fuga quis saepe quod est ut.
-                      trashTime: Molestias ut numquam aut est et.
+                            email: Laboriosam aspernatur aliquam nobis aliquid repellat quia.
+                      pinned: true
+                      title: Temporibus aliquid fuga qui.
+                      trashTime: Illum quis sed quae sunt earum.
                       trashed: false
-                      updateTime: Ad dolores nam molestias rerum.
+                      updateTime: Rerum fuga quis saepe quod est ut.
                     - archived: true
                       attachments:
                         - mimeType:
@@ -2483,71 +2499,65 @@ components:
                                   childListItems:
                                     - {}
                                     - {}
+                                    - {}
                                   text:
-                                    text: Illum quis sed quae sunt earum.
+                                    text: Quo impedit quia nihil aut.
                                 - checked: false
                                   childListItems:
                                     - {}
                                     - {}
+                                    - {}
                                   text:
-                                    text: Illum quis sed quae sunt earum.
+                                    text: Quo impedit quia nihil aut.
                                 - checked: false
                                   childListItems:
                                     - {}
                                     - {}
+                                    - {}
                                   text:
-                                    text: Illum quis sed quae sunt earum.
+                                    text: Quo impedit quia nihil aut.
                         text:
-                            text: Illum quis sed quae sunt earum.
-                      color: YELLOW
-                      createTime: Alias sed.
+                            text: Quo impedit quia nihil aut.
+                      color: TEAL
+                      createTime: Numquam aut est et quia.
                       labels:
-                        - Aliquid repellat quia dolorem.
-                        - Mollitia corporis porro cum beatae.
-                        - Non ipsum eos id et earum quo.
-                      name: Non vel dolores non qui natus asperiores.
+                        - Eos id.
+                        - Earum quo dolor quo aut.
+                        - Dolorem eos tenetur ipsam.
+                      name: Nam molestias rerum sunt molestias.
                       permissions:
-                        - deleted: false
-                          email: Modi voluptatem deleniti.
+                        - deleted: true
+                          email: Est magni deleniti aut facere iste minus.
                           family: {}
                           group:
-                            email: Facere iste minus sequi.
-                          name: Non quo impedit quia nihil aut.
-                          role: OWNER
+                            email: Molestias mollitia corporis porro.
+                          name: Suscipit impedit nihil.
+                          role: WRITER
                           user:
-                            email: Impedit nihil vel distinctio est magni deleniti.
-                        - deleted: false
-                          email: Modi voluptatem deleniti.
+                            email: Laboriosam aspernatur aliquam nobis aliquid repellat quia.
+                        - deleted: true
+                          email: Est magni deleniti aut facere iste minus.
                           family: {}
                           group:
-                            email: Facere iste minus sequi.
-                          name: Non quo impedit quia nihil aut.
-                          role: OWNER
+                            email: Molestias mollitia corporis porro.
+                          name: Suscipit impedit nihil.
+                          role: WRITER
                           user:
-                            email: Impedit nihil vel distinctio est magni deleniti.
-                        - deleted: false
-                          email: Modi voluptatem deleniti.
+                            email: Laboriosam aspernatur aliquam nobis aliquid repellat quia.
+                        - deleted: true
+                          email: Est magni deleniti aut facere iste minus.
                           family: {}
                           group:
-                            email: Facere iste minus sequi.
-                          name: Non quo impedit quia nihil aut.
-                          role: OWNER
+                            email: Molestias mollitia corporis porro.
+                          name: Suscipit impedit nihil.
+                          role: WRITER
                           user:
-                            email: Impedit nihil vel distinctio est magni deleniti.
-                        - deleted: false
-                          email: Modi voluptatem deleniti.
-                          family: {}
-                          group:
-                            email: Facere iste minus sequi.
-                          name: Non quo impedit quia nihil aut.
-                          role: OWNER
-                          user:
-                            email: Impedit nihil vel distinctio est magni deleniti.
-                      pinned: false
-                      title: Rerum fuga quis saepe quod est ut.
-                      trashTime: Molestias ut numquam aut est et.
+                            email: Laboriosam aspernatur aliquam nobis aliquid repellat quia.
+                      pinned: true
+                      title: Temporibus aliquid fuga qui.
+                      trashTime: Illum quis sed quae sunt earum.
                       trashed: false
-                      updateTime: Ad dolores nam molestias rerum.
+                      updateTime: Rerum fuga quis saepe quod est ut.
         Note:
             type: object
             properties:
@@ -2633,24 +2643,24 @@ components:
                         $ref: '#/components/schemas/Permission'
                     description: Output only. The list of permissions set on the note.
                     example:
-                        - deleted: false
-                          email: Modi voluptatem deleniti.
+                        - deleted: true
+                          email: Est magni deleniti aut facere iste minus.
                           family: {}
                           group:
-                            email: Facere iste minus sequi.
-                          name: Non quo impedit quia nihil aut.
-                          role: OWNER
+                            email: Molestias mollitia corporis porro.
+                          name: Suscipit impedit nihil.
+                          role: WRITER
                           user:
-                            email: Impedit nihil vel distinctio est magni deleniti.
-                        - deleted: false
-                          email: Modi voluptatem deleniti.
+                            email: Laboriosam aspernatur aliquam nobis aliquid repellat quia.
+                        - deleted: true
+                          email: Est magni deleniti aut facere iste minus.
                           family: {}
                           group:
-                            email: Facere iste minus sequi.
-                          name: Non quo impedit quia nihil aut.
-                          role: OWNER
+                            email: Molestias mollitia corporis porro.
+                          name: Suscipit impedit nihil.
+                          role: WRITER
                           user:
-                            email: Impedit nihil vel distinctio est magni deleniti.
+                            email: Laboriosam aspernatur aliquam nobis aliquid repellat quia.
                 pinned:
                     type: boolean
                     description: Whether the note is pinned.
@@ -2697,23 +2707,26 @@ components:
                               childListItems:
                                 - {}
                                 - {}
+                                - {}
                               text:
-                                text: Illum quis sed quae sunt earum.
+                                text: Quo impedit quia nihil aut.
                             - checked: false
                               childListItems:
                                 - {}
                                 - {}
+                                - {}
                               text:
-                                text: Illum quis sed quae sunt earum.
+                                text: Quo impedit quia nihil aut.
                             - checked: false
                               childListItems:
                                 - {}
                                 - {}
+                                - {}
                               text:
-                                text: Illum quis sed quae sunt earum.
+                                text: Quo impedit quia nihil aut.
                     text:
-                        text: Illum quis sed quae sunt earum.
-                color: YELLOW
+                        text: Quo impedit quia nihil aut.
+                color: TEAL
                 createTime: Qui rerum voluptatum voluptatem.
                 labels:
                     - Nulla aut voluptas doloribus qui.
@@ -2721,42 +2734,42 @@ components:
                     - Aut tenetur aut earum laudantium vitae nihil.
                 name: Libero rem blanditiis quo.
                 permissions:
-                    - deleted: false
-                      email: Modi voluptatem deleniti.
+                    - deleted: true
+                      email: Est magni deleniti aut facere iste minus.
                       family: {}
                       group:
-                        email: Facere iste minus sequi.
-                      name: Non quo impedit quia nihil aut.
-                      role: OWNER
+                        email: Molestias mollitia corporis porro.
+                      name: Suscipit impedit nihil.
+                      role: WRITER
                       user:
-                        email: Impedit nihil vel distinctio est magni deleniti.
-                    - deleted: false
-                      email: Modi voluptatem deleniti.
+                        email: Laboriosam aspernatur aliquam nobis aliquid repellat quia.
+                    - deleted: true
+                      email: Est magni deleniti aut facere iste minus.
                       family: {}
                       group:
-                        email: Facere iste minus sequi.
-                      name: Non quo impedit quia nihil aut.
-                      role: OWNER
+                        email: Molestias mollitia corporis porro.
+                      name: Suscipit impedit nihil.
+                      role: WRITER
                       user:
-                        email: Impedit nihil vel distinctio est magni deleniti.
-                    - deleted: false
-                      email: Modi voluptatem deleniti.
+                        email: Laboriosam aspernatur aliquam nobis aliquid repellat quia.
+                    - deleted: true
+                      email: Est magni deleniti aut facere iste minus.
                       family: {}
                       group:
-                        email: Facere iste minus sequi.
-                      name: Non quo impedit quia nihil aut.
-                      role: OWNER
+                        email: Molestias mollitia corporis porro.
+                      name: Suscipit impedit nihil.
+                      role: WRITER
                       user:
-                        email: Impedit nihil vel distinctio est magni deleniti.
-                    - deleted: false
-                      email: Modi voluptatem deleniti.
+                        email: Laboriosam aspernatur aliquam nobis aliquid repellat quia.
+                    - deleted: true
+                      email: Est magni deleniti aut facere iste minus.
                       family: {}
                       group:
-                        email: Facere iste minus sequi.
-                      name: Non quo impedit quia nihil aut.
-                      role: OWNER
+                        email: Molestias mollitia corporis porro.
+                      name: Suscipit impedit nihil.
+                      role: WRITER
                       user:
-                        email: Impedit nihil vel distinctio est magni deleniti.
+                        email: Laboriosam aspernatur aliquam nobis aliquid repellat quia.
                 pinned: true
                 title: Perferendis perferendis.
                 trashTime: In consequatur rerum dolorem sunt.
@@ -2824,23 +2837,26 @@ components:
                               childListItems:
                                 - {}
                                 - {}
+                                - {}
                               text:
-                                text: Illum quis sed quae sunt earum.
+                                text: Quo impedit quia nihil aut.
                             - checked: false
                               childListItems:
                                 - {}
                                 - {}
+                                - {}
                               text:
-                                text: Illum quis sed quae sunt earum.
+                                text: Quo impedit quia nihil aut.
                             - checked: false
                               childListItems:
                                 - {}
                                 - {}
+                                - {}
                               text:
-                                text: Illum quis sed quae sunt earum.
+                                text: Quo impedit quia nihil aut.
                     text:
-                        text: Illum quis sed quae sunt earum.
-                color: YELLOW
+                        text: Quo impedit quia nihil aut.
+                color: TEAL
                 labels:
                     - Voluptatibus eius minima accusantium aliquid.
                     - Animi quia.
@@ -2882,11 +2898,11 @@ components:
                 email: Perspiciatis ut inventore quia.
                 family: {}
                 group:
-                    email: Facere iste minus sequi.
+                    email: Molestias mollitia corporis porro.
                 name: Sequi commodi consequatur dolor et eaque sit.
-                role: OWNER
+                role: WRITER
                 user:
-                    email: Impedit nihil vel distinctio est magni deleniti.
+                    email: Laboriosam aspernatur aliquam nobis aliquid repellat quia.
         Section:
             type: object
             properties:
@@ -2902,22 +2918,25 @@ components:
                           childListItems:
                             - {}
                             - {}
+                            - {}
                           text:
-                            text: Illum quis sed quae sunt earum.
+                            text: Quo impedit quia nihil aut.
                         - checked: false
                           childListItems:
                             - {}
                             - {}
+                            - {}
                           text:
-                            text: Illum quis sed quae sunt earum.
+                            text: Quo impedit quia nihil aut.
                         - checked: false
                           childListItems:
                             - {}
                             - {}
+                            - {}
                           text:
-                            text: Illum quis sed quae sunt earum.
+                            text: Quo impedit quia nihil aut.
                 text:
-                    text: Illum quis sed quae sunt earum.
+                    text: Quo impedit quia nihil aut.
         TextContent:
             type: object
             properties:

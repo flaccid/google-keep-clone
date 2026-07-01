@@ -57,6 +57,14 @@ func handleHTTPServer(ctx context.Context, u *url.URL, mediaEndpoints *media.End
 		permissionsServer = permissionssvr.New(permissionsEndpoints, mux, dec, enc, eh, sf)
 	}
 
+	// Wrap download handler to sniff Content-Type (JSON metadata vs binary media).
+	wrapDownload := func(h http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			h.ServeHTTP(&sniffResponseWriter{ResponseWriter: w}, r)
+		})
+	}
+	mediaServer.Download = wrapDownload(mediaServer.Download)
+
 	mediasvr.Mount(mux, mediaServer)
 	labelssvr.Mount(mux, labelsServer)
 	notessvr.Mount(mux, notesServer)
@@ -152,6 +160,34 @@ func securityHeaders(next http.Handler) http.Handler {
 		w.Header().Set("Permissions-Policy", "camera=(), microphone=(), geolocation=(), interest-cohort=()")
 		next.ServeHTTP(w, r)
 	})
+}
+
+// sniffResponseWriter intercepts Write to sniff the first bytes and set
+// Content-Type accordingly: JSON for metadata (`?alt` absent), octet-stream
+// for raw media (`?alt=media`). The Goa-generated encoder calls WriteHeader
+// before Write, so we defer the real WriteHeader until Write to allow sniffing.
+type sniffResponseWriter struct {
+	http.ResponseWriter
+	statusCode  int
+	headerReady bool
+}
+
+func (w *sniffResponseWriter) WriteHeader(code int) {
+	w.statusCode = code
+	w.headerReady = true
+}
+
+func (w *sniffResponseWriter) Write(b []byte) (int, error) {
+	ct := "application/octet-stream"
+	if len(b) > 0 && b[0] == '{' {
+		ct = "application/json"
+	}
+	w.Header().Set("Content-Type", ct)
+	if w.statusCode == 0 {
+		w.statusCode = http.StatusOK
+	}
+	w.ResponseWriter.WriteHeader(w.statusCode)
+	return w.ResponseWriter.Write(b)
 }
 
 func errorHandler(logCtx context.Context) func(context.Context, http.ResponseWriter, error) {

@@ -48,11 +48,12 @@ func NewUploadPayload(body []byte, noteID string, contentType string) *media.Upl
 }
 
 // NewDownloadPayload builds a media service download endpoint payload.
-func NewDownloadPayload(noteID string, attachmentID string, mimeType *string) *media.DownloadPayload {
+func NewDownloadPayload(noteID string, attachmentID string, mimeType *string, alt *string) *media.DownloadPayload {
 	v := &media.DownloadPayload{}
 	v.NoteID = noteID
 	v.AttachmentID = attachmentID
 	v.MimeType = mimeType
+	v.Alt = alt
 
 	return v
 }

@@ -379,6 +379,11 @@ paths:
                   description: The requested MIME type. Must be one of the attachment's mimeType values.
                   required: false
                   type: string
+                - name: alt
+                  in: query
+                  description: The alt query parameter. Use 'media' to return raw bytes; omit to return Attachment metadata.
+                  required: false
+                  type: string
                 - name: noteId
                   in: path
                   description: The ID of the note.
@@ -1380,29 +1385,32 @@ definitions:
             body:
                 list:
                     listItems:
-                        - checked: true
+                        - checked: false
                           childListItems:
                             - {}
                             - {}
                             - {}
+                            - {}
                           text:
-                            text: Ut voluptatem voluptatem.
-                        - checked: true
+                            text: Maiores provident ut qui quia aut.
+                        - checked: false
                           childListItems:
                             - {}
                             - {}
                             - {}
+                            - {}
                           text:
-                            text: Ut voluptatem voluptatem.
-                        - checked: true
+                            text: Maiores provident ut qui quia aut.
+                        - checked: false
                           childListItems:
                             - {}
                             - {}
                             - {}
+                            - {}
                           text:
-                            text: Ut voluptatem voluptatem.
+                            text: Maiores provident ut qui quia aut.
                 text:
-                    text: Ut voluptatem voluptatem.
+                    text: Maiores provident ut qui quia aut.
             color: TEAL
             labels:
                 - Perspiciatis ut saepe odit ut quasi.

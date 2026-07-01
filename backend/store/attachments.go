@@ -54,6 +54,26 @@ func (s *AttachmentStore) Upload(ctx context.Context, noteID uuid.UUID, contentT
 	}, nil
 }
 
+type AttachmentMeta struct {
+	Name     string
+	MimeType []string
+}
+
+func (s *AttachmentStore) GetMetaByID(ctx context.Context, noteID, attachmentID uuid.UUID) (*AttachmentMeta, error) {
+	var mimeType string
+	err := s.pool.QueryRow(ctx, `
+		SELECT mime_type FROM attachments WHERE id = $1 AND note_id = $2
+	`, attachmentID, noteID).Scan(&mimeType)
+	if err != nil {
+		return nil, fmt.Errorf("query attachment: %w", err)
+	}
+	name := fmt.Sprintf("notes/%s/attachments/%s", noteID.String(), attachmentID.String())
+	return &AttachmentMeta{
+		Name:     name,
+		MimeType: []string{mimeType},
+	}, nil
+}
+
 func (s *AttachmentStore) GetByID(ctx context.Context, noteID, attachmentID uuid.UUID) ([]byte, string, error) {
 	var filePath string
 	var mimeType string

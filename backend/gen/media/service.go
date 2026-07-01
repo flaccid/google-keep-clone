@@ -51,6 +51,9 @@ type DownloadPayload struct {
 	AttachmentID string
 	// The requested MIME type. Must be one of the attachment's mimeType values.
 	MimeType *string
+	// The alt query parameter. Use 'media' to return raw bytes; omit to return
+	// Attachment metadata.
+	Alt *string
 }
 
 // UploadPayload is the payload type of the media service upload method.

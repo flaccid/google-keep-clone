@@ -93,16 +93,22 @@ func DecodeDownloadRequest(mux goahttp.Muxer, decoder func(*http.Request) goahtt
 			noteID       string
 			attachmentID string
 			mimeType     *string
+			alt          *string
 
 			params = mux.Vars(r)
 		)
 		noteID = params["noteId"]
 		attachmentID = params["attachmentId"]
-		mimeTypeRaw := r.URL.Query().Get("mimeType")
+		qp := r.URL.Query()
+		mimeTypeRaw := qp.Get("mimeType")
 		if mimeTypeRaw != "" {
 			mimeType = &mimeTypeRaw
 		}
-		payload = NewDownloadPayload(noteID, attachmentID, mimeType)
+		altRaw := qp.Get("alt")
+		if altRaw != "" {
+			alt = &altRaw
+		}
+		payload = NewDownloadPayload(noteID, attachmentID, mimeType, alt)
 
 		return payload, nil
 	}

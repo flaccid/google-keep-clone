@@ -138,6 +138,9 @@ func EncodeDownloadRequest(encoder func(*http.Request) goahttp.Encoder) func(*ht
 		if p.MimeType != nil {
 			values.Add("mimeType", *p.MimeType)
 		}
+		if p.Alt != nil {
+			values.Add("alt", *p.Alt)
+		}
 		req.URL.RawQuery = values.Encode()
 		return nil
 	}
