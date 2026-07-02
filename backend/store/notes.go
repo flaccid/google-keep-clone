@@ -17,7 +17,7 @@ import (
 
 type NoteStore struct {
 	pool            *pgxpool.Pool
-	attachmentStore *AttachmentStore
+	attachmentStore AttachmentStore
 }
 
 type noteRow struct {
@@ -57,7 +57,7 @@ type permissionRow struct {
 	Role   string
 }
 
-func NewNoteStore(pool *pgxpool.Pool, attachmentStore *AttachmentStore) *NoteStore {
+func NewNoteStore(pool *pgxpool.Pool, attachmentStore AttachmentStore) *NoteStore {
 	return &NoteStore{pool: pool, attachmentStore: attachmentStore}
 }
 

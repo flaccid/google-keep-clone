@@ -27,7 +27,7 @@ import (
 //go:embed openapi3.yaml
 var openapiSpec []byte
 
-func handleHTTPServer(ctx context.Context, u *url.URL, mediaEndpoints *media.Endpoints, labelsEndpoints *labels.Endpoints, notesEndpoints *notes.Endpoints, permissionsEndpoints *permissions.Endpoints, wg *sync.WaitGroup, errc chan error, dbg bool, attachmentStore *store.AttachmentStore) {
+func handleHTTPServer(ctx context.Context, u *url.URL, mediaEndpoints *media.Endpoints, labelsEndpoints *labels.Endpoints, notesEndpoints *notes.Endpoints, permissionsEndpoints *permissions.Endpoints, wg *sync.WaitGroup, errc chan error, dbg bool, attachmentStore store.AttachmentStore) {
 	var (
 		dec = goahttp.RequestDecoder
 		enc = goahttp.ResponseEncoder

@@ -57,7 +57,7 @@ func main() {
 	defer pool.Close()
 
 	var (
-		attachmentStore *store.AttachmentStore
+		attachmentStore store.AttachmentStore
 		mediaSvc        media.Service
 		labelsSvc       labels.Service
 		notesSvc        notes.Service

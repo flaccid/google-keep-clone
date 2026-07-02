@@ -12,10 +12,10 @@ import (
 )
 
 type MediaService struct {
-	attachmentStore *store.AttachmentStore
+	attachmentStore store.AttachmentStore
 }
 
-func NewMediaService(attachmentStore *store.AttachmentStore) media.Service {
+func NewMediaService(attachmentStore store.AttachmentStore) media.Service {
 	return &MediaService{attachmentStore: attachmentStore}
 }
 
