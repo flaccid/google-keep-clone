@@ -358,6 +358,11 @@ func (s *NoteStore) SetTrashed(ctx context.Context, owner string, id uuid.UUID, 
 }
 
 func (s *NoteStore) Delete(ctx context.Context, owner string, id uuid.UUID) error {
+	if s.attachmentStore != nil {
+		if err := s.attachmentStore.DeleteNote(ctx, id); err != nil {
+			return fmt.Errorf("delete note attachments: %w", err)
+		}
+	}
 	_, err := s.pool.Exec(ctx, `DELETE FROM notes WHERE id = $1 AND owner = $2`, id, owner)
 	if err != nil {
 		return fmt.Errorf("delete note: %w", err)

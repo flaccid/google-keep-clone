@@ -23,6 +23,7 @@ type AttachmentStore interface {
 	GetMetaByID(ctx context.Context, noteID, attachmentID uuid.UUID) (*AttachmentMeta, error)
 	GetByID(ctx context.Context, noteID, attachmentID uuid.UUID) ([]byte, string, error)
 	ListByNote(ctx context.Context, noteID uuid.UUID) ([]*notes.Attachment, error)
+	DeleteNote(ctx context.Context, noteID uuid.UUID) error
 }
 
 type AttachmentMeta struct {
@@ -138,6 +139,22 @@ func (s *filesystemStore) ListByNote(ctx context.Context, noteID uuid.UUID) ([]*
 		})
 	}
 	return result, nil
+}
+
+func (s *filesystemStore) DeleteNote(ctx context.Context, noteID uuid.UUID) error {
+	rows, err := s.pool.Query(ctx, `SELECT file_path FROM attachments WHERE note_id = $1`, noteID)
+	if err != nil {
+		return fmt.Errorf("query attachments for deletion: %w", err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var filePath string
+		if err := rows.Scan(&filePath); err != nil {
+			return fmt.Errorf("scan attachment file_path: %w", err)
+		}
+		os.Remove(filePath)
+	}
+	return nil
 }
 
 // --- S3 implementation ---
@@ -282,4 +299,22 @@ func (s *s3Store) ListByNote(ctx context.Context, noteID uuid.UUID) ([]*notes.At
 		})
 	}
 	return result, nil
+}
+
+func (s *s3Store) DeleteNote(ctx context.Context, noteID uuid.UUID) error {
+	rows, err := s.pool.Query(ctx, `SELECT file_path FROM attachments WHERE note_id = $1`, noteID)
+	if err != nil {
+		return fmt.Errorf("query attachments for deletion: %w", err)
+	}
+	defer rows.Close()
+	for rows.Next() {
+		var filePath string
+		if err := rows.Scan(&filePath); err != nil {
+			return fmt.Errorf("scan attachment file_path: %w", err)
+		}
+		if err := s.client.RemoveObject(ctx, s.bucket, filePath, minio.RemoveObjectOptions{}); err != nil {
+			return fmt.Errorf("remove S3 object: %w", err)
+		}
+	}
+	return nil
 }
