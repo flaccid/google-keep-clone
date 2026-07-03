@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 	"time"
@@ -250,13 +251,7 @@ func (s *s3Store) GetByID(ctx context.Context, noteID, attachmentID uuid.UUID) (
 	}
 	defer obj.Close()
 
-	stat, err := obj.Stat()
-	if err != nil {
-		return nil, "", fmt.Errorf("s3 stat object: %w", err)
-	}
-
-	data := make([]byte, stat.Size)
-	_, err = obj.Read(data)
+	data, err := io.ReadAll(obj)
 	if err != nil {
 		return nil, "", fmt.Errorf("s3 read object: %w", err)
 	}
