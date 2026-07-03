@@ -76,11 +76,18 @@ func DecodeUploadRequest(mux goahttp.Muxer, decoder func(*http.Request) goahttp.
 func EncodeDownloadResponse(encoder func(context.Context, http.ResponseWriter) goahttp.Encoder) func(context.Context, http.ResponseWriter, any) error {
 	return func(ctx context.Context, w http.ResponseWriter, v any) error {
 		res, _ := v.([]byte)
-		ctx = context.WithValue(ctx, goahttp.ContentTypeKey, "application/octet-stream")
+		contentType := "application/octet-stream"
+		if len(res) > 0 {
+			if res[0] == '{' {
+				contentType = "application/json"
+			} else {
+				contentType = http.DetectContentType(res)
+			}
+		}
+		ctx = context.WithValue(ctx, goahttp.ContentTypeKey, contentType)
 		enc := encoder(ctx, w)
-		body := res
 		w.WriteHeader(http.StatusOK)
-		return enc.Encode(body)
+		return enc.Encode(res)
 	}
 }
 
