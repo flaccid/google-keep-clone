@@ -84,10 +84,10 @@ func EncodeDownloadResponse(encoder func(context.Context, http.ResponseWriter) g
 				contentType = http.DetectContentType(res)
 			}
 		}
-		ctx = context.WithValue(ctx, goahttp.ContentTypeKey, contentType)
-		enc := encoder(ctx, w)
+		w.Header().Set("Content-Type", contentType)
 		w.WriteHeader(http.StatusOK)
-		return enc.Encode(res)
+		_, err := w.Write(res)
+		return err
 	}
 }
 
