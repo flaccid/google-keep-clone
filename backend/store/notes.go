@@ -150,9 +150,22 @@ func (s *NoteStore) List(ctx context.Context, owner string, pageSize *int, pageT
 	var args []any
 
 	argIdx := 0
-	argIdx++
-	conditions = append(conditions, fmt.Sprintf("owner = $%d", argIdx))
-	args = append(args, owner)
+	email := EmailFromContext(ctx)
+	if email != "" {
+		argIdx++
+		ownerIdx := argIdx
+		argIdx++
+		emailIdx := argIdx
+		conditions = append(conditions, fmt.Sprintf(
+			"(owner = $%d OR EXISTS (SELECT 1 FROM permissions WHERE note_id = notes.id AND email = $%d))",
+			ownerIdx, emailIdx,
+		))
+		args = append(args, owner, email)
+	} else {
+		argIdx++
+		conditions = append(conditions, fmt.Sprintf("owner = $%d", argIdx))
+		args = append(args, owner)
+	}
 
 	if pageToken != nil && *pageToken != "" {
 		cursor, err := decodeCursor(*pageToken)
@@ -264,6 +277,11 @@ func (s *NoteStore) Update(ctx context.Context, owner string, id uuid.UUID, titl
 
 	now := time.Now().UTC()
 
+	email := EmailFromContext(ctx)
+	if !s.hasWriteAccess(ctx, owner, email, id) {
+		return nil, fmt.Errorf("permission denied")
+	}
+
 	if title != nil {
 		_, err = tx.Exec(ctx, `UPDATE notes SET title = $1, updated_at = $2 WHERE id = $3 AND owner = $4`, *title, now, id, owner)
 		if err != nil {
@@ -329,6 +347,10 @@ func (s *NoteStore) Update(ctx context.Context, owner string, id uuid.UUID, titl
 }
 
 func (s *NoteStore) SetPinned(ctx context.Context, owner string, id uuid.UUID, pinned bool) (*notes.Note, error) {
+	email := EmailFromContext(ctx)
+	if !s.hasWriteAccess(ctx, owner, email, id) {
+		return nil, fmt.Errorf("permission denied")
+	}
 	_, err := s.pool.Exec(ctx, `UPDATE notes SET pinned = $1, updated_at = $2 WHERE id = $3 AND owner = $4`, pinned, time.Now().UTC(), id, owner)
 	if err != nil {
 		return nil, fmt.Errorf("set pinned: %w", err)
@@ -337,6 +359,10 @@ func (s *NoteStore) SetPinned(ctx context.Context, owner string, id uuid.UUID, p
 }
 
 func (s *NoteStore) SetArchived(ctx context.Context, owner string, id uuid.UUID, archived bool) (*notes.Note, error) {
+	email := EmailFromContext(ctx)
+	if !s.hasWriteAccess(ctx, owner, email, id) {
+		return nil, fmt.Errorf("permission denied")
+	}
 	_, err := s.pool.Exec(ctx, `UPDATE notes SET archived = $1, updated_at = $2 WHERE id = $3 AND owner = $4`, archived, time.Now().UTC(), id, owner)
 	if err != nil {
 		return nil, fmt.Errorf("set archived: %w", err)
@@ -345,6 +371,10 @@ func (s *NoteStore) SetArchived(ctx context.Context, owner string, id uuid.UUID,
 }
 
 func (s *NoteStore) SetTrashed(ctx context.Context, owner string, id uuid.UUID, trashed bool) (*notes.Note, error) {
+	email := EmailFromContext(ctx)
+	if !s.hasWriteAccess(ctx, owner, email, id) {
+		return nil, fmt.Errorf("permission denied")
+	}
 	var trashTime *time.Time
 	if trashed {
 		t := time.Now().UTC()
@@ -358,12 +388,18 @@ func (s *NoteStore) SetTrashed(ctx context.Context, owner string, id uuid.UUID, 
 }
 
 func (s *NoteStore) Delete(ctx context.Context, owner string, id uuid.UUID) error {
+	// Only the owner can permanently delete
+	var exists bool
+	err := s.pool.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM notes WHERE id = $1 AND owner = $2)`, id, owner).Scan(&exists)
+	if err != nil || !exists {
+		return fmt.Errorf("permission denied")
+	}
 	if s.attachmentStore != nil {
 		if err := s.attachmentStore.DeleteNote(ctx, id); err != nil {
 			return fmt.Errorf("delete note attachments: %w", err)
 		}
 	}
-	_, err := s.pool.Exec(ctx, `DELETE FROM notes WHERE id = $1 AND owner = $2`, id, owner)
+	_, err = s.pool.Exec(ctx, `DELETE FROM notes WHERE id = $1 AND owner = $2`, id, owner)
 	if err != nil {
 		return fmt.Errorf("delete note: %w", err)
 	}
@@ -372,10 +408,23 @@ func (s *NoteStore) Delete(ctx context.Context, owner string, id uuid.UUID) erro
 
 func (s *NoteStore) queryNote(ctx context.Context, owner string, id uuid.UUID) (noteRow, error) {
 	var nr noteRow
-	err := s.pool.QueryRow(ctx, `
-		SELECT id, title, body_type, body_text, color, pinned, archived, trashed, trash_time, created_at, updated_at
-		FROM notes WHERE id = $1 AND owner = $2
-	`, id, owner).Scan(&nr.ID, &nr.Title, &nr.BodyType, &nr.BodyText, &nr.Color, &nr.Pinned, &nr.Archived, &nr.Trashed, &nr.TrashTime, &nr.CreatedAt, &nr.UpdatedAt)
+	email := EmailFromContext(ctx)
+	var query string
+	var args []any
+	if email != "" {
+		query = `
+			SELECT id, title, body_type, body_text, color, pinned, archived, trashed, trash_time, created_at, updated_at
+			FROM notes WHERE id = $1 AND (owner = $2 OR EXISTS (SELECT 1 FROM permissions WHERE note_id = notes.id AND email = $3))
+		`
+		args = []any{id, owner, email}
+	} else {
+		query = `
+			SELECT id, title, body_type, body_text, color, pinned, archived, trashed, trash_time, created_at, updated_at
+			FROM notes WHERE id = $1 AND owner = $2
+		`
+		args = []any{id, owner}
+	}
+	err := s.pool.QueryRow(ctx, query, args...).Scan(&nr.ID, &nr.Title, &nr.BodyType, &nr.BodyText, &nr.Color, &nr.Pinned, &nr.Archived, &nr.Trashed, &nr.TrashTime, &nr.CreatedAt, &nr.UpdatedAt)
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return nr, fmt.Errorf("note not found")
@@ -444,7 +493,40 @@ func (s *NoteStore) assembleNote(ctx context.Context, row noteRow) (*notes.Note,
 		n.Attachments = atts
 	}
 
+	perms, err := s.listPermissions(ctx, row.ID)
+	if err != nil {
+		return nil, err
+	}
+	n.Permissions = perms
+
 	return n, nil
+}
+
+func (s *NoteStore) listPermissions(ctx context.Context, noteID uuid.UUID) ([]*notes.Permission, error) {
+	rows, err := s.pool.Query(ctx, `
+		SELECT id, email, role FROM permissions WHERE note_id = $1
+	`, noteID)
+	if err != nil {
+		return nil, fmt.Errorf("query permissions: %w", err)
+	}
+	defer rows.Close()
+
+	var result []*notes.Permission
+	for rows.Next() {
+		var id uuid.UUID
+		var email, role string
+		if err := rows.Scan(&id, &email, &role); err != nil {
+			return nil, fmt.Errorf("scan permission: %w", err)
+		}
+		name := fmt.Sprintf("notes/%s/permissions/%s", noteID.String(), id.String())
+		r := notes.Role(role)
+		result = append(result, &notes.Permission{
+			Name:  &name,
+			Email: &email,
+			Role:  &r,
+		})
+	}
+	return result, nil
 }
 
 func (s *NoteStore) getListItems(ctx context.Context, noteID uuid.UUID) ([]*notes.ListItem, error) {
@@ -674,6 +756,29 @@ func validateListItemText(item *notes.ListItem) error {
 		}
 	}
 	return nil
+}
+
+// noteAccessClause returns a WHERE clause suffix and its arguments that
+// restrict access to the note owner (by UUID) or any user whose email has a
+// WRITER permission.
+//   - noteIdx: param index for the note UUID (used in note_id = $N subquery)
+//   - ownerIdx: param index for the owner UUID (used in owner = $O)
+//   - emailIdx: param index for the collaborator email
+func (s *NoteStore) hasWriteAccess(ctx context.Context, owner, email string, noteID uuid.UUID) bool {
+	if email == "" {
+		var exists bool
+		err := s.pool.QueryRow(ctx, `SELECT EXISTS(SELECT 1 FROM notes WHERE id = $1 AND owner = $2)`, noteID, owner).Scan(&exists)
+		return err == nil && exists
+	}
+	var exists bool
+	err := s.pool.QueryRow(ctx, `
+		SELECT EXISTS(
+			SELECT 1 FROM notes WHERE id = $1 AND owner = $2
+			UNION
+			SELECT 1 FROM permissions WHERE note_id = $1 AND email = $3 AND role = 'WRITER'
+		)
+	`, noteID, owner, email).Scan(&exists)
+	return err == nil && exists
 }
 
 func parseNoteName(name string) (uuid.UUID, error) {
