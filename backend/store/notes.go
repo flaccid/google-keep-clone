@@ -283,35 +283,35 @@ func (s *NoteStore) Update(ctx context.Context, owner string, id uuid.UUID, titl
 	}
 
 	if title != nil {
-		_, err = tx.Exec(ctx, `UPDATE notes SET title = $1, updated_at = $2 WHERE id = $3 AND owner = $4`, *title, now, id, owner)
+		_, err = tx.Exec(ctx, `UPDATE notes SET title = $1, updated_at = $2 WHERE id = $3`, *title, now, id)
 		if err != nil {
 			return nil, fmt.Errorf("update title: %w", err)
 		}
 	}
 
 	if bodyType != nil && bodyText != nil {
-		_, err = tx.Exec(ctx, `UPDATE notes SET body_type = $1, body_text = $2, updated_at = $3 WHERE id = $4 AND owner = $5`, *bodyType, *bodyText, now, id, owner)
+		_, err = tx.Exec(ctx, `UPDATE notes SET body_type = $1, body_text = $2, updated_at = $3 WHERE id = $4`, *bodyType, *bodyText, now, id)
 		if err != nil {
 			return nil, fmt.Errorf("update body: %w", err)
 		}
 	}
 
 	if color != nil {
-		_, err = tx.Exec(ctx, `UPDATE notes SET color = $1, updated_at = $2 WHERE id = $3 AND owner = $4`, *color, now, id, owner)
+		_, err = tx.Exec(ctx, `UPDATE notes SET color = $1, updated_at = $2 WHERE id = $3`, *color, now, id)
 		if err != nil {
 			return nil, fmt.Errorf("update color: %w", err)
 		}
 	}
 
 	if pinned != nil {
-		_, err = tx.Exec(ctx, `UPDATE notes SET pinned = $1, updated_at = $2 WHERE id = $3 AND owner = $4`, *pinned, now, id, owner)
+		_, err = tx.Exec(ctx, `UPDATE notes SET pinned = $1, updated_at = $2 WHERE id = $3`, *pinned, now, id)
 		if err != nil {
 			return nil, fmt.Errorf("update pinned: %w", err)
 		}
 	}
 
 	if archived != nil {
-		_, err = tx.Exec(ctx, `UPDATE notes SET archived = $1, updated_at = $2 WHERE id = $3 AND owner = $4`, *archived, now, id, owner)
+		_, err = tx.Exec(ctx, `UPDATE notes SET archived = $1, updated_at = $2 WHERE id = $3`, *archived, now, id)
 		if err != nil {
 			return nil, fmt.Errorf("update archived: %w", err)
 		}
@@ -351,7 +351,7 @@ func (s *NoteStore) SetPinned(ctx context.Context, owner string, id uuid.UUID, p
 	if !s.hasWriteAccess(ctx, owner, email, id) {
 		return nil, fmt.Errorf("permission denied")
 	}
-	_, err := s.pool.Exec(ctx, `UPDATE notes SET pinned = $1, updated_at = $2 WHERE id = $3 AND owner = $4`, pinned, time.Now().UTC(), id, owner)
+	_, err := s.pool.Exec(ctx, `UPDATE notes SET pinned = $1, updated_at = $2 WHERE id = $3`, pinned, time.Now().UTC(), id)
 	if err != nil {
 		return nil, fmt.Errorf("set pinned: %w", err)
 	}
@@ -363,7 +363,7 @@ func (s *NoteStore) SetArchived(ctx context.Context, owner string, id uuid.UUID,
 	if !s.hasWriteAccess(ctx, owner, email, id) {
 		return nil, fmt.Errorf("permission denied")
 	}
-	_, err := s.pool.Exec(ctx, `UPDATE notes SET archived = $1, updated_at = $2 WHERE id = $3 AND owner = $4`, archived, time.Now().UTC(), id, owner)
+	_, err := s.pool.Exec(ctx, `UPDATE notes SET archived = $1, updated_at = $2 WHERE id = $3`, archived, time.Now().UTC(), id)
 	if err != nil {
 		return nil, fmt.Errorf("set archived: %w", err)
 	}
@@ -380,7 +380,7 @@ func (s *NoteStore) SetTrashed(ctx context.Context, owner string, id uuid.UUID, 
 		t := time.Now().UTC()
 		trashTime = &t
 	}
-	_, err := s.pool.Exec(ctx, `UPDATE notes SET trashed = $1, trash_time = $2, updated_at = $3 WHERE id = $4 AND owner = $5`, trashed, trashTime, time.Now().UTC(), id, owner)
+	_, err := s.pool.Exec(ctx, `UPDATE notes SET trashed = $1, trash_time = $2, updated_at = $3 WHERE id = $4`, trashed, trashTime, time.Now().UTC(), id)
 	if err != nil {
 		return nil, fmt.Errorf("set trashed: %w", err)
 	}
@@ -758,12 +758,9 @@ func validateListItemText(item *notes.ListItem) error {
 	return nil
 }
 
-// noteAccessClause returns a WHERE clause suffix and its arguments that
-// restrict access to the note owner (by UUID) or any user whose email has a
-// WRITER permission.
-//   - noteIdx: param index for the note UUID (used in note_id = $N subquery)
-//   - ownerIdx: param index for the owner UUID (used in owner = $O)
-//   - emailIdx: param index for the collaborator email
+// hasWriteAccess reports whether the caller (identified by owner UUID and
+// optionally email) is allowed to modify the given note: either the note owner
+// or a collaborator with WRITER role.
 func (s *NoteStore) hasWriteAccess(ctx context.Context, owner, email string, noteID uuid.UUID) bool {
 	if email == "" {
 		var exists bool
