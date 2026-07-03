@@ -5,8 +5,9 @@ import "context"
 type contextKey string
 
 const (
-	ownerKey contextKey = "keep_owner"
-	emailKey contextKey = "keep_email"
+	ownerKey    contextKey = "keep_owner"
+	emailKey    contextKey = "keep_email"
+	avatarURLKey contextKey = "keep_avatar_url"
 )
 
 func WithOwner(ctx context.Context, owner string) context.Context {
@@ -25,4 +26,13 @@ func WithEmail(ctx context.Context, email string) context.Context {
 func EmailFromContext(ctx context.Context) string {
 	email, _ := ctx.Value(emailKey).(string)
 	return email
+}
+
+func WithAvatarURL(ctx context.Context, url string) context.Context {
+	return context.WithValue(ctx, avatarURLKey, url)
+}
+
+func AvatarURLFromContext(ctx context.Context) string {
+	url, _ := ctx.Value(avatarURLKey).(string)
+	return url
 }

@@ -21,17 +21,19 @@ type NoteStore struct {
 }
 
 type noteRow struct {
-	ID        uuid.UUID
-	Title     string
-	BodyType  *string
-	BodyText  string
-	Color     string
-	Pinned    bool
-	Archived  bool
-	Trashed   bool
-	TrashTime *time.Time
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID             uuid.UUID
+	Title          string
+	BodyType       *string
+	BodyText       string
+	Color          string
+	Pinned         bool
+	Archived       bool
+	Trashed        bool
+	TrashTime      *time.Time
+	OwnerEmail     string
+	OwnerAvatarURL string
+	CreatedAt      time.Time
+	UpdatedAt      time.Time
 }
 
 type listItemRow struct {
@@ -74,11 +76,13 @@ func (s *NoteStore) Create(ctx context.Context, owner string, title string, body
 
 	id := uuid.New()
 	now := time.Now().UTC()
+	ownerEmail := EmailFromContext(ctx)
+	ownerAvatarURL := AvatarURLFromContext(ctx)
 
 	_, err = tx.Exec(ctx, `
-		INSERT INTO notes (id, owner, title, body_type, body_text, color, pinned, archived, created_at, updated_at)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-	`, id, owner, title, bodyType, bodyText, color, pinned, archived, now, now)
+		INSERT INTO notes (id, owner, title, body_type, body_text, color, pinned, archived, owner_email, owner_avatar_url, created_at, updated_at)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+	`, id, owner, title, bodyType, bodyText, color, pinned, archived, ownerEmail, ownerAvatarURL, now, now)
 	if err != nil {
 		return nil, fmt.Errorf("insert note: %w", err)
 	}
@@ -213,7 +217,7 @@ func (s *NoteStore) List(ctx context.Context, owner string, pageSize *int, pageT
 	whereClause := strings.Join(conditions, " AND ")
 
 	query := fmt.Sprintf(`
-		SELECT id, title, body_type, body_text, color, pinned, archived, trashed, trash_time, created_at, updated_at
+		SELECT id, title, body_type, body_text, color, pinned, archived, trashed, trash_time, owner_email, owner_avatar_url, created_at, updated_at
 		FROM notes WHERE %s
 		ORDER BY pinned DESC, updated_at DESC
 		LIMIT $%d
@@ -230,7 +234,7 @@ func (s *NoteStore) List(ctx context.Context, owner string, pageSize *int, pageT
 	var noteRows []noteRow
 	for rows.Next() {
 		var nr noteRow
-		if err := rows.Scan(&nr.ID, &nr.Title, &nr.BodyType, &nr.BodyText, &nr.Color, &nr.Pinned, &nr.Archived, &nr.Trashed, &nr.TrashTime, &nr.CreatedAt, &nr.UpdatedAt); err != nil {
+		if err := rows.Scan(&nr.ID, &nr.Title, &nr.BodyType, &nr.BodyText, &nr.Color, &nr.Pinned, &nr.Archived, &nr.Trashed, &nr.TrashTime, &nr.OwnerEmail, &nr.OwnerAvatarURL, &nr.CreatedAt, &nr.UpdatedAt); err != nil {
 			return nil, fmt.Errorf("scan note: %w", err)
 		}
 		noteRows = append(noteRows, nr)
@@ -413,18 +417,18 @@ func (s *NoteStore) queryNote(ctx context.Context, owner string, id uuid.UUID) (
 	var args []any
 	if email != "" {
 		query = `
-			SELECT id, title, body_type, body_text, color, pinned, archived, trashed, trash_time, created_at, updated_at
+			SELECT id, title, body_type, body_text, color, pinned, archived, trashed, trash_time, owner_email, owner_avatar_url, created_at, updated_at
 			FROM notes WHERE id = $1 AND (owner = $2 OR EXISTS (SELECT 1 FROM permissions WHERE note_id = notes.id AND email = $3))
 		`
 		args = []any{id, owner, email}
 	} else {
 		query = `
-			SELECT id, title, body_type, body_text, color, pinned, archived, trashed, trash_time, created_at, updated_at
+			SELECT id, title, body_type, body_text, color, pinned, archived, trashed, trash_time, owner_email, owner_avatar_url, created_at, updated_at
 			FROM notes WHERE id = $1 AND owner = $2
 		`
 		args = []any{id, owner}
 	}
-	err := s.pool.QueryRow(ctx, query, args...).Scan(&nr.ID, &nr.Title, &nr.BodyType, &nr.BodyText, &nr.Color, &nr.Pinned, &nr.Archived, &nr.Trashed, &nr.TrashTime, &nr.CreatedAt, &nr.UpdatedAt)
+	err := s.pool.QueryRow(ctx, query, args...).Scan(&nr.ID, &nr.Title, &nr.BodyType, &nr.BodyText, &nr.Color, &nr.Pinned, &nr.Archived, &nr.Trashed, &nr.TrashTime, &nr.OwnerEmail, &nr.OwnerAvatarURL, &nr.CreatedAt, &nr.UpdatedAt)
 	if err != nil {
 		if err == pgx.ErrNoRows {
 			return nr, fmt.Errorf("note not found")
@@ -493,7 +497,7 @@ func (s *NoteStore) assembleNote(ctx context.Context, row noteRow) (*notes.Note,
 		n.Attachments = atts
 	}
 
-	perms, err := s.listPermissions(ctx, row.ID)
+	perms, err := s.listPermissions(ctx, row.ID, row.OwnerEmail, row.OwnerAvatarURL)
 	if err != nil {
 		return nil, err
 	}
@@ -502,7 +506,7 @@ func (s *NoteStore) assembleNote(ctx context.Context, row noteRow) (*notes.Note,
 	return n, nil
 }
 
-func (s *NoteStore) listPermissions(ctx context.Context, noteID uuid.UUID) ([]*notes.Permission, error) {
+func (s *NoteStore) listPermissions(ctx context.Context, noteID uuid.UUID, ownerEmail, ownerAvatarURL string) ([]*notes.Permission, error) {
 	rows, err := s.pool.Query(ctx, `
 		SELECT id, email, role FROM permissions WHERE note_id = $1
 	`, noteID)
@@ -512,6 +516,15 @@ func (s *NoteStore) listPermissions(ctx context.Context, noteID uuid.UUID) ([]*n
 	defer rows.Close()
 
 	var result []*notes.Permission
+
+	ownerRole := notes.Role("OWNER")
+	ownerPermName := fmt.Sprintf("notes/%s/permissions/owner", noteID.String())
+	result = append(result, &notes.Permission{
+		Name:      &ownerPermName,
+		Email:     &ownerEmail,
+		Role:      &ownerRole,
+	})
+
 	for rows.Next() {
 		var id uuid.UUID
 		var email, role string

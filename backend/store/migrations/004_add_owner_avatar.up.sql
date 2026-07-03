@@ -1,0 +1,2 @@
+ALTER TABLE notes ADD COLUMN owner_email TEXT NOT NULL DEFAULT '';
+ALTER TABLE notes ADD COLUMN owner_avatar_url TEXT NOT NULL DEFAULT '';
