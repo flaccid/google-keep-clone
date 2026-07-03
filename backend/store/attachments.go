@@ -174,10 +174,15 @@ func newS3Store(pool *pgxpool.Pool) *s3Store {
 	// Ensure bucket exists
 	ctx := context.Background()
 	if err := client.MakeBucket(ctx, bucket, minio.MakeBucketOptions{Region: region}); err != nil {
-		// Ignore BucketAlreadyOwnedByYou and BucketAlreadyExists errors
 		exists, errExists := client.BucketExists(ctx, bucket)
-		if errExists != nil || !exists {
-			panic(fmt.Sprintf("failed to create S3 bucket %s: %v", bucket, err))
+		if errExists != nil {
+			// Both MakeBucket and BucketExists failed — likely a permission
+			// restriction (e.g. Backblaze B2 application key lacks
+			// createBucket / listBuckets). The bucket already exists and
+			// PutObject/GetObject still work, so proceed with a warning.
+			fmt.Fprintf(os.Stderr, "WARN: unable to verify S3 bucket %q: %v (MakeBucket: %v); assuming it exists\n", bucket, errExists, err)
+		} else if !exists {
+			panic(fmt.Sprintf("S3 bucket %s does not exist", bucket))
 		}
 	}
 
