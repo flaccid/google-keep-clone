@@ -12,7 +12,7 @@ var ColorValue = Type("ColorValue", String, func() {
 
 var Role = Type("Role", String, func() {
 	Description("The role granted by a permission.")
-	Enum("ROLE_UNSPECIFIED", "OWNER", "WRITER")
+	Enum("ROLE_UNSPECIFIED", "OWNER", "WRITER", "READER")
 })
 
 var TextContent = Type("TextContent", func() {

@@ -114,12 +114,60 @@ func NewBatchCreatePermissionOK(body []*PermissionResponse) []*permissions.Permi
 	return v
 }
 
+// NewBatchCreateForbidden builds a permissions service batchCreate endpoint
+// forbidden error.
+func NewBatchCreateForbidden(body string) permissions.Forbidden {
+	v := permissions.Forbidden(body)
+
+	return v
+}
+
+// NewBatchCreateInvalidRequest builds a permissions service batchCreate
+// endpoint invalid_request error.
+func NewBatchCreateInvalidRequest(body string) permissions.InvalidRequest {
+	v := permissions.InvalidRequest(body)
+
+	return v
+}
+
+// NewBatchCreateNotFound builds a permissions service batchCreate endpoint
+// not_found error.
+func NewBatchCreateNotFound(body string) permissions.NotFound {
+	v := permissions.NotFound(body)
+
+	return v
+}
+
+// NewBatchDeleteForbidden builds a permissions service batchDelete endpoint
+// forbidden error.
+func NewBatchDeleteForbidden(body string) permissions.Forbidden {
+	v := permissions.Forbidden(body)
+
+	return v
+}
+
+// NewBatchDeleteInvalidRequest builds a permissions service batchDelete
+// endpoint invalid_request error.
+func NewBatchDeleteInvalidRequest(body string) permissions.InvalidRequest {
+	v := permissions.InvalidRequest(body)
+
+	return v
+}
+
+// NewBatchDeleteNotFound builds a permissions service batchDelete endpoint
+// not_found error.
+func NewBatchDeleteNotFound(body string) permissions.NotFound {
+	v := permissions.NotFound(body)
+
+	return v
+}
+
 // ValidateCreatePermissionRequestRequestBodyRequestBody runs the validations
 // defined on CreatePermissionRequestRequestBodyRequestBody
 func ValidateCreatePermissionRequestRequestBodyRequestBody(body *CreatePermissionRequestRequestBodyRequestBody) (err error) {
 	if body.Role != nil {
-		if !(*body.Role == "ROLE_UNSPECIFIED" || *body.Role == "OWNER" || *body.Role == "WRITER") {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.role", *body.Role, []any{"ROLE_UNSPECIFIED", "OWNER", "WRITER"}))
+		if !(*body.Role == "ROLE_UNSPECIFIED" || *body.Role == "OWNER" || *body.Role == "WRITER" || *body.Role == "READER") {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.role", *body.Role, []any{"ROLE_UNSPECIFIED", "OWNER", "WRITER", "READER"}))
 		}
 	}
 	return
@@ -128,8 +176,8 @@ func ValidateCreatePermissionRequestRequestBodyRequestBody(body *CreatePermissio
 // ValidatePermissionResponse runs the validations defined on PermissionResponse
 func ValidatePermissionResponse(body *PermissionResponse) (err error) {
 	if body.Role != nil {
-		if !(*body.Role == "ROLE_UNSPECIFIED" || *body.Role == "OWNER" || *body.Role == "WRITER") {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.role", *body.Role, []any{"ROLE_UNSPECIFIED", "OWNER", "WRITER"}))
+		if !(*body.Role == "ROLE_UNSPECIFIED" || *body.Role == "OWNER" || *body.Role == "WRITER" || *body.Role == "READER") {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.role", *body.Role, []any{"ROLE_UNSPECIFIED", "OWNER", "WRITER", "READER"}))
 		}
 	}
 	return

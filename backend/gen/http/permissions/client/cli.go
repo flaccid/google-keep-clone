@@ -56,7 +56,7 @@ func BuildBatchDeletePayload(permissionsBatchDeleteBody string, permissionsBatch
 	{
 		err = json.Unmarshal([]byte(permissionsBatchDeleteBody), &body)
 		if err != nil {
-			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"names\": [\n         \"Quisquam qui.\",\n         \"Praesentium quae dolor saepe.\"\n      ]\n   }'")
+			return nil, fmt.Errorf("invalid JSON for body, \nerror: %s, \nexample of valid JSON:\n%s", err, "'{\n      \"names\": [\n         \"Eius ut est aliquid ratione dolor.\",\n         \"Dolorem ea aliquam molestiae non.\"\n      ]\n   }'")
 		}
 	}
 	var noteID string

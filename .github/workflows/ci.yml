@@ -63,7 +63,7 @@ jobs:
         working-directory: ./backend
         env:
           DATABASE_URL: "postgres://${{ env.CI_DB_USER }}:${{ env.CI_DB_PASSWORD }}@localhost:5432/${{ env.CI_DB_NAME }}?sslmode=disable"
-        run: go test -count=1 ./store/...
+        run: go test -race -p 1 -count=1 ./...
 
   frontend:
     runs-on: ubuntu-latest

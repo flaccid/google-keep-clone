@@ -17,8 +17,8 @@ import (
 	goahttp "goa.design/goa/v3/http"
 
 	"github.com/flaccid/google-keep-clone/backend/api"
-	notes "github.com/flaccid/google-keep-clone/backend/gen/notes"
 	notessvr "github.com/flaccid/google-keep-clone/backend/gen/http/notes/server"
+	notes "github.com/flaccid/google-keep-clone/backend/gen/notes"
 	"github.com/flaccid/google-keep-clone/backend/store"
 )
 
@@ -53,7 +53,10 @@ func newTestServer(t *testing.T) (*httptest.Server, *store.NoteStore) {
 	notesServer := notessvr.New(endpoints, mux, dec, enc, eh, nil)
 	notessvr.Mount(mux, notesServer)
 
-	server := httptest.NewServer(mux)
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := store.WithOwner(r.Context(), "00000000-0000-0000-0000-000000000000")
+		mux.ServeHTTP(w, r.WithContext(ctx))
+	}))
 	t.Cleanup(server.Close)
 
 	return server, noteStore

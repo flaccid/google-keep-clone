@@ -106,7 +106,7 @@ func NewBatchCreateHandler(
 	var (
 		decodeRequest  = DecodeBatchCreateRequest(mux, decoder)
 		encodeResponse = EncodeBatchCreateResponse(encoder)
-		encodeError    = goahttp.ErrorEncoder(encoder, formatter)
+		encodeError    = EncodeBatchCreateError(encoder, formatter)
 	)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))
@@ -159,7 +159,7 @@ func NewBatchDeleteHandler(
 	var (
 		decodeRequest  = DecodeBatchDeleteRequest(mux, decoder)
 		encodeResponse = EncodeBatchDeleteResponse(encoder)
-		encodeError    = goahttp.ErrorEncoder(encoder, formatter)
+		encodeError    = EncodeBatchDeleteError(encoder, formatter)
 	)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := context.WithValue(r.Context(), goahttp.AcceptTypeKey, r.Header.Get("Accept"))

@@ -13,9 +13,13 @@ import (
 
 // The permissions service handles batch operations on note permissions.
 type Service interface {
-	// Creates one or more permissions on a note.
+	// Atomically creates or updates permissions. Only the actual note owner may
+	// mutate permissions. Duplicate emails are invalid; returned resource names
+	// use persisted IDs.
 	BatchCreate(context.Context, *BatchCreatePayload) (res []*Permission, err error)
-	// Deletes one or more permissions on a note.
+	// Atomically deletes permissions for the actual note owner. Duplicate or
+	// foreign-note names are invalid. Missing IDs are idempotent after
+	// authorization; grantor identity does not prevent owner revocation.
 	BatchDelete(context.Context, *BatchDeletePayload) (err error)
 }
 
@@ -108,4 +112,64 @@ type Role string
 type User struct {
 	// The user's email.
 	Email *string
+}
+
+// Only the actual note owner may change permissions.
+type Forbidden string
+
+// The complete batch is invalid; no changes were committed.
+type InvalidRequest string
+
+// The note does not exist.
+type NotFound string
+
+// Error returns an error description.
+func (e Forbidden) Error() string {
+	return "Only the actual note owner may change permissions."
+}
+
+// ErrorName returns the error name.
+//
+// Deprecated: Use GoaErrorName - https://github.com/goadesign/goa/issues/3105
+func (e Forbidden) ErrorName() string {
+	return e.GoaErrorName()
+}
+
+// GoaErrorName returns the error name.
+func (e Forbidden) GoaErrorName() string {
+	return "forbidden"
+}
+
+// Error returns an error description.
+func (e InvalidRequest) Error() string {
+	return "The complete batch is invalid; no changes were committed."
+}
+
+// ErrorName returns the error name.
+//
+// Deprecated: Use GoaErrorName - https://github.com/goadesign/goa/issues/3105
+func (e InvalidRequest) ErrorName() string {
+	return e.GoaErrorName()
+}
+
+// GoaErrorName returns the error name.
+func (e InvalidRequest) GoaErrorName() string {
+	return "invalid_request"
+}
+
+// Error returns an error description.
+func (e NotFound) Error() string {
+	return "The note does not exist."
+}
+
+// ErrorName returns the error name.
+//
+// Deprecated: Use GoaErrorName - https://github.com/goadesign/goa/issues/3105
+func (e NotFound) ErrorName() string {
+	return e.GoaErrorName()
+}
+
+// GoaErrorName returns the error name.
+func (e NotFound) GoaErrorName() string {
+	return "not_found"
 }
