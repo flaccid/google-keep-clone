@@ -1242,8 +1242,8 @@ func ValidateRestoreResponseBody(body *RestoreResponseBody) (err error) {
 // PermissionRequestBodyRequestBody
 func ValidatePermissionRequestBodyRequestBody(body *PermissionRequestBodyRequestBody) (err error) {
 	if body.Role != nil {
-		if !(*body.Role == "ROLE_UNSPECIFIED" || *body.Role == "OWNER" || *body.Role == "WRITER") {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.role", *body.Role, []any{"ROLE_UNSPECIFIED", "OWNER", "WRITER"}))
+		if !(*body.Role == "ROLE_UNSPECIFIED" || *body.Role == "OWNER" || *body.Role == "WRITER" || *body.Role == "READER") {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.role", *body.Role, []any{"ROLE_UNSPECIFIED", "OWNER", "WRITER", "READER"}))
 		}
 	}
 	return
@@ -1253,8 +1253,8 @@ func ValidatePermissionRequestBodyRequestBody(body *PermissionRequestBodyRequest
 // PermissionResponseBody
 func ValidatePermissionResponseBody(body *PermissionResponseBody) (err error) {
 	if body.Role != nil {
-		if !(*body.Role == "ROLE_UNSPECIFIED" || *body.Role == "OWNER" || *body.Role == "WRITER") {
-			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.role", *body.Role, []any{"ROLE_UNSPECIFIED", "OWNER", "WRITER"}))
+		if !(*body.Role == "ROLE_UNSPECIFIED" || *body.Role == "OWNER" || *body.Role == "WRITER" || *body.Role == "READER") {
+			err = goa.MergeErrors(err, goa.InvalidEnumValueError("body.role", *body.Role, []any{"ROLE_UNSPECIFIED", "OWNER", "WRITER", "READER"}))
 		}
 	}
 	return

@@ -28,6 +28,11 @@ func NewClient(batchCreate, batchDelete goa.Endpoint) *Client {
 }
 
 // BatchCreate calls the "batchCreate" endpoint of the "permissions" service.
+// BatchCreate may return the following errors:
+//   - "invalid_request" (type InvalidRequest)
+//   - "forbidden" (type Forbidden)
+//   - "not_found" (type NotFound)
+//   - error: internal error
 func (c *Client) BatchCreate(ctx context.Context, p *BatchCreatePayload) (res []*Permission, err error) {
 	var ires any
 	ires, err = c.BatchCreateEndpoint(ctx, p)
@@ -38,6 +43,11 @@ func (c *Client) BatchCreate(ctx context.Context, p *BatchCreatePayload) (res []
 }
 
 // BatchDelete calls the "batchDelete" endpoint of the "permissions" service.
+// BatchDelete may return the following errors:
+//   - "invalid_request" (type InvalidRequest)
+//   - "forbidden" (type Forbidden)
+//   - "not_found" (type NotFound)
+//   - error: internal error
 func (c *Client) BatchDelete(ctx context.Context, p *BatchDeletePayload) (err error) {
 	_, err = c.BatchDeleteEndpoint(ctx, p)
 	return

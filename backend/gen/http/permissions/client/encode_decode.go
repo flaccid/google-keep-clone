@@ -63,6 +63,11 @@ func EncodeBatchCreateRequest(encoder func(*http.Request) goahttp.Encoder) func(
 // DecodeBatchCreateResponse returns a decoder for responses returned by the
 // permissions batchCreate endpoint. restoreBody controls whether the response
 // body should be restored after having been read.
+// DecodeBatchCreateResponse may return the following errors:
+//   - "forbidden" (type permissions.Forbidden): http.StatusForbidden
+//   - "invalid_request" (type permissions.InvalidRequest): http.StatusBadRequest
+//   - "not_found" (type permissions.NotFound): http.StatusNotFound
+//   - error: internal error
 func DecodeBatchCreateResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (any, error) {
 	return func(resp *http.Response) (any, error) {
 		if restoreBody {
@@ -99,6 +104,36 @@ func DecodeBatchCreateResponse(decoder func(*http.Response) goahttp.Decoder, res
 			}
 			res := NewBatchCreatePermissionOK(body)
 			return res, nil
+		case http.StatusForbidden:
+			var (
+				body string
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("permissions", "batchCreate", err)
+			}
+			return nil, NewBatchCreateForbidden(body)
+		case http.StatusBadRequest:
+			var (
+				body string
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("permissions", "batchCreate", err)
+			}
+			return nil, NewBatchCreateInvalidRequest(body)
+		case http.StatusNotFound:
+			var (
+				body string
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("permissions", "batchCreate", err)
+			}
+			return nil, NewBatchCreateNotFound(body)
 		default:
 			body, _ := io.ReadAll(resp.Body)
 			return nil, goahttp.ErrInvalidResponse("permissions", "batchCreate", resp.StatusCode, string(body))
@@ -150,6 +185,11 @@ func EncodeBatchDeleteRequest(encoder func(*http.Request) goahttp.Encoder) func(
 // DecodeBatchDeleteResponse returns a decoder for responses returned by the
 // permissions batchDelete endpoint. restoreBody controls whether the response
 // body should be restored after having been read.
+// DecodeBatchDeleteResponse may return the following errors:
+//   - "forbidden" (type permissions.Forbidden): http.StatusForbidden
+//   - "invalid_request" (type permissions.InvalidRequest): http.StatusBadRequest
+//   - "not_found" (type permissions.NotFound): http.StatusNotFound
+//   - error: internal error
 func DecodeBatchDeleteResponse(decoder func(*http.Response) goahttp.Decoder, restoreBody bool) func(*http.Response) (any, error) {
 	return func(resp *http.Response) (any, error) {
 		if restoreBody {
@@ -167,6 +207,36 @@ func DecodeBatchDeleteResponse(decoder func(*http.Response) goahttp.Decoder, res
 		switch resp.StatusCode {
 		case http.StatusNoContent:
 			return nil, nil
+		case http.StatusForbidden:
+			var (
+				body string
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("permissions", "batchDelete", err)
+			}
+			return nil, NewBatchDeleteForbidden(body)
+		case http.StatusBadRequest:
+			var (
+				body string
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("permissions", "batchDelete", err)
+			}
+			return nil, NewBatchDeleteInvalidRequest(body)
+		case http.StatusNotFound:
+			var (
+				body string
+				err  error
+			)
+			err = decoder(resp).Decode(&body)
+			if err != nil {
+				return nil, goahttp.ErrDecodingError("permissions", "batchDelete", err)
+			}
+			return nil, NewBatchDeleteNotFound(body)
 		default:
 			body, _ := io.ReadAll(resp.Body)
 			return nil, goahttp.ErrInvalidResponse("permissions", "batchDelete", resp.StatusCode, string(body))
